@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TRACS App</string>
+    <string name="notificationsBundle">Notifications</string>
+    <string name="title_activity_notifications">Notifications</string>
+</resources>
