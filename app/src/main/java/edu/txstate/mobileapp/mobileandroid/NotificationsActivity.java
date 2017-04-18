@@ -36,7 +36,7 @@ public class NotificationsActivity extends AppCompatActivity implements Notifica
                 .getDispatchNotifications(this, this, "ajt79");
         Log.d(TAG, "Request is out");
         TracsClient tracs = TracsClient.getInstance();
-        tracs.getAnnouncement(entityId, this);
+        tracs.getAnnouncements(dispatchNotifications, this);
         //TODO: set up for display of notifications fetched from Tracs (after all async calls)
     }
 

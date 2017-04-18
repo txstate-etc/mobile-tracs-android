@@ -10,12 +10,14 @@ import com.google.gson.JsonStreamParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationTypes;
+import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.TracsAppNotification;
+import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
 
 public class TracsClient {
     static final String tracsUrl = "https://tracs.txstate.edu";
@@ -25,6 +27,7 @@ public class TracsClient {
     static final String portalUrl = tracsUrl + "/portal";
     static final String loginUrl = tracsUrl + "/portal/login";
     static final String logoutUrl = tracsUrl + "/portal/pda/?force.logout=yes";
+    static final String entityId = "831342dd-fdb6-4878-8b3c-1d29ecb06a14:main:d36eb344-774b-43cf-b2ab-826126161129";
 
     private static TracsClient tracsClient;
 
@@ -65,10 +68,13 @@ public class TracsClient {
         return desiredUrl;
     }
 
-    public JsonArray getAnnouncement(String entityId, NotificationListener listener) {
-        JsonArray data = new JsonArray();
+    public void getAnnouncements(NotificationsBundle notifications, NotificationListener listener) {
+        for(TracsAppNotification notification : notifications) {
+            if (NotificationTypes.ANNOUNCEMENT.equals(notification.getType())) {
+
+            }
+        }
         new GetTracsNotification(listener).execute(announcementUrl, entityId);
-        return data;
     }
 
     private class GetTracsNotification extends AsyncTask<String, Void, String> {

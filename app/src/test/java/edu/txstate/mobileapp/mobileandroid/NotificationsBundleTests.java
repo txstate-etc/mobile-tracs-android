@@ -6,11 +6,14 @@ import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.TracsAppNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class NotificationsBundleTests {
     NotificationsBundle notifications;
@@ -35,5 +38,45 @@ public class NotificationsBundleTests {
         TracsAppNotification announcement = new TracsAnnouncement(rawAnnouncement);
         notifications.addOne(announcement);
         assertTrue(notifications.size() == 1);
+    }
+
+    @Test
+    public void notificationTypeIsAddedAndCounted() {
+        TracsAppNotification announcement = new TracsAnnouncement(rawAnnouncement);
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+        assertEquals(notifications.countAnnouncements(), 4);
+    }
+
+    @Test
+    public void notificationTypeIsRemovedAndCounted() {
+        TracsAppNotification announcement = new TracsAnnouncement(rawAnnouncement);
+
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+        notifications.addOne(announcement);
+
+        notifications.remove(announcement.getId());
+        notifications.remove(announcement.getId());
+        notifications.remove(announcement.getId());
+
+        assertEquals(1, notifications.countAnnouncements());
+    }
+
+    @Test
+    public void multipleNotificationsCanBeAdded() {
+        TracsAppNotification announcement = new TracsAnnouncement(rawAnnouncement);
+
+        ArrayList<TracsAppNotification> multipleNotifications = new ArrayList<>();
+        multipleNotifications.add(announcement);
+        multipleNotifications.add(announcement);
+        multipleNotifications.add(announcement);
+
+        notifications.addMany(multipleNotifications);
+
+        assertEquals(3, notifications.countAnnouncements());
     }
 }
