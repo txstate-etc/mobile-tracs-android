@@ -41,5 +41,7 @@ abstract class TracsNotificationAbs implements TracsNotification {
         this.id = id;
     }
 
-
+    public String toString() {
+        return this.getTitle();
+    }
 }

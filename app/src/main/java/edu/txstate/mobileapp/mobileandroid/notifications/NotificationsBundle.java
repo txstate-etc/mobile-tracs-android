@@ -53,6 +53,10 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         return this.notificationsCount.get(NotificationTypes.ANNOUNCEMENT);
     }
 
+    public ArrayList<TracsAppNotification> getAllNotifications() {
+        return this.allNotifications;
+    }
+
     public NotificationsBundleIterator iterator() {
         return new NotificationsBundleIterator(allNotifications.size());
     }
