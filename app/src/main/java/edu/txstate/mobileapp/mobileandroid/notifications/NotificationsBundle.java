@@ -57,6 +57,11 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         return new NotificationsBundleIterator(allNotifications.size());
     }
 
+    public int getNotificationCount(String type) {
+        Integer total = this.notificationsCount.get(type);
+        return total == null ? 0 : total;
+    }
+
     private void incrementCount(String type) {
         boolean typeExists = this.notificationsCount.containsKey(type);
         int updatedTypeTotal = typeExists ? this.notificationsCount.get(type) + 1 : 1;
@@ -73,7 +78,7 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
 
         @Override
         public boolean hasNext() {
-            return current < size - 1;
+            return current < size;
         }
 
         @Override

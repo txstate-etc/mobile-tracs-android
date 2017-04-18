@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import edu.txstate.mobileapp.mobileandroid.notifications.DispatchNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
@@ -26,10 +27,10 @@ public class IntegrationServer {
     private HttpURLConnection client;
     private static IntegrationServer integrationServer;
     private static final String TAG = "IntegrationServer";
-    private NotificationsBundle tracsNotificationsBundle;
+    private NotificationsBundle dispatchNotifications;
 
     private IntegrationServer() {
-        tracsNotificationsBundle = new NotificationsBundle();
+        dispatchNotifications = new NotificationsBundle();
         integrationServerUrl = "http://ajt79.its.txstate.edu:3000/";
     }
 
@@ -40,26 +41,16 @@ public class IntegrationServer {
         return integrationServer;
     }
 
-
-
-    public void getDispatchNotifications(Activity parentActivity, NotificationListener listener, String userId){
-        new DispatchNotifications(parentActivity, listener).execute(integrationServerUrl, userId);
+    public void getDispatchNotifications(NotificationListener listener, String userId){
+        new DispatchNotifications(listener).execute(integrationServerUrl, userId);
     }
 
     private class DispatchNotifications extends AsyncTask<String, Void, String> {
-        private final String TAG = "DispatchNotifications";
-        private ProgressDialog dialog;
+        private final String TAG = "DispatchNotif";
         private NotificationListener notificationListener;
 
-        DispatchNotifications(Activity parentActivity, NotificationListener listener) {
-            dialog = new ProgressDialog(parentActivity);
+        DispatchNotifications(NotificationListener listener) {
             this.notificationListener = listener;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            dialog.setMessage("Loading NotificationsBundle...");
-            dialog.show();
         }
 
         @Override
@@ -72,7 +63,7 @@ public class IntegrationServer {
                         .openConnection();
                 dataReceived += JsonResponse.parse(client.getInputStream());
             } catch (IOException e) {
-                Log.d(TAG.substring(0,24), e.getMessage());
+                Log.d(TAG, e.getMessage());
             }
             return dataReceived;
         }
@@ -95,11 +86,10 @@ public class IntegrationServer {
 
             for (JsonElement notification : notifications) {
                 if (notification.isJsonObject()) {
-                    tracsNotificationsBundle.addOne(new TracsAnnouncement((JsonObject) notification));
+                    dispatchNotifications.addOne(new DispatchNotification((JsonObject) notification));
                 }
             }
-            dialog.dismiss();
-            notificationListener.onNotificationAvailable(tracsNotificationsBundle);
+            notificationListener.onNotificationAvailable(dispatchNotifications);
         }
     }
 }

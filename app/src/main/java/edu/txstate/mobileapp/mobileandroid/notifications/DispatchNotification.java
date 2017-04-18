@@ -24,7 +24,7 @@ public class DispatchNotification implements TracsAppNotification {
         this.id = extractKey(rawNotification, "id", String.class);
         this.seen = extractKey(rawNotification, "seen", Boolean.class);
         this.read = extractKey(rawNotification, "read", Boolean.class);
-        this.type = extractKey(keys, "type", String.class);
+        this.type = extractKey(keys, "object_type", String.class);
         this.providerId = extractKey(keys, "provider_id", String.class);
         this.objectId = extractKey(keys, "object_id", String.class);
         this.userId = extractKey(keys, "user_id", String.class);

@@ -1,5 +1,6 @@
 package edu.txstate.mobileapp.mobileandroid;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,16 +14,19 @@ import edu.txstate.mobileapp.mobileandroid.util.IntegrationServer;
 import edu.txstate.mobileapp.mobileandroid.util.TracsClient;
 
 public class NotificationsActivity extends AppCompatActivity implements NotificationListener {
-    private static final String TAG = "NotificationsActvitiy";
+    private static final String TAG = "NotificationsActivity";
     private NotificationsBundle tracsNotificationsBundle;
     private NotificationsBundle dispatchNotifications;
-
-    //FIXME: remove after testing
-    private String entityId = "831342dd-fdb6-4878-8b3c-1d29ecb06a14:main:aa4f8f85-a645-4766-bc91-1a1c7bef93df";
+    private int notificationsRetrieved;
+    private ProgressDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadingDialog = new ProgressDialog(this);
+        this.tracsNotificationsBundle = new NotificationsBundle();
+        loadingDialog.setMessage("Loading NotificationsBundle...");
+        loadingDialog.show();
         setContentView(R.layout.activity_notifications);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -33,22 +37,34 @@ public class NotificationsActivity extends AppCompatActivity implements Notifica
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         IntegrationServer.getInstance()
-                .getDispatchNotifications(this, this, "ajt79");
-        Log.d(TAG, "Request is out");
-        TracsClient tracs = TracsClient.getInstance();
-        tracs.getAnnouncements(dispatchNotifications, this);
-        //TODO: set up for display of notifications fetched from Tracs (after all async calls)
+                .getDispatchNotifications(this, "ajt79");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "Activity has resumed");
+
     }
 
     @Override
     public void onNotificationAvailable(TracsNotification announcement) {
         if (announcement.isNull()) { return; }
+        boolean allNotificationsRetrieved;
         this.tracsNotificationsBundle.addOne(announcement);
+        this.notificationsRetrieved += 1;
+        allNotificationsRetrieved = this.notificationsRetrieved >= this.dispatchNotifications.size();
+        if (allNotificationsRetrieved) {
+            this.notificationsRetrieved = 0;
+            loadingDialog.dismiss();
+        }
     }
 
     @Override
     public void onNotificationAvailable(NotificationsBundle notifications) {
         if (notifications.size() == 0) { return; }
         this.dispatchNotifications = notifications;
+        TracsClient tracs = TracsClient.getInstance();
+        tracs.getNotifications(dispatchNotifications, this);
     }
 }
