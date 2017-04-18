@@ -12,9 +12,7 @@ public class TracsAnnouncement extends TracsNotificationAbs {
 
     private static final String TAG = "TracsAnnouncement";
 
-    public TracsAnnouncement() {
-
-    }
+    public TracsAnnouncement() {}
 
     public TracsAnnouncement(JsonObject rawNotification) {
         super.setId(this.extractKey(rawNotification, "id", String.class));
