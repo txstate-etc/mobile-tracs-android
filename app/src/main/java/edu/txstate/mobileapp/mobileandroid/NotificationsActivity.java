@@ -1,28 +1,17 @@
 package edu.txstate.mobileapp.mobileandroid;
 
-import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.v4.net.TrafficStatsCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsListLoader;
-import edu.txstate.mobileapp.mobileandroid.notifications.TracsAppNotification;
-import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
+import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.mobileandroid.util.IntegrationServer;
 import edu.txstate.mobileapp.mobileandroid.util.TracsClient;
 
@@ -78,7 +67,6 @@ public class NotificationsActivity
                     android.R.layout.simple_list_item_1,
                     tracsNotificationsBundle);
             notificationsList.setAdapter(adapter);
-
         }
     }
 
@@ -89,6 +77,4 @@ public class NotificationsActivity
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(dispatchNotifications, this);
     }
-
-
 }
