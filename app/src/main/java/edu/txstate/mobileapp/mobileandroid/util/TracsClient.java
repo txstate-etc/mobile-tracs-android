@@ -1,23 +1,14 @@
 package edu.txstate.mobileapp.mobileandroid.util;
 
 import android.os.AsyncTask;
-import android.util.Log;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonStreamParser;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Queue;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.DispatchNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationTypes;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.TracsAppNotification;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
-import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
+import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
+import edu.txstate.mobileapp.mobileandroid.requests.AsyncTaskFactory;
+import edu.txstate.mobileapp.mobileandroid.requests.Task;
 
 public class TracsClient {
     private static final String tracsUrl = "https://tracs.txstate.edu";
@@ -68,57 +59,11 @@ public class TracsClient {
         return desiredUrl;
     }
 
-    public void getNotifications(NotificationsBundle notifications, NotificationListener listener) {
+    public void getNotifications(NotificationsBundle notifications, TracsListener listener) {
         for (TracsAppNotification notification : notifications) {
             String entityId = DispatchNotification.class.cast(notification).getObjectId();
-            new GetTracsNotification(listener)
+            AsyncTaskFactory.createTask(Task.TRACS_NOTIFICATION, listener)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, announcementUrl, entityId);
-        }
-    }
-
-    private class GetTracsNotification extends AsyncTask<String, Void, String> {
-        private final String TAG = "GetTracsNotification";
-        private final String FORBIDDEN_ERROR = "Access to resource is forbidden";
-        private NotificationListener listener;
-
-        GetTracsNotification(NotificationListener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String entityId = params[1];
-            String response = "";
-            try {
-                URL url = new URL(params[0] + entityId + ".json");
-                HttpURLConnection client = (HttpURLConnection) url.openConnection();
-                client.setRequestProperty("Cookie", "JSESSIONID=ca345a8c-e479-43fb-a183-41a0aaad62e5.tracs-app-mcs-1-7;");
-                if (client.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
-                    //TODO: Add logic to login to tracks
-                    throw new IOException(FORBIDDEN_ERROR);
-                }
-                response = JsonResponse.parse(client.getInputStream());
-            } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
-            }
-            return response;
-        }
-
-        @Override
-        protected void onPostExecute(String notificationData) {
-            TracsNotification announcement;
-            if (notificationData.isEmpty()) {
-                announcement = new TracsAnnouncement();
-            } else {
-                JsonStreamParser parser = new JsonStreamParser(notificationData);
-                JsonObject notification = null;
-
-                while (parser.hasNext()) {
-                    notification = (JsonObject) parser.next();
-                }
-                announcement = new TracsAnnouncement(notification);
-            }
-            listener.onNotificationAvailable(announcement);
         }
     }
 }

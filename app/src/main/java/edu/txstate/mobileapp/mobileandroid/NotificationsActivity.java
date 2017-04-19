@@ -10,14 +10,16 @@ import android.widget.ListView;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsListLoader;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
+import edu.txstate.mobileapp.mobileandroid.notifications.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.notifications.listeners.RequestListener;
+import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.mobileandroid.util.IntegrationServer;
 import edu.txstate.mobileapp.mobileandroid.util.TracsClient;
 
 public class NotificationsActivity
         extends AppCompatActivity
-        implements NotificationListener {
+        implements DispatchListener, TracsListener{
     private static final String TAG = "NotificationsActivity";
     private NotificationsBundle tracsNotificationsBundle;
     private NotificationsBundle dispatchNotifications;
@@ -51,8 +53,7 @@ public class NotificationsActivity
 
     }
 
-    @Override
-    public void onNotificationAvailable(TracsNotification announcement) {
+    public void onRequestReturned(TracsNotification announcement) {
         if (announcement.isNull()) { return; }
         boolean allNotificationsRetrieved;
         this.tracsNotificationsBundle.addOne(announcement);
@@ -70,11 +71,15 @@ public class NotificationsActivity
         }
     }
 
-    @Override
-    public void onNotificationAvailable(NotificationsBundle notifications) {
+    public void onRequestReturned(NotificationsBundle notifications) {
         if (notifications.size() == 0) { return; }
         this.dispatchNotifications = notifications;
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(dispatchNotifications, this);
+    }
+
+    @Override
+    public void onRequestReturned() {
+
     }
 }
