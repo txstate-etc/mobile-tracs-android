@@ -1,7 +1,5 @@
 package edu.txstate.mobileapp.mobileandroid.util;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,7 +15,6 @@ import java.net.URL;
 import edu.txstate.mobileapp.mobileandroid.notifications.DispatchNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.listeners.NotificationListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
 
 /**
  * Singleton Integration Server
