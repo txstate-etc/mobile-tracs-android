@@ -6,7 +6,7 @@ import edu.txstate.mobileapp.mobileandroid.notifications.DispatchNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationTypes;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.TracsAppNotification;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.TracsListener;
 import edu.txstate.mobileapp.mobileandroid.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.mobileandroid.requests.Task;
 
@@ -18,7 +18,6 @@ public class TracsClient {
     static final String portalUrl = tracsUrl + "/portal";
     static final String loginUrl = tracsUrl + "/portal/login";
     static final String logoutUrl = tracsUrl + "/portal/pda/?force.logout=yes";
-    static final String entityId = "831342dd-fdb6-4878-8b3c-1d29ecb06a14:main:d36eb344-774b-43cf-b2ab-826126161129";
 
     private static TracsClient tracsClient;
 

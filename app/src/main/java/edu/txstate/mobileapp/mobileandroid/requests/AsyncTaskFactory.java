@@ -2,9 +2,9 @@ package edu.txstate.mobileapp.mobileandroid.requests;
 
 import android.os.AsyncTask;
 
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.DispatchListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.RequestListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.RequestListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.TracsListener;
 
 
 

@@ -17,6 +17,10 @@ import android.view.MenuItem;
 import android.webkit.DownloadListener;
 import android.webkit.WebView;
 
+import java.util.UUID;
+
+import edu.txstate.mobileapp.mobileandroid.util.AppInstanceId;
+
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;

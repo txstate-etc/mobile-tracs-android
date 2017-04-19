@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.TracsListener;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.mobileandroid.util.JsonResponse;

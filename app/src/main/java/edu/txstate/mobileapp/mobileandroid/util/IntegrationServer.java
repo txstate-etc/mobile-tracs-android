@@ -2,7 +2,8 @@ package edu.txstate.mobileapp.mobileandroid.util;
 
 import android.os.AsyncTask;
 
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.RegistrationListener;
 import edu.txstate.mobileapp.mobileandroid.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.mobileandroid.requests.Task;
 
@@ -25,7 +26,14 @@ public class IntegrationServer {
         return integrationServer;
     }
 
-    public void getDispatchNotifications(DispatchListener listener, String userId){
+    public void getRegistrationStatus(RegistrationListener listener, String userId) {
+        AsyncTask<String, Void, String> registrationTask = AsyncTaskFactory.createTask(Task.REGISTER_DEVICE, listener);
+        if (registrationTask != null) {
+            registrationTask.execute(integrationServerUrl, userId);
+        }
+    }
+
+    public void getDispatchNotifications(DispatchListener listener, String userId) {
         AsyncTask<String, Void, String> dispatchTask = AsyncTaskFactory.createTask(Task.DISPATCH_NOTIFICATIONS, listener);
         if (dispatchTask != null) {
             dispatchTask.execute(integrationServerUrl, userId);

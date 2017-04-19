@@ -1,4 +1,4 @@
-package edu.txstate.mobileapp.mobileandroid.notifications.listeners;
+package edu.txstate.mobileapp.mobileandroid.listeners;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 

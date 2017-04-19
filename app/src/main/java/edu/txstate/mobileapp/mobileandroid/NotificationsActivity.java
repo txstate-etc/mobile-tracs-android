@@ -10,9 +10,8 @@ import android.widget.ListView;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsListLoader;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.DispatchListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.RequestListener;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.TracsListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.TracsListener;
 import edu.txstate.mobileapp.mobileandroid.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.mobileandroid.util.IntegrationServer;
 import edu.txstate.mobileapp.mobileandroid.util.TracsClient;

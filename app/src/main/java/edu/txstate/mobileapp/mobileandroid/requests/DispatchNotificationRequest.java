@@ -14,7 +14,7 @@ import java.net.URL;
 
 import edu.txstate.mobileapp.mobileandroid.notifications.DispatchNotification;
 import edu.txstate.mobileapp.mobileandroid.notifications.NotificationsBundle;
-import edu.txstate.mobileapp.mobileandroid.notifications.listeners.DispatchListener;
+import edu.txstate.mobileapp.mobileandroid.listeners.DispatchListener;
 import edu.txstate.mobileapp.mobileandroid.util.JsonResponse;
 
 class DispatchNotificationRequest extends AsyncTask<String, Void, String> {
