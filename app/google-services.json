@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "690009396668",
+    "project_id": "tracs-e329c"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690009396668:android:5dfae7204783afc5",
+        "android_client_info": {
+          "package_name": "edu.txstate.mobileapp.tracscompanion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU_U735OSsdURH6o_mwBnZ4LD6-e6fByc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-24962120-4"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
