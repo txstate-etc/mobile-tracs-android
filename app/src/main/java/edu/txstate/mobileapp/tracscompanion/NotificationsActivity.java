@@ -8,6 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsListLoader;
 import edu.txstate.mobileapp.tracscompanion.listeners.DispatchListener;
@@ -20,14 +23,18 @@ public class NotificationsActivity
         extends AppCompatActivity
         implements DispatchListener, TracsListener{
     private static final String TAG = "NotificationsActivity";
+    private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotificationsBundle;
     private NotificationsBundle dispatchNotifications;
     private int notificationsRetrieved;
     private ProgressDialog loadingDialog;
+    private Tracker analyticsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
+
         loadingDialog = new ProgressDialog(this);
         this.tracsNotificationsBundle = new NotificationsBundle();
         loadingDialog.setMessage("Loading NotificationsBundle...");
@@ -47,9 +54,10 @@ public class NotificationsActivity
 
     @Override
     protected void onResume() {
-        super.onResume();
         Log.d(TAG, "Activity has resumed");
-
+        analyticsTracker.setScreenName(SCREEN_NAME);
+        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.onResume();
     }
 
     public void onRequestReturned(TracsNotification announcement) {
