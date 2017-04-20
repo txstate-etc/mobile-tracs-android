@@ -1,5 +1,5 @@
 package edu.txstate.mobileapp.tracscompanion.listeners;
 
-public interface RegistrationListener extends RequestListener {
+public interface CheckRegistrationListener extends RequestListener {
     void onRequestReturned(boolean deviceIsRegistered);
 }

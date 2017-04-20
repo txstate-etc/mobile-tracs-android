@@ -3,7 +3,7 @@ package edu.txstate.mobileapp.tracscompanion.util;
 import android.os.AsyncTask;
 
 import edu.txstate.mobileapp.tracscompanion.listeners.DispatchListener;
-import edu.txstate.mobileapp.tracscompanion.listeners.RegistrationListener;
+import edu.txstate.mobileapp.tracscompanion.listeners.CheckRegistrationListener;
 import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
 
@@ -26,8 +26,8 @@ public class IntegrationServer {
         return integrationServer;
     }
 
-    public void getRegistrationStatus(RegistrationListener listener, String userId) {
-        AsyncTask<String, Void, String> registrationTask = AsyncTaskFactory.createTask(Task.REGISTER_DEVICE, listener);
+    public void getRegistrationStatus(CheckRegistrationListener listener, String userId) {
+        AsyncTask<String, Void, String> registrationTask = AsyncTaskFactory.createTask(Task.CHECK_REGISTRATION, listener);
         if (registrationTask != null) {
             registrationTask.execute(integrationServerUrl, userId);
         }

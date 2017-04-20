@@ -6,6 +6,7 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -20,7 +21,11 @@ import android.webkit.WebView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-public class MainActivity extends AppCompatActivity {
+import edu.txstate.mobileapp.tracscompanion.listeners.CheckRegistrationListener;
+import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
+import edu.txstate.mobileapp.tracscompanion.requests.Task;
+
+public class MainActivity extends AppCompatActivity implements CheckRegistrationListener {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
@@ -39,8 +44,10 @@ public class MainActivity extends AppCompatActivity {
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
 
+        //This is how you check for security setting
         KeyguardManager keyguardManager = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
         Log.d(TAG, keyguardManager.isKeyguardSecure() ? "Device is secure" : "Device is not secure");
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.tracs_toolbar);
         setSupportActionBar(toolbar);
@@ -101,9 +108,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[],
-                                           int[] grantResults) {
-        //TODO: Implement something that happens when a permission is granted, if necessary
+    public void onRequestReturned() {
+
+    }
+
+    @Override
+    public void onRequestReturned(boolean deviceIsRegistered) {
+        if (!deviceIsRegistered) {
+            AsyncTask<String, Void, String> registerDevice = AsyncTaskFactory.createTask(Task.REGISTER_DEVICE, this);
+        }
     }
 }

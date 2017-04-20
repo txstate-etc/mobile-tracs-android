@@ -18,7 +18,7 @@ public final class AsyncTaskFactory{
             case Task.DISPATCH_NOTIFICATIONS:
                 task = new DispatchNotificationRequest((DispatchListener) listener);
                 break;
-            case Task.REGISTER_DEVICE:
+            case Task.CHECK_REGISTRATION:
                 task = null;
                 break;
             case Task.TRACS_NOTIFICATION:
