@@ -2,6 +2,7 @@ package edu.txstate.mobileapp.tracscompanion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -9,6 +10,7 @@ import android.webkit.WebViewClient;
 
 import com.securepreferences.SecurePreferences;
 
+import edu.txstate.mobileapp.tracscompanion.util.AppInstanceId;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 
 
@@ -56,7 +58,8 @@ class TracsController {
 
     @JavascriptInterface
     public void deliver(String username, String password) {
-        SharedPreferences prefs = new SecurePreferences(this.context, password, "user_based_prefs.xml");
+        String encryptionKey = AppInstanceId.getKey(context).toString();
+        SharedPreferences prefs = new SecurePreferences(this.context, encryptionKey, "user_based_prefs.xml");
         String currentPass = prefs.getString("password", "");
 
         //A null object is returned if the stored info can't be decrypted.

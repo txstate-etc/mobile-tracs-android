@@ -1,6 +1,7 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.securepreferences.SecurePreferences;
 
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsListLoader;
@@ -48,6 +50,7 @@ public class NotificationsActivity
             return;
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         IntegrationServer.getInstance()
                 .getDispatchNotifications(this, "ajt79");
     }
