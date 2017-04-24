@@ -23,8 +23,7 @@ public class Registrar {
         //TODO: Find out what this is and where it comes from
         app_id = "app-id-goes-here";
 
-        //TODO: Retrieve the user_id from somewhere
-        user_id = "uuid-goes-here";
+        user_id = AppStorage.get(AppStorage.TRACS_ID, context);
 
         global_disable = false;
 

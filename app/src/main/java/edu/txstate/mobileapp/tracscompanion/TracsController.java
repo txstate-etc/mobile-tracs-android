@@ -52,6 +52,10 @@ class TracsController implements UserIdListener {
     }
 
     void loadUrl() {
+        //Before loading the url we should check to see if the user has a valid
+        //session ID stored and if they do, make sure the cookie is set. If they do not
+        //then the program should log them in to CAS and get the JSESSIONID and store it
+        //then come back here and load the url with the right cookie.
         tracsView.loadUrl(this.url);
     }
 
@@ -59,7 +63,7 @@ class TracsController implements UserIdListener {
         this.tracsView.setDownloadListener(downloadListener);
     }
 
-    void setSessionId(String sessionId) {
+    private void setSessionId(String sessionId) {
         AppStorage.put(AppStorage.SESSION_ID, sessionId, context);
     }
 
@@ -72,9 +76,6 @@ class TracsController implements UserIdListener {
             AppStorage.put(AppStorage.USERNAME, username, context);
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
-
-        //Need to request user id here which will be stored in shared prefs via callback
-
     }
 
     @Override
