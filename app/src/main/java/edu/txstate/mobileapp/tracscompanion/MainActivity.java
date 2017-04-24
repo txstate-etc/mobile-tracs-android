@@ -20,10 +20,12 @@ import android.webkit.WebView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import edu.txstate.mobileapp.tracscompanion.listeners.CheckRegistrationListener;
 import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
+import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 
 public class MainActivity extends AppCompatActivity implements CheckRegistrationListener {
     private static final String TAG = "MainActivity";
@@ -39,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements CheckRegistration
             }
         }
         super.onCreate(savedInstanceState);
+
+        AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
+        Log.i(TAG, "Token: " + AppStorage.get(AppStorage.NOTIFICATION_ID, this));
 
         //Analytics tracker setup for this view.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();

@@ -13,6 +13,7 @@ public class AppStorage {
     public static final String PASSWORD = "password";
     public static final String TRACS_ID = "userEid";
     public static final String SESSION_ID = "sessionId";
+    public static final String NOTIFICATION_ID = "notificationId";
 
     private AppStorage() {}
 
@@ -37,6 +38,7 @@ public class AppStorage {
 
     private static boolean keyIsValid(String key) {
         return USERNAME.equals(key) || PASSWORD.equals(key)
-                || TRACS_ID.equals(key) || SESSION_ID.equals(key);
+                || TRACS_ID.equals(key) || SESSION_ID.equals(key)
+                || NOTIFICATION_ID.equals(key);
     }
 }

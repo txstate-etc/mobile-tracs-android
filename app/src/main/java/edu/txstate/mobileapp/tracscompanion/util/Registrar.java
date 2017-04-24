@@ -11,21 +11,22 @@ public class Registrar {
     private String platform;
     private String app_id;
     private String user_id;
-    private boolean global_disable;
+    private boolean global_disable = false;
     private String[] blacklist;
 
     private static Registrar registrar;
 
     private Registrar(Context context) {
+        init(context);
+    }
+
+    private void init(Context context) {
         token = AppInstanceId.getInstanceId(context).toString();
         platform = "android";
 
-        //TODO: Find out what this is and where it comes from
-        app_id = "app-id-goes-here";
+        app_id = AppStorage.get(AppStorage.NOTIFICATION_ID, context);
 
         user_id = AppStorage.get(AppStorage.TRACS_ID, context);
-
-        global_disable = false;
 
         //TODO: Write subclass for blacklist, then turn it into a JsonArray
         blacklist = new String[0];
@@ -36,6 +37,14 @@ public class Registrar {
             registrar = new Registrar(context);
         }
         return registrar;
+    }
+
+    public void refreshRegistartion(Context context) {
+        init(context);
+    }
+
+    public void toggleGlobalDisable() {
+        this.global_disable = !this.global_disable;
     }
 
     public JsonObject getJsonRegistration() {

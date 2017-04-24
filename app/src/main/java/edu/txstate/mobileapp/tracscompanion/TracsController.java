@@ -23,7 +23,6 @@ class TracsController implements UserIdListener {
     private FileDownloader fileDownloader;
     private Context context;
     private WebView tracsView;
-    private String sessionId;
 
     TracsController(WebView view, String url) {
         this.context = view.getContext();
