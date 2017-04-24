@@ -1,26 +1,29 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
+import android.os.AsyncTask;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
-import com.securepreferences.SecurePreferences;
-
-import edu.txstate.mobileapp.tracscompanion.util.AppInstanceId;
+import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
+import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
+import edu.txstate.mobileapp.tracscompanion.requests.Task;
+import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 
 
-class TracsController {
+class TracsController implements UserIdListener {
     private static final String TAG = "TracsController";
 
     private String url;
     private FileDownloader fileDownloader;
     private Context context;
     private WebView tracsView;
+    private String sessionId;
 
     TracsController(WebView view, String url) {
         this.context = view.getContext();
@@ -56,19 +59,42 @@ class TracsController {
         this.tracsView.setDownloadListener(downloadListener);
     }
 
+    void setSessionId(String sessionId) {
+        AppStorage.put(AppStorage.SESSION_ID, sessionId, context);
+    }
+
     @JavascriptInterface
     public void deliver(String username, String password) {
-        String encryptionKey = AppInstanceId.getKey(context).toString();
-        SharedPreferences prefs = new SecurePreferences(this.context, encryptionKey, "user_based_prefs.xml");
-        String currentPass = prefs.getString("password", "");
+        String userNameAndPass = AppStorage.get(AppStorage.USERNAME, context)
+                               + AppStorage.get(AppStorage.PASSWORD, context);
 
-        //A null object is returned if the stored info can't be decrypted.
-        if (currentPass == null) { currentPass = ""; }
-
-        if (!currentPass.equals(password)) {
-            prefs.edit().putString("username", username).apply();
-            prefs.edit().putString("password", password).apply();
+        if (!userNameAndPass.equals(password)) {
+            AppStorage.put(AppStorage.USERNAME, username, context);
+            AppStorage.put(AppStorage.PASSWORD, password, context);
         }
+
+        //Need to request user id here which will be stored in shared prefs via callback
+
+    }
+
+    @Override
+    public void onRequestReturned() {
+
+    }
+
+    @Override
+    public void onRequestReturned(String userEid) {
+        if (!userEid.isEmpty()) {
+            AppStorage.put(AppStorage.TRACS_ID, userEid, context);
+        }
+        Toast.makeText(context, AppStorage.get(AppStorage.TRACS_ID, context), Toast.LENGTH_LONG).show();
+    }
+
+    private void getUserEid() {
+        AsyncTask<String, Void, String> getUserId = AsyncTaskFactory.createTask(Task.TRACS_USER_ID, this);
+        getUserId.execute("https://tracs.txstate.edu/direct/session.json",
+                AppStorage.get(AppStorage.USERNAME, context),
+                AppStorage.get(AppStorage.SESSION_ID, context));
     }
 
     private class TracsWebViewClient extends WebViewClient {
@@ -96,6 +122,17 @@ class TracsController {
                         "\treturn true;\n" +
                         "}";
                 view.loadUrl("javascript:" + javascript);
+            }
+
+            if ("https://tracs.txstate.edu/portal".equals(url)) {
+                String cookies = CookieManager.getInstance().getCookie(url);
+                String newCookie = cookies.split("=")[1];
+                String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
+                if (!newCookie.equals(oldCookie)) {
+                    setSessionId(cookies.split("=")[1]);
+                } else {
+                    getUserEid();
+                }
             }
         }
     }

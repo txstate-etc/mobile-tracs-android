@@ -2,10 +2,11 @@ package edu.txstate.mobileapp.tracscompanion.requests;
 
 import android.os.AsyncTask;
 
+import edu.txstate.mobileapp.tracscompanion.listeners.CheckRegistrationListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.DispatchListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.RequestListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.TracsListener;
-
+import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
 
 
 public final class AsyncTaskFactory{
@@ -19,10 +20,13 @@ public final class AsyncTaskFactory{
                 task = new DispatchNotificationRequest((DispatchListener) listener);
                 break;
             case Task.CHECK_REGISTRATION:
-                task = null;
+                task = new RegisterStatusRequest((CheckRegistrationListener) listener);
                 break;
             case Task.TRACS_NOTIFICATION:
                 task = new TracsNotificationRequest((TracsListener) listener);
+                break;
+            case Task.TRACS_USER_ID:
+                task = new TracsUserIdRequest((UserIdListener) listener);
                 break;
             default:
                 task = null;

@@ -5,6 +5,7 @@ public final class Task {
     public static final String DISPATCH_NOTIFICATIONS = "dispatch_notifications";
     public static final String TRACS_NOTIFICATION = "tracs_notification";
     public static final String REGISTER_DEVICE = "register_device";
+    public static final String TRACS_USER_ID = "tracs_user_id";
 
     private Task() {}
 }

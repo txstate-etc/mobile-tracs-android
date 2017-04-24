@@ -141,7 +141,6 @@ public final class AppInstanceId {
             while(line != null) {
                 if (line.contains(SHARED_PREF_KEY_TAG)) {
                     key = line.split(" ")[1];
-                    Log.i(TAG, key);
                 }
                 line = reader.readLine();
             }
