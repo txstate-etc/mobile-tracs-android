@@ -2,6 +2,7 @@ package edu.txstate.mobileapp.tracscompanion;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
 import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
+import edu.txstate.mobileapp.tracscompanion.requests.TracsUserIdRequest;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 
@@ -51,11 +53,31 @@ class TracsController implements UserIdListener {
     }
 
     void loadUrl() {
-        //Before loading the url we should check to see if the user has a valid
-        //session ID stored and if they do, make sure the cookie is set. If they do not
-        //then the program should log them in to CAS and get the JSESSIONID and store it
-        //then come back here and load the url with the right cookie.
-        tracsView.loadUrl(this.url);
+        AsyncTask<String, Void, String> checkSession = AsyncTaskFactory.createTask(Task.TRACS_USER_ID,
+                new UserIdListener() {
+                    @Override
+                    public void onRequestReturned(String userId) {
+                        if (userId.isEmpty()) {
+                            //This is where you'd load sign the user in if they have credentials saved
+                            //and save the session id cookie
+                            Log.wtf(TAG, "MISSING VALID SESSION, FOOL!");
+                        } else {
+                            //This spot is where I need to just let the user head on in because
+                            //their session is still valid.
+                            tracsView.loadUrl(url);
+                        }
+                    }
+
+                    @Override
+                    public void onRequestReturned() {
+
+                    }
+                });
+
+        //FIXME: Don't hard code things, what's wrong with you?
+        checkSession.execute("https://tracs.txstate.edu/direct/session.json",
+                AppStorage.get(AppStorage.USERNAME, context),
+                AppStorage.get(AppStorage.SESSION_ID, context));
     }
 
     void setDownloadListener(DownloadListener downloadListener) {
@@ -87,7 +109,6 @@ class TracsController implements UserIdListener {
         if (!userEid.isEmpty()) {
             AppStorage.put(AppStorage.TRACS_ID, userEid, context);
         }
-        Toast.makeText(context, AppStorage.get(AppStorage.TRACS_ID, context), Toast.LENGTH_LONG).show();
     }
 
     private void getUserEid() {
