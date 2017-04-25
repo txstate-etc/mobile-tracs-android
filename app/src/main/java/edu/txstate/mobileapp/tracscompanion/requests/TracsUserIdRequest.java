@@ -13,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
-import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.JsonResponse;
 
 public class TracsUserIdRequest extends AsyncTask<String, Void, String> {

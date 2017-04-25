@@ -8,7 +8,9 @@ import edu.txstate.mobileapp.tracscompanion.listeners.RequestListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.TracsListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
 
-
+/**
+ * Creates a new request of the given type.
+ */
 public final class AsyncTaskFactory{
 
     private AsyncTaskFactory() {}
@@ -27,6 +29,9 @@ public final class AsyncTaskFactory{
                 break;
             case Task.TRACS_USER_ID:
                 task = new TracsUserIdRequest((UserIdListener) listener);
+                break;
+            case Task.TRACS_LOGIN:
+                task = new TracsLoginRequest((UserIdListener) listener);
                 break;
             default:
                 task = null;

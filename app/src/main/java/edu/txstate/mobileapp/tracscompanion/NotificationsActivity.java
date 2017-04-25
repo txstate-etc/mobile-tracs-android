@@ -87,9 +87,4 @@ public class NotificationsActivity
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(dispatchNotifications, this);
     }
-
-    @Override
-    public void onRequestReturned() {
-
-    }
 }

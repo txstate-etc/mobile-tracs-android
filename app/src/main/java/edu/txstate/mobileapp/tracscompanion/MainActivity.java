@@ -113,11 +113,6 @@ public class MainActivity extends AppCompatActivity implements CheckRegistration
     }
 
     @Override
-    public void onRequestReturned() {
-
-    }
-
-    @Override
     public void onRequestReturned(boolean deviceIsRegistered) {
         if (!deviceIsRegistered) {
             AsyncTask<String, Void, String> registerDevice = AsyncTaskFactory.createTask(Task.REGISTER_DEVICE, this);

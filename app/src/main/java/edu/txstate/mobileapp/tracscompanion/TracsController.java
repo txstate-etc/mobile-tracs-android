@@ -5,15 +5,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
 import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
-import edu.txstate.mobileapp.tracscompanion.requests.TracsUserIdRequest;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 
@@ -52,32 +51,43 @@ class TracsController implements UserIdListener {
         this.tracsView.getSettings().setDisplayZoomControls(false);
     }
 
+    /**
+     * Need to decide what is happening in this function. We're trying to load the tracs url.
+     * The user should be presenting with either a working tracs screen, or the CAS url to login.
+     * If they are not registered with dispatch then they will be logging in and submitting
+     * a registration request to dispatch.
+     */
     void loadUrl() {
-        AsyncTask<String, Void, String> checkSession = AsyncTaskFactory.createTask(Task.TRACS_USER_ID,
-                new UserIdListener() {
-                    @Override
-                    public void onRequestReturned(String userId) {
-                        if (userId.isEmpty()) {
-                            //This is where you'd load sign the user in if they have credentials saved
-                            //and save the session id cookie
-                            Log.wtf(TAG, "MISSING VALID SESSION, FOOL!");
-                        } else {
-                            //This spot is where I need to just let the user head on in because
-                            //their session is still valid.
-                            tracsView.loadUrl(url);
+        if ("".equals(AppStorage.get(AppStorage.USERNAME, context))) {
+
+            AsyncTask<String, Void, String> checkSession = AsyncTaskFactory.createTask(Task.TRACS_USER_ID,
+                    new UserIdListener() {
+                        @Override
+                        public void onRequestReturned(String userId) {
+                            if (userId.isEmpty()) {
+                                //FIXME: This has to go, there must be a better way to design this.
+                                AsyncTask<String, Void, String> tracsLogin = AsyncTaskFactory.createTask(Task.TRACS_LOGIN, new UserIdListener() {
+                                    @Override
+                                    public void onRequestReturned(String userId) {
+                                        Log.i(TAG, userId);
+                                    }
+                                });
+                                tracsLogin.execute("https://tracs.txstate.edu/direct/session",
+                                        AppStorage.get(AppStorage.USERNAME, context),
+                                        AppStorage.get(AppStorage.PASSWORD, context));
+//                            tracsView.loadData("<h1>You must login with a Tx State NetID to view this content.</h1>", "text/html", "UTF-8");
+//                            Log.wtf(TAG, "MISSING VALID SESSION, FOOL!");
+                            } else {
+                                tracsView.loadUrl(url);
+                            }
                         }
-                    }
+                    });
 
-                    @Override
-                    public void onRequestReturned() {
-
-                    }
-                });
-
-        //FIXME: Don't hard code things, what's wrong with you?
-        checkSession.execute("https://tracs.txstate.edu/direct/session.json",
-                AppStorage.get(AppStorage.USERNAME, context),
-                AppStorage.get(AppStorage.SESSION_ID, context));
+            //FIXME: Don't hard code things, what's wrong with you?
+            checkSession.execute("https://tracs.txstate.edu/direct/session.json",
+                    AppStorage.get(AppStorage.USERNAME, context),
+                    AppStorage.get(AppStorage.SESSION_ID, context));
+        }
     }
 
     void setDownloadListener(DownloadListener downloadListener) {
@@ -100,11 +110,6 @@ class TracsController implements UserIdListener {
     }
 
     @Override
-    public void onRequestReturned() {
-
-    }
-
-    @Override
     public void onRequestReturned(String userEid) {
         if (!userEid.isEmpty()) {
             AppStorage.put(AppStorage.TRACS_ID, userEid, context);
@@ -123,6 +128,11 @@ class TracsController implements UserIdListener {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+
+        @Override
+        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+            Log.i(TAG, host);
         }
 
         @Override
