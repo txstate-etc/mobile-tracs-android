@@ -6,7 +6,6 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -22,12 +21,9 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import edu.txstate.mobileapp.tracscompanion.listeners.CheckRegistrationListener;
-import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
-import edu.txstate.mobileapp.tracscompanion.requests.Task;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 
-public class MainActivity extends AppCompatActivity implements CheckRegistrationListener {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
@@ -70,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements CheckRegistration
             }
         });
 
+
     }
 
     @Override
@@ -110,12 +107,5 @@ public class MainActivity extends AppCompatActivity implements CheckRegistration
         boolean doesNotHaveWritePermission;
         doesNotHaveWritePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
         return doesNotHaveWritePermission;
-    }
-
-    @Override
-    public void onRequestReturned(boolean deviceIsRegistered) {
-        if (!deviceIsRegistered) {
-            AsyncTask<String, Void, String> registerDevice = AsyncTaskFactory.createTask(Task.REGISTER_DEVICE, this);
-        }
     }
 }

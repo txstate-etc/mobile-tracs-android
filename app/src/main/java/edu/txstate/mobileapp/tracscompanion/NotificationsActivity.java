@@ -9,21 +9,26 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.android.volley.Response;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.securepreferences.SecurePreferences;
 
+import edu.txstate.mobileapp.tracscompanion.listeners.RequestListener;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsListLoader;
 import edu.txstate.mobileapp.tracscompanion.listeners.DispatchListener;
 import edu.txstate.mobileapp.tracscompanion.listeners.TracsListener;
+import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
+import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
+import edu.txstate.mobileapp.tracscompanion.util.http.listeners.NotificationsBundleListener;
+import edu.txstate.mobileapp.tracscompanion.util.http.listeners.TracsNotificationListener;
 
 public class NotificationsActivity
-        extends AppCompatActivity
-        implements DispatchListener, TracsListener{
+        extends AppCompatActivity {
     private static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotificationsBundle;
@@ -52,7 +57,7 @@ public class NotificationsActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         IntegrationServer.getInstance()
-                .getDispatchNotifications(this, "ajt79");
+                .getDispatchNotifications(NotificationsActivity.this::onResponse, getApplicationContext());
     }
 
     @Override
@@ -63,12 +68,23 @@ public class NotificationsActivity
         super.onResume();
     }
 
-    public void onRequestReturned(TracsNotification announcement) {
-        if (announcement.isNull()) { return; }
+    protected void onResponse(NotificationsBundle response) {
+        if (response.size() == 0) { return; }
+        this.dispatchNotifications = response;
+        TracsClient tracs = TracsClient.getInstance();
+        tracs.getNotifications(response, NotificationsActivity.this::onResponse, getApplicationContext());
+    }
+
+    public void onResponse(TracsNotification response) {
+        if (response.isNull()) {
+            return;
+        }
+
         boolean allNotificationsRetrieved;
-        this.tracsNotificationsBundle.addOne(announcement);
+        this.tracsNotificationsBundle.addOne(response);
         this.notificationsRetrieved += 1;
         allNotificationsRetrieved = this.notificationsRetrieved >= this.dispatchNotifications.size();
+
         if (allNotificationsRetrieved) {
             this.notificationsRetrieved = 0;
             loadingDialog.dismiss();
@@ -79,12 +95,5 @@ public class NotificationsActivity
                     tracsNotificationsBundle);
             notificationsList.setAdapter(adapter);
         }
-    }
-
-    public void onRequestReturned(NotificationsBundle notifications) {
-        if (notifications.size() == 0) { return; }
-        this.dispatchNotifications = notifications;
-        TracsClient tracs = TracsClient.getInstance();
-        tracs.getNotifications(dispatchNotifications, this);
     }
 }

@@ -27,7 +27,7 @@ public class AppStorage {
         if (keyIsValid(key)) {
             return AppStorage.getPrefs(context).getString(key, "");
         }
-        return null;
+        return "";
     }
 
     public static void put(String key, String value, Context context) {

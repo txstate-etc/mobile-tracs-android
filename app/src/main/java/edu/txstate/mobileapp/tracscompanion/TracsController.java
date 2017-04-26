@@ -10,14 +10,23 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
 import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
+import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSessionRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
 
-class TracsController implements UserIdListener {
+class TracsController implements UserIdListener, Response.Listener<TracsSession> {
     private static final String TAG = "TracsController";
 
     private String url;
@@ -59,34 +68,19 @@ class TracsController implements UserIdListener {
      */
     void loadUrl() {
         if ("".equals(AppStorage.get(AppStorage.USERNAME, context))) {
-
-            AsyncTask<String, Void, String> checkSession = AsyncTaskFactory.createTask(Task.TRACS_USER_ID,
-                    new UserIdListener() {
+            Map<String, String> headers = new HashMap<>();
+            HttpQueue requestQueue = HttpQueue.getInstance(context);
+            requestQueue.addToRequestQueue(new TracsSessionRequest<>(
+                    "https://tracs.txstate.edu/direct/session.json",
+                    TracsSession.class, headers, this,
+                    new Response.ErrorListener() {
+                        private static final String TAG = "ErrorListener";
                         @Override
-                        public void onRequestReturned(String userId) {
-                            if (userId.isEmpty()) {
-                                //FIXME: This has to go, there must be a better way to design this.
-                                AsyncTask<String, Void, String> tracsLogin = AsyncTaskFactory.createTask(Task.TRACS_LOGIN, new UserIdListener() {
-                                    @Override
-                                    public void onRequestReturned(String userId) {
-                                        Log.i(TAG, userId);
-                                    }
-                                });
-                                tracsLogin.execute("https://tracs.txstate.edu/direct/session",
-                                        AppStorage.get(AppStorage.USERNAME, context),
-                                        AppStorage.get(AppStorage.PASSWORD, context));
-//                            tracsView.loadData("<h1>You must login with a Tx State NetID to view this content.</h1>", "text/html", "UTF-8");
-//                            Log.wtf(TAG, "MISSING VALID SESSION, FOOL!");
-                            } else {
-                                tracsView.loadUrl(url);
-                            }
+                        public void onErrorResponse(VolleyError error) {
+                            Log.wtf(TAG, error);
                         }
-                    });
-
-            //FIXME: Don't hard code things, what's wrong with you?
-            checkSession.execute("https://tracs.txstate.edu/direct/session.json",
-                    AppStorage.get(AppStorage.USERNAME, context),
-                    AppStorage.get(AppStorage.SESSION_ID, context));
+                    })
+            );
         }
     }
 
@@ -121,6 +115,20 @@ class TracsController implements UserIdListener {
         getUserId.execute("https://tracs.txstate.edu/direct/session.json",
                 AppStorage.get(AppStorage.USERNAME, context),
                 AppStorage.get(AppStorage.SESSION_ID, context));
+    }
+
+    @Override
+    public void onResponse(TracsSession session) {
+        String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
+        String fetchedNetId = "";
+        if (session.hasNetId()) {
+            fetchedNetId = session.getUserEid();
+
+        }
+
+        if (storedNetId.equals(fetchedNetId)) {
+            tracsView.loadUrl(url);
+        }
     }
 
     private class TracsWebViewClient extends WebViewClient {
