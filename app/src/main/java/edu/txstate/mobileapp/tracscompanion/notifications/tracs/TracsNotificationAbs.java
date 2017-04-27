@@ -7,10 +7,12 @@ abstract class TracsNotificationAbs implements TracsNotification {
     private String title;
     private String id;
     private String subtitle;
+    private boolean isError;
 
     TracsNotificationAbs() {
         this.title = TITLE_NOT_SET;
         this.subtitle = SUBTITLE_NOT_SET;
+        this.isError = false;
     }
 
     public String getTitle() {
@@ -27,6 +29,10 @@ abstract class TracsNotificationAbs implements TracsNotification {
 
     public boolean isNull() {
         return this.id == null || "".equals(this.id);
+    }
+
+    public boolean isError() {
+        return this.isError;
     }
 
     void setTitle(String title) {

@@ -24,10 +24,11 @@ public class AppStorage {
     }
 
     public static String get(String key, Context context) {
+        String value = null;
         if (keyIsValid(key)) {
-            return AppStorage.getPrefs(context).getString(key, "");
+            value = AppStorage.getPrefs(context).getString(key, "");
         }
-        return "";
+        return value == null ? "" : value;
     }
 
     public static void put(String key, String value, Context context) {

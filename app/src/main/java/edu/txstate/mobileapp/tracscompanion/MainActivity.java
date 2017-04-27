@@ -53,20 +53,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.tracs_toolbar);
         setSupportActionBar(toolbar);
 
-        final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview), "https://tracs.txstate.edu");
+        final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
         tracsWebView.javaScriptEnabled(true);
         tracsWebView.zoomEnabled(true);
         tracsWebView.loadUrl();
 
-        tracsWebView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-                tracsWebView.downloadFile(url, mimetype);
-            }
-        });
-
-
+        tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
     }
 
     @Override

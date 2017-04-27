@@ -6,4 +6,5 @@ public class NotificationTypes {
     public static final String GRADE = "grade";
     public static final String ASSIGNMENT = "assignment";
     public static final String ASSESSMENT = "assessment";
+    public static final String ERROR = "error";
 }

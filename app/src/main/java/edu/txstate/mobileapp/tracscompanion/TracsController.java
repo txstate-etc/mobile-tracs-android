@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
@@ -11,7 +12,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,7 @@ import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
 import edu.txstate.mobileapp.tracscompanion.requests.Task;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
+import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSessionRequest;
 import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
@@ -29,19 +30,21 @@ import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 class TracsController implements UserIdListener, Response.Listener<TracsSession> {
     private static final String TAG = "TracsController";
 
-    private String url;
+    private String tracsPortalUrl = "https://tracs.txstate.edu/portal";
+    private final String loginUrl = "https://login.its.txstate.edu/login?" +
+            "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
+
     private FileDownloader fileDownloader;
     private Context context;
     private WebView tracsView;
 
-    TracsController(WebView view, String url) {
+    TracsController(WebView view) {
         this.context = view.getContext();
         this.tracsView = view;
-        Init(url);
+        Init();
     }
 
-    private void Init(String url) {
-        this.url = url;
+    private void Init() {
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
     }
@@ -60,26 +63,16 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
         this.tracsView.getSettings().setDisplayZoomControls(false);
     }
 
-    /**
-     * Need to decide what is happening in this function. We're trying to load the tracs url.
-     * The user should be presenting with either a working tracs screen, or the CAS url to login.
-     * If they are not registered with dispatch then they will be logging in and submitting
-     * a registration request to dispatch.
-     */
+
     void loadUrl() {
         if ("".equals(AppStorage.get(AppStorage.USERNAME, context))) {
+            tracsView.loadUrl(loginUrl);
+        } else {
+            HttpQueue requestQueue=HttpQueue.getInstance(context);
             Map<String, String> headers = new HashMap<>();
-            HttpQueue requestQueue = HttpQueue.getInstance(context);
             requestQueue.addToRequestQueue(new TracsSessionRequest<>(
-                    "https://tracs.txstate.edu/direct/session.json",
-                    TracsSession.class, headers, this,
-                    new Response.ErrorListener() {
-                        private static final String TAG = "ErrorListener";
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.wtf(TAG, error);
-                        }
-                    })
+                    TracsSession.class, headers, TracsController.this,
+                    error->Log.wtf(TAG,error))
             );
         }
     }
@@ -120,14 +113,14 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
     @Override
     public void onResponse(TracsSession session) {
         String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
-        String fetchedNetId = "";
-        if (session.hasNetId()) {
-            fetchedNetId = session.getUserEid();
+        String fetchedNetId = session.getUserEid();
 
-        }
-
+        //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
-            tracsView.loadUrl(url);
+            CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + session.getSessionId());
+            tracsView.loadUrl(tracsPortalUrl);
+        } else {
+            //TODO: Get a god damned session man!
         }
     }
 
