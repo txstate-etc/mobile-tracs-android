@@ -17,7 +17,11 @@ public class AnalyticsApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
-        AnalyticsApplication.context = getApplicationContext();
+        context = this.getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     synchronized public Tracker getDefaultTracker() {
@@ -25,11 +29,8 @@ public class AnalyticsApplication extends Application {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
             tracker = analytics.newTracker("UA-24962120-4");
         }
-
         return tracker;
     }
 
-    public static Context getAppContext() {
-        return AnalyticsApplication.context;
-    }
+
 }

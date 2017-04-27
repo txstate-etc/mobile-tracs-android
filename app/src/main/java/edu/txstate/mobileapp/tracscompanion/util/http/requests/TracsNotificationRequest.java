@@ -33,7 +33,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> customHeaders = headers != null ? headers : super.getHeaders();
-        String jSessionId = "JSESSIONID=" + AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getAppContext());
+        String jSessionId = "JSESSIONID=" + AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
         customHeaders.put("Cookie", jSessionId);
         return customHeaders;
     }
