@@ -9,9 +9,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
-import com.google.gson.JsonObject;
 
-import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
@@ -19,25 +19,22 @@ import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 public class TracsLoginRequest extends StringRequest {
 
     private static final String TAG = "TracsLoginRequest";
-    private JsonObject jsonBody = new JsonObject();
-    private final String requestBody;
+    private Map<String, String> params = new HashMap<>();
 
-    public TracsLoginRequest (String url, Response.Listener<String> listener) {
-        super(Request.Method.POST, url, listener, error -> Log.wtf(TAG, error.getMessage()));
-        jsonBody.addProperty("_username", AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext()));
-        jsonBody.addProperty("_password", AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext()));
-        requestBody = jsonBody.toString();
+    public TracsLoginRequest (String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Request.Method.POST, url, listener, errorListener);
     }
 
     @Override
-    public byte[] getBody() throws AuthFailureError {
-        byte[] bodyBytes = null;
-        try {
-            bodyBytes = requestBody == null ? null : requestBody.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.wtf(TAG, e.getMessage());
-        }
-        return bodyBytes;
+    protected Map<String, String> getParams() throws AuthFailureError {
+        params.put("_username", AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext()));
+        params.put("_password", AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext()));
+        return params;
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return "application/x-www-form-urlencoded; charset=" + getParamsEncoding();
     }
 
     @Override

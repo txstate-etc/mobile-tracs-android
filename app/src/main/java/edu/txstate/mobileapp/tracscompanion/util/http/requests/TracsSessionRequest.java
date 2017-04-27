@@ -37,7 +37,7 @@ public class TracsSessionRequest<T> extends Request<T> {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         headers.putAll(super.getHeaders());
-        headers.put("Cookie", AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext()));
+        headers.put("Cookie", "JSESSIONID=" + AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext()));
         return headers;
     }
 
@@ -56,7 +56,9 @@ public class TracsSessionRequest<T> extends Request<T> {
             }
 
             JsonObject session = sessions.get(0).getAsJsonObject();
-            session.addProperty("sessionId", sessionId.split(";")[0].split("=")[1]);
+            if (sessionId != null) {
+                session.addProperty("sessionId", sessionId.split(";")[0].split("=")[1]);
+            }
             T tracsSession = gson.fromJson(session, gClass);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

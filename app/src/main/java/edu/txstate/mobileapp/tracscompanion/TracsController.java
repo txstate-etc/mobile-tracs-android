@@ -23,6 +23,7 @@ import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSessionRequest;
 import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
@@ -65,7 +66,8 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
 
 
     void loadUrl() {
-        if ("".equals(AppStorage.get(AppStorage.USERNAME, context))) {
+        String userId = AppStorage.get(AppStorage.USERNAME, context);
+        if ("".equals(userId)) {
             tracsView.loadUrl(loginUrl);
         } else {
             HttpQueue requestQueue=HttpQueue.getInstance(context);
@@ -117,10 +119,14 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
 
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
-            CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + session.getSessionId());
+            String sessionId = AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
+            CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + sessionId + "; Path=/");
             tracsView.loadUrl(tracsPortalUrl);
         } else {
-            //TODO: Get a god damned session man!
+            HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                    new TracsLoginRequest(TracsClient.LOGIN_URL,
+                            response -> tracsView.loadUrl(tracsPortalUrl),
+                            error -> tracsView.loadUrl(loginUrl)));
         }
     }
 

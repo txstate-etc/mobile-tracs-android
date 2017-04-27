@@ -23,7 +23,7 @@ public class TracsClient {
     private static final String ANNOUNCEMENT_URL = TRACS_BASE + "/announcement/";
     static final String SITE_URL = TRACS_BASE + "/site";
     static final String PORTAL_URL = TRACS_URL + "/portal";
-    public static final String LOGIN_URL = TRACS_URL + "/session";
+    public static final String LOGIN_URL = TRACS_BASE + "/session";
     static final String LOGOUT_URL = TRACS_URL + "/portal/pda/?force.logout=yes";
 
     private static TracsClient tracsClient;
@@ -82,10 +82,5 @@ public class TracsClient {
                     url, headers,
                     listener, errorHandler));
         }
-    }
-
-    private void login(Context context, Response.Listener<String> listener) {
-        HttpQueue.getInstance(context).addToRequestQueue(new TracsLoginRequest(
-                LOGIN_URL, listener));
     }
 }
