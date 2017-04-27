@@ -117,19 +117,22 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
         String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
         String fetchedNetId = session.getUserEid();
 
+        String sessionId = AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
+        CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + sessionId + "; Path=/");
+
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
-            String sessionId = AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
-            CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + sessionId + "; Path=/");
             tracsView.loadUrl(tracsPortalUrl);
         } else {
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new TracsLoginRequest(TracsClient.LOGIN_URL,
-                            response -> tracsView.loadUrl(tracsPortalUrl),
+                            response -> {
+                                CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + response + "; Path=/");
+                                tracsView.loadUrl(tracsPortalUrl);
+                            },
                             error -> tracsView.loadUrl(loginUrl)));
         }
     }
-
     private class TracsWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
