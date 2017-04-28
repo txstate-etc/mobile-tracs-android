@@ -6,6 +6,8 @@ import android.content.Context;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 public class AnalyticsApplication extends Application {
     private Tracker tracker;
@@ -17,6 +19,7 @@ public class AnalyticsApplication extends Application {
 
     public void onCreate() {
         super.onCreate();
+        Iconify.with(new FontAwesomeModule());
         context = this.getApplicationContext();
     }
 

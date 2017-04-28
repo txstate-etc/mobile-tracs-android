@@ -20,6 +20,8 @@ import android.webkit.WebView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 
@@ -65,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        menu.findItem(R.id.notifications_menu).setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
+                        .colorRes(R.color.colorAccent)
+                        .actionBarSize()
+        );
+        menu.findItem(R.id.menu_refresh).setVisible(false);
         return true;
     }
 
@@ -72,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuId = item.getItemId();
         switch (menuId) {
-            case R.id.notificationsMenu:
+            case R.id.notifications_menu:
                 Intent intent = new Intent(this, NotificationsActivity.class);
                 startActivity(intent);
                 break;

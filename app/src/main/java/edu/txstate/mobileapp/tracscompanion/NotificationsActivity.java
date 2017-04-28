@@ -6,10 +6,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import java.util.ArrayList;
 
@@ -59,6 +63,20 @@ public class NotificationsActivity
         analyticsTracker.setScreenName(SCREEN_NAME);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         super.onResume();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        menu.findItem(R.id.notifications_menu).setVisible(false);
+        MenuItem refreshButton = menu.findItem(R.id.menu_refresh);
+        refreshButton.setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_refresh)
+                    .colorRes(R.color.colorAccent)
+                    .actionBarSize()
+        );
+        refreshButton.setVisible(true);
+        return true;
     }
 
     protected void onResponse(NotificationsBundle response) {

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/notificationsMenu"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:accessible="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/notifications_menu"
+        accessible:showAsAction="ifRoom"
         android:title="@string/notificationsBundle" />
+    <item
+        android:id="@+id/menu_refresh"
+        accessible:showAsAction="ifRoom"
+        android:title="@string/menu_refresh" />
+
 </menu>

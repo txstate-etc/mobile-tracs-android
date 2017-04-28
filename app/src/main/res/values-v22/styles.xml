@@ -2,6 +2,6 @@
 <resources>
 
     <style name="TxStateAlert" parent="android:Theme.DeviceDefault.Light.Dialog.Alert" >
-        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
     </style>
 </resources>
