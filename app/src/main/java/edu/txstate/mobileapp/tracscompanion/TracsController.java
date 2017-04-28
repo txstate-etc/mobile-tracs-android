@@ -1,24 +1,17 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.android.volley.Response;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
-import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
-import edu.txstate.mobileapp.tracscompanion.requests.Task;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
@@ -28,7 +21,7 @@ import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSessionReque
 import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
 
-class TracsController implements UserIdListener, Response.Listener<TracsSession> {
+class TracsController {
     private static final String TAG = "TracsController";
 
     private String tracsPortalUrl = "https://tracs.txstate.edu/portal";
@@ -73,7 +66,7 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
             HttpQueue requestQueue=HttpQueue.getInstance(context);
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSessionRequest<>(
-                    TracsSession.class, headers, TracsController.this,
+                    TracsSession.class, headers, TracsController.this::onResponse,
                     error->Log.wtf(TAG,error))
             );
         }
@@ -98,22 +91,24 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
         }
     }
 
-    @Override
-    public void onRequestReturned(String userEid) {
-        if (!userEid.isEmpty()) {
-            AppStorage.put(AppStorage.TRACS_ID, userEid, context);
-        }
-    }
+
 
     private void getUserEid() {
-        AsyncTask<String, Void, String> getUserId = AsyncTaskFactory.createTask(Task.TRACS_USER_ID, this);
-        getUserId.execute("https://tracs.txstate.edu/direct/session.json",
-                AppStorage.get(AppStorage.USERNAME, context),
-                AppStorage.get(AppStorage.SESSION_ID, context));
+        Map<String, String> headers = new HashMap<>();
+        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                new TracsSessionRequest<>(
+                        TracsSession.class, headers,
+                        TracsController.this::onUserEidReturned,
+                        error -> Log.wtf(TAG, error.getMessage())
+                )
+        );
     }
 
-    @Override
-    public void onResponse(TracsSession session) {
+    private void onUserEidReturned(TracsSession session) {
+        AppStorage.put(AppStorage.TRACS_ID, session.getUserEid(), context);
+    }
+
+    private void onResponse(TracsSession session) {
         String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
         String fetchedNetId = session.getUserEid();
 
@@ -172,7 +167,7 @@ class TracsController implements UserIdListener, Response.Listener<TracsSession>
                 if (!newCookie.equals(oldCookie)) {
                     setSessionId(cookies.split("=")[1]);
                 } else {
-                    getUserEid();
+                    TracsController.this.getUserEid();
                 }
             }
         }
