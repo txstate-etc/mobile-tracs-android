@@ -1,7 +1,6 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.app.ProgressDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,22 +10,21 @@ import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.securepreferences.SecurePreferences;
 
+import java.util.ArrayList;
+
+import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsListLoader;
-import edu.txstate.mobileapp.tracscompanion.listeners.DispatchListener;
-import edu.txstate.mobileapp.tracscompanion.listeners.TracsListener;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 
 public class NotificationsActivity
-        extends AppCompatActivity
-        implements DispatchListener, TracsListener{
+        extends AppCompatActivity {
     private static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
-    private NotificationsBundle tracsNotificationsBundle;
+    private NotificationsBundle tracsNotifications;
     private NotificationsBundle dispatchNotifications;
     private int notificationsRetrieved;
     private ProgressDialog loadingDialog;
@@ -38,7 +36,7 @@ public class NotificationsActivity
         analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
 
         loadingDialog = new ProgressDialog(this);
-        this.tracsNotificationsBundle = new NotificationsBundle();
+        this.tracsNotifications = new NotificationsBundle();
         loadingDialog.setMessage("Loading NotificationsBundle...");
         loadingDialog.show();
         setContentView(R.layout.activity_notifications);
@@ -52,7 +50,7 @@ public class NotificationsActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         IntegrationServer.getInstance()
-                .getDispatchNotifications(this, "ajt79");
+                .getDispatchNotifications(NotificationsActivity.this::onResponse, getApplicationContext());
     }
 
     @Override
@@ -63,33 +61,42 @@ public class NotificationsActivity
         super.onResume();
     }
 
-    public void onRequestReturned(TracsNotification announcement) {
-        if (announcement.isNull()) { return; }
-        boolean allNotificationsRetrieved;
-        this.tracsNotificationsBundle.addOne(announcement);
-        this.notificationsRetrieved += 1;
-        allNotificationsRetrieved = this.notificationsRetrieved >= this.dispatchNotifications.size();
-        if (allNotificationsRetrieved) {
-            this.notificationsRetrieved = 0;
-            loadingDialog.dismiss();
+    protected void onResponse(NotificationsBundle response) {
+        if (response.size() == 0) { return; }
+        this.dispatchNotifications = response;
+        TracsClient tracs = TracsClient.getInstance();
+        tracs.getNotifications(response, NotificationsActivity.this::onResponse, getApplicationContext());
+    }
 
-            final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
-            final NotificationsListLoader adapter = new NotificationsListLoader(this,
-                    android.R.layout.simple_list_item_1,
-                    tracsNotificationsBundle);
-            notificationsList.setAdapter(adapter);
+    public void onResponse(TracsNotification response) {
+        this.notificationsRetrieved += 1;
+        boolean done = this.allRequestsBack();
+        if (response.getType().equals(NotificationTypes.ERROR)) {
+            if (done) {
+                loadingDialog.dismiss();
+                //Could have valid notifications available to view
+                Log.wtf(TAG, "Error retrieving notifications.");
+                displayListView();
+            }
+        } else {
+            this.tracsNotifications.addOne(response);
+            if (done) {
+                this.notificationsRetrieved = 0;
+                this.displayListView();
+            }
         }
     }
 
-    public void onRequestReturned(NotificationsBundle notifications) {
-        if (notifications.size() == 0) { return; }
-        this.dispatchNotifications = notifications;
-        TracsClient tracs = TracsClient.getInstance();
-        tracs.getNotifications(dispatchNotifications, this);
+    private boolean allRequestsBack() {
+        return this.notificationsRetrieved >= this.dispatchNotifications.size();
     }
 
-    @Override
-    public void onRequestReturned() {
-
+    private void displayListView() {
+        loadingDialog.dismiss();
+        final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
+        final NotificationsListLoader adapter = new NotificationsListLoader(this,
+                android.R.layout.simple_list_item_1,
+                tracsNotifications);
+        notificationsList.setAdapter(adapter);
     }
 }

@@ -1,39 +1,44 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
-import edu.txstate.mobileapp.tracscompanion.listeners.UserIdListener;
-import edu.txstate.mobileapp.tracscompanion.requests.AsyncTaskFactory;
-import edu.txstate.mobileapp.tracscompanion.requests.Task;
-import edu.txstate.mobileapp.tracscompanion.requests.TracsUserIdRequest;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
+import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
+import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSessionRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
 
-class TracsController implements UserIdListener {
+class TracsController {
     private static final String TAG = "TracsController";
 
-    private String url;
+    private String tracsPortalUrl = "https://tracs.txstate.edu/portal";
+    private final String loginUrl = "https://login.its.txstate.edu/login?" +
+            "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
+
     private FileDownloader fileDownloader;
     private Context context;
     private WebView tracsView;
 
-    TracsController(WebView view, String url) {
+    TracsController(WebView view) {
         this.context = view.getContext();
         this.tracsView = view;
-        Init(url);
+        Init();
     }
 
-    private void Init(String url) {
-        this.url = url;
+    private void Init() {
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
     }
@@ -52,32 +57,19 @@ class TracsController implements UserIdListener {
         this.tracsView.getSettings().setDisplayZoomControls(false);
     }
 
+
     void loadUrl() {
-        AsyncTask<String, Void, String> checkSession = AsyncTaskFactory.createTask(Task.TRACS_USER_ID,
-                new UserIdListener() {
-                    @Override
-                    public void onRequestReturned(String userId) {
-                        if (userId.isEmpty()) {
-                            //This is where you'd load sign the user in if they have credentials saved
-                            //and save the session id cookie
-                            Log.wtf(TAG, "MISSING VALID SESSION, FOOL!");
-                        } else {
-                            //This spot is where I need to just let the user head on in because
-                            //their session is still valid.
-                            tracsView.loadUrl(url);
-                        }
-                    }
-
-                    @Override
-                    public void onRequestReturned() {
-
-                    }
-                });
-
-        //FIXME: Don't hard code things, what's wrong with you?
-        checkSession.execute("https://tracs.txstate.edu/direct/session.json",
-                AppStorage.get(AppStorage.USERNAME, context),
-                AppStorage.get(AppStorage.SESSION_ID, context));
+        String userId = AppStorage.get(AppStorage.USERNAME, context);
+        if ("".equals(userId)) {
+            tracsView.loadUrl(loginUrl);
+        } else {
+            HttpQueue requestQueue=HttpQueue.getInstance(context);
+            Map<String, String> headers = new HashMap<>();
+            requestQueue.addToRequestQueue(new TracsSessionRequest<>(
+                    TracsSession.class, headers, TracsController.this::onResponse,
+                    error->Log.wtf(TAG,error))
+            );
+        }
     }
 
     void setDownloadListener(DownloadListener downloadListener) {
@@ -99,30 +91,53 @@ class TracsController implements UserIdListener {
         }
     }
 
-    @Override
-    public void onRequestReturned() {
 
-    }
-
-    @Override
-    public void onRequestReturned(String userEid) {
-        if (!userEid.isEmpty()) {
-            AppStorage.put(AppStorage.TRACS_ID, userEid, context);
-        }
-    }
 
     private void getUserEid() {
-        AsyncTask<String, Void, String> getUserId = AsyncTaskFactory.createTask(Task.TRACS_USER_ID, this);
-        getUserId.execute("https://tracs.txstate.edu/direct/session.json",
-                AppStorage.get(AppStorage.USERNAME, context),
-                AppStorage.get(AppStorage.SESSION_ID, context));
+        Map<String, String> headers = new HashMap<>();
+        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                new TracsSessionRequest<>(
+                        TracsSession.class, headers,
+                        TracsController.this::onUserEidReturned,
+                        error -> Log.wtf(TAG, error.getMessage())
+                )
+        );
     }
 
+    private void onUserEidReturned(TracsSession session) {
+        AppStorage.put(AppStorage.TRACS_ID, session.getUserEid(), context);
+    }
+
+    private void onResponse(TracsSession session) {
+        String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
+        String fetchedNetId = session.getUserEid();
+
+        String sessionId = AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
+        CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + sessionId + "; Path=/");
+
+        //Session is good if this check passes
+        if (storedNetId.equals(fetchedNetId)) {
+            tracsView.loadUrl(tracsPortalUrl);
+        } else {
+            HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                    new TracsLoginRequest(TracsClient.LOGIN_URL,
+                            response -> {
+                                CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + response + "; Path=/");
+                                tracsView.loadUrl(tracsPortalUrl);
+                            },
+                            error -> tracsView.loadUrl(loginUrl)));
+        }
+    }
     private class TracsWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+
+        @Override
+        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+            Log.i(TAG, host);
         }
 
         @Override
@@ -152,7 +167,7 @@ class TracsController implements UserIdListener {
                 if (!newCookie.equals(oldCookie)) {
                     setSessionId(cookies.split("=")[1]);
                 } else {
-                    getUserEid();
+                    TracsController.this.getUserEid();
                 }
             }
         }

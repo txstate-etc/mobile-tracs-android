@@ -6,7 +6,7 @@ public interface TracsNotification extends TracsAppNotification {
     /**
      * Forms the appropriate url to point as close as possible to the applicable
      * notification
-     * @return A complete string URL (i.e. 'https://tracs.txstate.edu/portal/site/{siteid}/page/{pageid}')
+     * @return A complete string URL
      */
     String getUrl();
 
