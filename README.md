@@ -16,6 +16,6 @@ integrate with a ListView in Android.
 
 To Run
 ----
-1. Install Android Studio
+1. Install Android Studio (must get 2.4 or later)
 2. Import the entire folder
 3. That should be it, just run the project
