@@ -1,19 +1,21 @@
 package edu.txstate.mobileapp.tracscompanion.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Response;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.txstate.mobileapp.tracscompanion.notifications.DispatchNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
+import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.listeners.TracsNotificationListener;
-import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsNotificationRequest;
 
 public class TracsClient {
@@ -71,8 +73,16 @@ public class TracsClient {
                                  Context context) {
 
         for (TracsAppNotification notification : notifications) {
+            DispatchNotification tracsNotification;
+            try {
+                tracsNotification = (DispatchNotification) notification;
+            } catch (ClassCastException e) {
+                Log.wtf(TAG, e.getMessage());
+                continue;
+            }
+
             HttpQueue requestQueue = HttpQueue.getInstance(context);
-            String url = makeUrl(notification.getType());
+            String url = makeUrl(notification.getType()) + tracsNotification.getObjectId() + ".json";
             Map<String, String> headers = new HashMap<>();
             Response.ErrorListener errorHandler = error -> listener.onResponse(new TracsNotificationError(
                     error.networkResponse.statusCode
@@ -82,5 +92,6 @@ public class TracsClient {
                     url, headers,
                     listener, errorHandler));
         }
+
     }
 }
