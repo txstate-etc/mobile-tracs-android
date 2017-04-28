@@ -2,12 +2,14 @@ package edu.txstate.mobileapp.tracscompanion;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -25,7 +27,7 @@ import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 
 public class NotificationsActivity
-        extends AppCompatActivity {
+        extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
@@ -33,16 +35,17 @@ public class NotificationsActivity
     private int notificationsRetrieved;
     private ProgressDialog loadingDialog;
     private Tracker analyticsTracker;
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
 
-        loadingDialog = new ProgressDialog(this);
+
         this.tracsNotifications = new NotificationsBundle();
-        loadingDialog.setMessage("Loading NotificationsBundle...");
-        loadingDialog.show();
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setMessage("Loading Notifications...");
         setContentView(R.layout.activity_notifications);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,8 +56,10 @@ public class NotificationsActivity
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        IntegrationServer.getInstance()
-                .getDispatchNotifications(NotificationsActivity.this::onResponse, getApplicationContext());
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.notification_swipe_refresh);
+        refreshLayout.setOnRefreshListener(NotificationsActivity.this);
+        refreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        refreshNotifications(true);
     }
 
     @Override
@@ -72,18 +77,38 @@ public class NotificationsActivity
         MenuItem refreshButton = menu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)
-                    .colorRes(R.color.colorAccent)
-                    .actionBarSize()
+                        .colorRes(R.color.colorAccent)
+                        .actionBarSize()
+        );
+        refreshButton.setOnMenuItemClickListener(
+                item -> {
+                    NotificationsActivity.this.refreshNotifications(true);
+                    return false;
+                }
         );
         refreshButton.setVisible(true);
         return true;
     }
 
+    @Override
+    public void onRefresh() {
+        refreshNotifications(false);
+    }
+
+    private void refreshNotifications(boolean showDialog) {
+        if (showDialog) { loadingDialog.show(); }
+        this.tracsNotifications = new NotificationsBundle();
+        IntegrationServer.getInstance()
+                .getDispatchNotifications(NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
+    }
+
     protected void onResponse(NotificationsBundle response) {
-        if (response.size() == 0) { return; }
+        if (response.size() == 0) {
+            return;
+        }
         this.dispatchNotifications = response;
         TracsClient tracs = TracsClient.getInstance();
-        tracs.getNotifications(response, NotificationsActivity.this::onResponse, getApplicationContext());
+        tracs.getNotifications(response, NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
     }
 
     public void onResponse(TracsNotification response) {
@@ -92,7 +117,6 @@ public class NotificationsActivity
         if (response.getType().equals(NotificationTypes.ERROR)) {
             if (done) {
                 loadingDialog.dismiss();
-                //Could have valid notifications available to view
                 Log.wtf(TAG, "Error retrieving notifications.");
                 displayListView();
             }
@@ -111,6 +135,7 @@ public class NotificationsActivity
 
     private void displayListView() {
         loadingDialog.dismiss();
+        refreshLayout.setRefreshing(false);
         final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
         final NotificationsListLoader adapter = new NotificationsListLoader(this,
                 android.R.layout.simple_list_item_1,

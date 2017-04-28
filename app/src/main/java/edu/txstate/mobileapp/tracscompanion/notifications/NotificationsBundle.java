@@ -21,6 +21,7 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         this.notificationsCount = new HashMap<>();
     }
 
+    //TODO: Add hashcode to identify if there is already a notification here.
     public void addOne(TracsAppNotification notification) {
         this.incrementCount(notification.getType());
         this.allNotifications.add(notification);

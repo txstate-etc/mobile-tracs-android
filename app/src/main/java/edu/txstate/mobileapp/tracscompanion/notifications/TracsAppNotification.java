@@ -28,4 +28,5 @@ public interface TracsAppNotification {
      */
     <T> T extractKey(JsonObject notification, String key, Class<T> returnType);
 
+
 }
