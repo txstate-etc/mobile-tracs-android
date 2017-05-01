@@ -37,6 +37,12 @@ public class AppStorage {
         }
     }
 
+    public static void remove(String key, Context context) {
+        if (keyIsValid(key)) {
+            AppStorage.getPrefs(context).edit().remove(key).apply();
+        }
+    }
+
     private static boolean keyIsValid(String key) {
         return USERNAME.equals(key) || PASSWORD.equals(key)
                 || TRACS_ID.equals(key) || SESSION_ID.equals(key)

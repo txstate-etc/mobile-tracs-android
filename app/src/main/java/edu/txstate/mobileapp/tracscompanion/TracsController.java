@@ -1,11 +1,15 @@
 package edu.txstate.mobileapp.tracscompanion;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -38,25 +42,26 @@ class TracsController {
         Init();
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void Init() {
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            this.tracsView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            this.tracsView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        this.tracsView.getSettings().setJavaScriptEnabled(true);
+        this.tracsView.getSettings().setBuiltInZoomControls(true);
+        this.tracsView.getSettings().setDisplayZoomControls(false);
+        this.tracsView.addJavascriptInterface(this, "TracsController");
     }
 
     void downloadFile(String url, String mimetype) {
         this.fileDownloader.downloadFile(url, mimetype);
     }
-
-    void javaScriptEnabled(boolean isEnabled) {
-        this.tracsView.getSettings().setJavaScriptEnabled(isEnabled);
-        this.tracsView.addJavascriptInterface(this, "TracsController");
-    }
-
-    void zoomEnabled(boolean isEnabled) {
-        this.tracsView.getSettings().setBuiltInZoomControls(isEnabled);
-        this.tracsView.getSettings().setDisplayZoomControls(false);
-    }
-
 
     void loadUrl() {
         String userId = AppStorage.get(AppStorage.USERNAME, context);
@@ -143,7 +148,11 @@ class TracsController {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (url.contains("login.its.txstate.edu")) {
+            String loginUrl = "https://login.its.txstate.edu";
+            String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container";
+            String logoutUrl = "https://login.its.txstate.edu/logout?url=https://tracs.txstate.edu";
+
+            if (url.contains(loginUrl)) {
                 String javascript = "document.getElementsByTagName('form')[0].onsubmit = function() {\n" +
                         "\tvar username, password;\n" +
                         "\tvar inputs = document.getElementsByTagName('input');\n" +
@@ -160,7 +169,7 @@ class TracsController {
                 view.loadUrl("javascript:" + javascript);
             }
 
-            if ("https://tracs.txstate.edu/portal".equals(url)) {
+            if (loginSuccessUrl.equals(url)) {
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = cookies.split("=")[1];
                 String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
@@ -169,6 +178,12 @@ class TracsController {
                 } else {
                     TracsController.this.getUserEid();
                 }
+            }
+
+            if (logoutUrl.equals(url)) {
+                AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
+                AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+                AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
             }
         }
     }

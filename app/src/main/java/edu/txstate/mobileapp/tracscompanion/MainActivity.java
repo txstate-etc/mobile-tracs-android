@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
-        tracsWebView.javaScriptEnabled(true);
-        tracsWebView.zoomEnabled(true);
         tracsWebView.loadUrl();
 
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
