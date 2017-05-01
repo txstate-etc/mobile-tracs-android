@@ -9,7 +9,6 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -18,6 +17,7 @@ import java.util.Map;
 
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
+import edu.txstate.mobileapp.tracscompanion.util.LoginStatus;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
@@ -44,6 +44,7 @@ class TracsController {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void Init() {
+        LoginStatus.getInstance().logout();
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
 
@@ -66,6 +67,7 @@ class TracsController {
     void loadUrl() {
         String userId = AppStorage.get(AppStorage.USERNAME, context);
         if ("".equals(userId)) {
+            LoginStatus.getInstance().logout();
             tracsView.loadUrl(loginUrl);
         } else {
             HttpQueue requestQueue=HttpQueue.getInstance(context);
@@ -90,7 +92,7 @@ class TracsController {
         String userNameAndPass = AppStorage.get(AppStorage.USERNAME, context)
                                + AppStorage.get(AppStorage.PASSWORD, context);
 
-        if (!userNameAndPass.equals(password)) {
+        if (!userNameAndPass.equals(username + password)) {
             AppStorage.put(AppStorage.USERNAME, username, context);
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
@@ -123,9 +125,9 @@ class TracsController {
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
             tracsView.loadUrl(tracsPortalUrl);
-            MainActivity.setNotificationsEnabled(true);
+            LoginStatus.getInstance().login();
         } else {
-            MainActivity.setNotificationsEnabled(false);
+            LoginStatus.getInstance().logout();
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new TracsLoginRequest(TracsClient.LOGIN_URL,
                             response -> {
@@ -150,8 +152,8 @@ class TracsController {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            String loginUrl = "https://login.its.txstate.edu";
-            String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container";
+            String loginUrl = "https://login.its.txstate.edu/login";
+            String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container?ticket";
             String logoutUrl = "https://login.its.txstate.edu/logout?url=https://tracs.txstate.edu";
 
             if (url.contains(loginUrl)) {
@@ -171,11 +173,10 @@ class TracsController {
                 view.loadUrl("javascript:" + javascript);
             }
 
-            if (loginSuccessUrl.equals(url)) {
+            if (url.contains(loginSuccessUrl)) {
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = cookies.split("=")[1];
                 String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
-                MainActivity.setNotificationsEnabled(true);
                 if (!newCookie.equals(oldCookie)) {
                     setSessionId(cookies.split("=")[1]);
                 } else {
@@ -184,7 +185,7 @@ class TracsController {
             }
 
             if (logoutUrl.equals(url)) {
-                MainActivity.setNotificationsEnabled(false);
+                LoginStatus.getInstance().logout();
                 AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());

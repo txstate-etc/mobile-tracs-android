@@ -23,9 +23,13 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
-import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
+import java.util.Observable;
+import java.util.Observer;
 
-public class MainActivity extends AppCompatActivity {
+import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
+import edu.txstate.mobileapp.tracscompanion.util.LoginStatus;
+
+public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
     private static Menu optionsMenu;
@@ -56,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
+
+        LoginStatus.getInstance().addObserver(this);
+        LoginStatus.getInstance().logout();
 
         tracsWebView.loadUrl();
 
@@ -116,5 +123,10 @@ public class MainActivity extends AppCompatActivity {
         boolean doesNotHaveWritePermission;
         doesNotHaveWritePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
         return doesNotHaveWritePermission;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        setNotificationsEnabled(LoginStatus.getInstance().isUserLoggedIn());
     }
 }
