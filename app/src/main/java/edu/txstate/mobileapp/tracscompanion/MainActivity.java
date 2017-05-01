@@ -28,6 +28,7 @@ import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
+    private static Menu optionsMenu;
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     private Tracker analyticsTracker;
 
@@ -41,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
-        Log.i(TAG, "Token: " + AppStorage.get(AppStorage.NOTIFICATION_ID, this));
 
         //Analytics tracker setup for this view.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
@@ -69,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
                 new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
                         .colorRes(R.color.colorAccent)
                         .actionBarSize()
-        );
+        )
+                .setEnabled(false);
+
         menu.findItem(R.id.menu_refresh).setVisible(false);
+        optionsMenu = menu;
         return true;
     }
 
@@ -100,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
     private void requestWritePermission() {
         this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+    }
+
+    public static void setNotificationsEnabled(boolean shouldEnableNotifications) {
+        if (optionsMenu == null) {
+            return;
+        }
+        optionsMenu.findItem(R.id.notifications_menu).setEnabled(shouldEnableNotifications);
     }
 
     private boolean writePermissionNotGranted() {

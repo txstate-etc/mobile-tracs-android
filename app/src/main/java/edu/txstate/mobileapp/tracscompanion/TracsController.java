@@ -123,7 +123,9 @@ class TracsController {
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
             tracsView.loadUrl(tracsPortalUrl);
+            MainActivity.setNotificationsEnabled(true);
         } else {
+            MainActivity.setNotificationsEnabled(false);
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new TracsLoginRequest(TracsClient.LOGIN_URL,
                             response -> {
@@ -173,6 +175,7 @@ class TracsController {
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = cookies.split("=")[1];
                 String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
+                MainActivity.setNotificationsEnabled(true);
                 if (!newCookie.equals(oldCookie)) {
                     setSessionId(cookies.split("=")[1]);
                 } else {
@@ -181,6 +184,7 @@ class TracsController {
             }
 
             if (logoutUrl.equals(url)) {
+                MainActivity.setNotificationsEnabled(false);
                 AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
