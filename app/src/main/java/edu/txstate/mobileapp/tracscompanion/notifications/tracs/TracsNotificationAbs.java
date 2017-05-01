@@ -1,17 +1,18 @@
 package edu.txstate.mobileapp.tracscompanion.notifications.tracs;
 
 abstract class TracsNotificationAbs implements TracsNotification {
-    private static final String TITLE_NOT_SET = "Title Not Set";
-    private static final String SUBTITLE_NOT_SET = "Subtitle Not Set";
+    static final String NOT_SET = "NOT SET";
 
     private String title;
     private String id;
-    private String subtitle;
+    private String siteId;
+    private String siteName;
     private boolean isError;
 
     TracsNotificationAbs() {
-        this.title = TITLE_NOT_SET;
-        this.subtitle = SUBTITLE_NOT_SET;
+        this.title = NOT_SET;
+        this.siteId = NOT_SET;
+        this.siteName = NOT_SET;
         this.isError = false;
     }
 
@@ -19,28 +20,38 @@ abstract class TracsNotificationAbs implements TracsNotification {
         return this.title;
     }
 
-    public String getSubtitle() {
-        return this.subtitle;
+    public String getSiteId() {
+        return this.siteId;
     }
 
     public String getId() {
         return this.id;
     }
 
+    public String getSiteName() { return this.siteName; }
+
     public boolean isNull() {
         return this.id == null || "".equals(this.id);
+    }
+
+    public boolean hasSiteName() {
+        return !NOT_SET.equals(this.siteName);
     }
 
     public boolean isError() {
         return this.isError;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     void setId(String id) {
@@ -48,6 +59,6 @@ abstract class TracsNotificationAbs implements TracsNotification {
     }
 
     public String toString() {
-        return this.getTitle();
+        return this.getSiteName() + " - " + this.getTitle();
     }
 }

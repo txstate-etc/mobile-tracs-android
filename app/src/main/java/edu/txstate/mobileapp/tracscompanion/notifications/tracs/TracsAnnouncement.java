@@ -17,7 +17,7 @@ public class TracsAnnouncement extends TracsNotificationAbs {
     public TracsAnnouncement(JsonObject rawNotification) {
         super.setId(this.extractKey(rawNotification, "id", String.class));
         super.setTitle(this.extractKey(rawNotification, "title", String.class));
-        super.setSubtitle(this.extractKey(rawNotification, "body", String.class));
+        super.setSiteId(this.extractKey(rawNotification, "siteId", String.class));
     }
 
     public String getUrl() {
@@ -33,11 +33,12 @@ public class TracsAnnouncement extends TracsNotificationAbs {
 
     @Override
     public <T> T extractKey(JsonObject notification, String key, Class<T> returnType) {
+        if (notification == null) { return returnType.cast(TracsNotificationAbs.NOT_SET); }
         T value;
         JsonElement jsonValue = notification.get(key);
 
         if (jsonValue == null) {
-            Log.e(TAG, "Tried to find key: " + key + " and failed.");
+            Log.wtf(TAG, "Tried to find key: " + key + " and failed.");
             return null;
         }
 

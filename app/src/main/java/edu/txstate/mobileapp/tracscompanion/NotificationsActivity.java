@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -17,17 +16,23 @@ import com.google.android.gms.analytics.Tracker;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
-import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsListLoader;
+import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsAdapter;
+import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
+import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsSiteRequest;
 
 public class NotificationsActivity
-        extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+        extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, Observer {
     private static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
@@ -36,16 +41,18 @@ public class NotificationsActivity
     private ProgressDialog loadingDialog;
     private Tracker analyticsTracker;
     private SwipeRefreshLayout refreshLayout;
+    private NotificationsAdapter adapter;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
-
-
         this.tracsNotifications = new NotificationsBundle();
+
         loadingDialog = new ProgressDialog(this);
         loadingDialog.setMessage("Loading Notifications...");
+
         setContentView(R.layout.activity_notifications);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -55,6 +62,7 @@ public class NotificationsActivity
             return;
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.notification_swipe_refresh);
         refreshLayout.setOnRefreshListener(NotificationsActivity.this);
@@ -98,6 +106,7 @@ public class NotificationsActivity
     private void refreshNotifications(boolean showDialog) {
         if (showDialog) { loadingDialog.show(); }
         this.tracsNotifications = new NotificationsBundle();
+        this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
                 .getDispatchNotifications(NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
     }
@@ -137,9 +146,46 @@ public class NotificationsActivity
         loadingDialog.dismiss();
         refreshLayout.setRefreshing(false);
         final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
-        final NotificationsListLoader adapter = new NotificationsListLoader(this,
-                android.R.layout.simple_list_item_1,
-                tracsNotifications);
+        adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
         notificationsList.setAdapter(adapter);
+    }
+
+    private void updateListView() {
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void update(Observable tracsNotifications, Object newNotification) {
+        TracsNotification notification;
+        try {
+            notification = (TracsNotification) newNotification;
+        } catch (ClassCastException e) {
+            Log.wtf(TAG, e.getMessage());
+            return;
+        }
+
+        if (notification != null && !notification.hasSiteName()) {
+            HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+            Map<String, String> headers = new HashMap<>();
+            requestQueue.addToRequestQueue(new TracsSiteRequest(
+                    notification, headers, NotificationsActivity.this::onSiteNameReturned
+            ));
+        }
+    }
+
+    public void onSiteNameReturned(Map<String, String> siteNameAndId) {
+        for (TracsAppNotification notification : tracsNotifications) {
+            try {
+                String siteId = TracsNotification.class.cast(notification).getSiteId();
+                String siteName = siteNameAndId.get(siteId);
+                if (siteName != null) {
+                    TracsNotification.class.cast(notification).setSiteName(siteName);
+                }
+            } catch (NullPointerException | ClassCastException e) {
+                Log.wtf(TAG, "Could not set site name.");
+            }
+        }
+
+        updateListView();
     }
 }

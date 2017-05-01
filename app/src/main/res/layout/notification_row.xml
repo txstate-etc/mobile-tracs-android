@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:padding="0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <edu.txstate.mobileapp.tracscompanion.util.FontAwesome
+        android:id="@+id/notification_icon"
+        android:layout_alignParentBottom="true"
+        android:layout_height="fill_parent"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_width="wrap_content"
+        android:textSize="50sp" />
+
+    <LinearLayout
+        android:layout_alignParentTop="true"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/notification_icon"
+        android:layout_width="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/notification_site_name"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:layout_width="fill_parent"
+            android:text="This is a test notification's title" />
+
+        <TextView
+            android:id="@+id/notification_title"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.5"
+            android:layout_width="fill_parent"
+            android:text="My Test Site Name" />
+
+
+    </LinearLayout>
+</RelativeLayout>

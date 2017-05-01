@@ -65,18 +65,4 @@ public class NotificationsBundleTests {
 
         assertEquals(1, notifications.countAnnouncements());
     }
-
-    @Test
-    public void multipleNotificationsCanBeAdded() {
-        TracsAppNotification announcement = new TracsAnnouncement(rawAnnouncement);
-
-        ArrayList<TracsAppNotification> multipleNotifications = new ArrayList<>();
-        multipleNotifications.add(announcement);
-        multipleNotifications.add(announcement);
-        multipleNotifications.add(announcement);
-
-        notifications.addMany(multipleNotifications);
-
-        assertEquals(3, notifications.countAnnouncements());
-    }
 }

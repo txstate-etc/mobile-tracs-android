@@ -18,10 +18,23 @@ public interface TracsNotification extends TracsAppNotification {
     String getTitle();
 
     /**
-     * Fetches the subtitle used in the app
-     * @return The notification subtitle
+     * Fetches the site id of the notification
+     * @return The notification site id
      */
-    String getSubtitle();
+    String getSiteId();
+
+    /**
+     * Gets the site name the notification came from
+     * @return The site name associated with the notification
+     */
+    String getSiteName();
+
+    void setTitle(String siteTitle);
+    void setSiteId(String siteId);
+    void setSiteName(String siteName);
+
 
     boolean isNull();
+
+    boolean hasSiteName();
 }

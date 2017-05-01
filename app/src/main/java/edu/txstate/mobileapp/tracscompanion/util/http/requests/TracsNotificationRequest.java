@@ -54,7 +54,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
             JsonStreamParser parser = new JsonStreamParser(notificationData);
             JsonObject notification = null;
 
-            while (parser.hasNext()) {
+            if (parser.hasNext()) {
                 notification = (JsonObject) parser.next();
             }
             announcement = new TracsAnnouncement(notification);

@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
 
 /**
  * A container for multiple Notifications
  */
-public class NotificationsBundle implements Iterable<TracsAppNotification> {
+public class NotificationsBundle extends Observable implements Iterable<TracsAppNotification> {
     private static final String TAG = "NotificationsBundle";
     private ArrayList<TracsAppNotification> allNotifications;
     private Map<String, Integer> notificationsCount;
@@ -23,17 +24,12 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         this.notificationsCount = new HashMap<>();
     }
 
-    //TODO: Add hashcode to identify if there is already a notification here.
     public void addOne(TracsAppNotification notification) {
         this.incrementCount(notification.getType());
         this.allNotifications.add(notification);
-    }
-
-    public void addMany(ArrayList<TracsAppNotification> notifications) {
-        for(TracsAppNotification notification : notifications) {
-            this.incrementCount(notification.getType());
-        }
-        this.allNotifications.addAll(notifications);
+        this.setChanged();
+        this.notifyObservers(notification);
+        this.clearChanged();
     }
 
     public void remove(String id) {
@@ -60,6 +56,12 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         return this.allNotifications;
     }
 
+    private void announceUpdate() {
+        this.setChanged();
+        this.notifyObservers();
+        this.clearChanged();
+    }
+
     @NonNull
     public NotificationsBundleIterator iterator() {
         return new NotificationsBundleIterator(allNotifications.size());
@@ -68,6 +70,13 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
     public int getNotificationCount(String type) {
         Integer total = this.notificationsCount.get(type);
         return total == null ? 0 : total;
+    }
+
+    public TracsAppNotification get(int position) {
+        if (position < this.allNotifications.size()) {
+            return this.allNotifications.get(position);
+        }
+        return null;
     }
 
     private void incrementCount(String type) {
