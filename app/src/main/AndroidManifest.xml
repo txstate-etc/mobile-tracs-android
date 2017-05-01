@@ -32,6 +32,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.txstate.mobileapp.tracscompanion.MainActivity" />
         </activity>
+
+        <service android:name=".notifications.NotificationIdService" />
     </application>
 
 </manifest>

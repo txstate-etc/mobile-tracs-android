@@ -33,7 +33,7 @@ public class AppStorage {
 
     public static void put(String key, String value, Context context) {
         if (keyIsValid(key)) {
-            AppStorage.getPrefs(context).edit().putString(key, value).apply();;
+            AppStorage.getPrefs(context).edit().putString(key, value).apply();
         }
     }
 

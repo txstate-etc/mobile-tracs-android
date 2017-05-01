@@ -1,5 +1,7 @@
 package edu.txstate.mobileapp.tracscompanion.notifications;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +60,7 @@ public class NotificationsBundle implements Iterable<TracsAppNotification> {
         return this.allNotifications;
     }
 
+    @NonNull
     public NotificationsBundleIterator iterator() {
         return new NotificationsBundleIterator(allNotifications.size());
     }
