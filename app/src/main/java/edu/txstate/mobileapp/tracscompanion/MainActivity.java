@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         }
         super.onCreate(savedInstanceState);
+        LoginStatus.getInstance().addObserver(this);
+        LoginStatus.getInstance().logout();
 
         AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
 
@@ -61,11 +63,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
-        LoginStatus.getInstance().addObserver(this);
-        LoginStatus.getInstance().logout();
-
         tracsWebView.loadUrl();
-
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
     }
 
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         )
                 .setEnabled(false);
 
-        menu.findItem(R.id.menu_refresh).setVisible(false);
+        menu.findItem(R.id.menu_refresh).setVisible(LoginStatus.getInstance().isUserLoggedIn());
         optionsMenu = menu;
         return true;
     }
@@ -126,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-        setNotificationsEnabled(LoginStatus.getInstance().isUserLoggedIn());
+    public void update(Observable loginStatus, Object userIsLoggedIn) {
+        setNotificationsEnabled((boolean) userIsLoggedIn);
+        Log.i(TAG, "Observer notified: user " + ((boolean) userIsLoggedIn ? "is " : "is not ") + "logged in.");
     }
 }

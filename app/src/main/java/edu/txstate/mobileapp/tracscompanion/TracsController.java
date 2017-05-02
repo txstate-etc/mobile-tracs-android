@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
-import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -96,8 +95,8 @@ class TracsController {
             AppStorage.put(AppStorage.USERNAME, username, context);
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
+        LoginStatus.getInstance().login();
     }
-
 
 
     private void getUserEid() {
@@ -119,9 +118,6 @@ class TracsController {
         String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
         String fetchedNetId = session.getUserEid();
 
-        String sessionId = AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
-        CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + sessionId + "; Path=/");
-
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
             tracsView.loadUrl(tracsPortalUrl);
@@ -137,16 +133,12 @@ class TracsController {
                             error -> tracsView.loadUrl(loginUrl)));
         }
     }
+
     private class TracsWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
-        }
-
-        @Override
-        public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
-            Log.i(TAG, host);
         }
 
         @Override
@@ -156,7 +148,8 @@ class TracsController {
             String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container?ticket";
             String logoutUrl = "https://login.its.txstate.edu/logout?url=https://tracs.txstate.edu";
 
-            if (url.contains(loginUrl)) {
+            if (url.equals(loginUrl)) {
+                LoginStatus.getInstance().logout();
                 String javascript = "document.getElementsByTagName('form')[0].onsubmit = function() {\n" +
                         "\tvar username, password;\n" +
                         "\tvar inputs = document.getElementsByTagName('input');\n" +
@@ -177,6 +170,7 @@ class TracsController {
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = cookies.split("=")[1];
                 String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
+                LoginStatus.getInstance().login();
                 if (!newCookie.equals(oldCookie)) {
                     setSessionId(cookies.split("=")[1]);
                 } else {
