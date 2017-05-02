@@ -42,12 +42,28 @@ public class NotificationsActivity
     private Tracker analyticsTracker;
     private SwipeRefreshLayout refreshLayout;
     private NotificationsAdapter adapter;
-    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "Activity has resumed");
+        analyticsTracker.setScreenName(SCREEN_NAME);
+        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        init();
+    }
+
+    private void init() {
         this.tracsNotifications = new NotificationsBundle();
 
         loadingDialog = new ProgressDialog(this);
@@ -58,24 +74,14 @@ public class NotificationsActivity
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            return;
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.notification_swipe_refresh);
         refreshLayout.setOnRefreshListener(NotificationsActivity.this);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary);
         refreshNotifications(true);
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "Activity has resumed");
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
     }
 
     @Override
