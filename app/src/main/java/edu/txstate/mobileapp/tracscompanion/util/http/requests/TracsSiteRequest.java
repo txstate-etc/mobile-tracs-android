@@ -18,17 +18,17 @@ import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 
-public class TracsSiteRequest extends Request<Map<String, String>> {
+public class TracsSiteRequest extends Request<JsonObject> {
 
     private static final String url = "https://tracs.txstate.edu/direct/site/";
     private static final String TAG = "TracsSiteRequest";
 
-    private final Response.Listener<Map<String, String>> listener;
+    private final Response.Listener<JsonObject> listener;
     private Map<String, String> headers;
 
     public TracsSiteRequest(TracsNotification notification,
                             Map<String, String> headers,
-                            Response.Listener<Map<String, String>> listener) {
+                            Response.Listener<JsonObject> listener) {
         super(Method.GET,
                 url + notification.getSiteId() + ".json",
                 error -> Log.wtf(TAG, error.getMessage()));
@@ -44,7 +44,7 @@ public class TracsSiteRequest extends Request<Map<String, String>> {
     }
 
     @Override
-    protected Response<Map<String, String>> parseNetworkResponse(NetworkResponse response) {
+    protected Response<JsonObject> parseNetworkResponse(NetworkResponse response) {
         String siteData = null;
         try {
             siteData = new String(response.data,
@@ -56,19 +56,11 @@ public class TracsSiteRequest extends Request<Map<String, String>> {
         JsonStreamParser parser = new JsonStreamParser(siteData);
         JsonObject siteInfo = parser.hasNext() ? (JsonObject) parser.next() : new JsonObject();
 
-        Map<String, String> siteName = new HashMap<>();
-
-        try {
-            siteName.put(siteInfo.get("entityId").getAsString(), siteInfo.get("entityTitle").getAsString());
-        } catch (NullPointerException e) {
-            Log.wtf(TAG, "Could not retrieve site name");
-        }
-
-        return Response.success(siteName, HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(siteInfo, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override
-    protected void deliverResponse(Map<String, String> response) {
+    protected void deliverResponse(JsonObject response) {
         this.listener.onResponse(response);
     }
 }

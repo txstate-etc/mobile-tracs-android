@@ -3,6 +3,7 @@ package edu.txstate.mobileapp.tracscompanion.notifications.tracs;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
 
 public interface TracsNotification extends TracsAppNotification {
+    String NOT_SET = "NOT SET";
     /**
      * Forms the appropriate url to point as close as possible to the applicable
      * notification
@@ -32,7 +33,7 @@ public interface TracsNotification extends TracsAppNotification {
     void setTitle(String siteTitle);
     void setSiteId(String siteId);
     void setSiteName(String siteName);
-
+    void setPageId(String pageId);
 
     boolean isNull();
 

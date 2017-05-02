@@ -23,10 +23,9 @@ public class TracsClient {
     private static final String TRACS_URL = "https://tracs.txstate.edu";
     private static final String TRACS_BASE = TRACS_URL + "/direct";
     private static final String ANNOUNCEMENT_URL = TRACS_BASE + "/announcement/";
-    static final String SITE_URL = TRACS_BASE + "/site";
-    static final String PORTAL_URL = TRACS_URL + "/portal";
+    private static final String PORTAL_URL = TRACS_URL + "/portal";
+    private static final String SITE_URL = PORTAL_URL + "/site/";
     public static final String LOGIN_URL = TRACS_BASE + "/session";
-    static final String LOGOUT_URL = TRACS_URL + "/portal/pda/?force.logout=yes";
 
     private static TracsClient tracsClient;
 
@@ -61,6 +60,9 @@ public class TracsClient {
                 break;
             case NotificationTypes.GRADE:
                 desiredUrl = TRACS_BASE;
+                break;
+            case "SITE":
+                desiredUrl = SITE_URL;
                 break;
             default:
                 desiredUrl = TRACS_BASE;

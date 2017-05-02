@@ -1,6 +1,9 @@
 package edu.txstate.mobileapp.tracscompanion;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -9,10 +12,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
@@ -25,6 +33,7 @@ import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsAdapter;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
+import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
@@ -127,24 +136,14 @@ public class NotificationsActivity
     }
 
     public void onResponse(TracsNotification response) {
-        this.notificationsRetrieved += 1;
-        boolean done = this.allRequestsBack();
         if (response.getType().equals(NotificationTypes.ERROR)) {
-            if (done) {
-                loadingDialog.dismiss();
-                Log.wtf(TAG, "Error retrieving notifications.");
-                displayListView();
-            }
+            Log.wtf(TAG, "Error retrieving notifications from TRACS");
         } else {
             this.tracsNotifications.addOne(response);
-            if (done) {
-                this.notificationsRetrieved = 0;
-                this.displayListView();
-            }
         }
     }
 
-    private boolean allRequestsBack() {
+    private boolean allRequestsAreBack() {
         return this.notificationsRetrieved >= this.dispatchNotifications.size();
     }
 
@@ -154,10 +153,13 @@ public class NotificationsActivity
         final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
         notificationsList.setAdapter(adapter);
-    }
-
-    private void updateListView() {
-        adapter.notifyDataSetChanged();
+        notificationsList.setOnItemClickListener((parent, view, position, id) -> {
+            TracsNotification notification = (TracsNotification) notificationsList.getAdapter().getItem(position);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("url", notification.getUrl());
+            startActivity(intent);
+            Log.i(TAG, notification.getTitle());
+        });
     }
 
     @Override
@@ -179,19 +181,38 @@ public class NotificationsActivity
         }
     }
 
-    public void onSiteNameReturned(Map<String, String> siteNameAndId) {
+    public void onSiteNameReturned(JsonObject siteInfo) {
         for (TracsAppNotification notification : tracsNotifications) {
             try {
-                String siteId = TracsNotification.class.cast(notification).getSiteId();
-                String siteName = siteNameAndId.get(siteId);
-                if (siteName != null) {
-                    TracsNotification.class.cast(notification).setSiteName(siteName);
+                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
+                boolean titleIsSet = !TracsNotification.NOT_SET.equals(tracsNotification.getSiteName());
+                if (titleIsSet) {
+                    this.notificationsRetrieved += 1;
+                }
+
+                String siteId = tracsNotification.getSiteId();
+                String fetchedSiteId = siteInfo.get("entityId").getAsString();
+                String siteName = siteInfo.get("entityTitle").getAsString();
+
+                if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
+                    tracsNotification.setSiteName(siteName);
+                    JsonArray sitePages = siteInfo.get("sitePages").getAsJsonArray();
+                    for (JsonElement page : sitePages) {
+                        JsonObject jsonPage = page.getAsJsonObject();
+                        String pageName = jsonPage.get("title").getAsString();
+                        if (pageName.toLowerCase().contains(NotificationTypes.ANNOUNCEMENT)) {
+                            tracsNotification.setPageId(jsonPage.get("id").getAsString());
+                        }
+                    }
                 }
             } catch (NullPointerException | ClassCastException e) {
                 Log.wtf(TAG, "Could not set site name.");
             }
         }
 
-        updateListView();
+        if (allRequestsAreBack()) {
+            this.notificationsRetrieved = 0;
+            displayListView();
+        }
     }
 }

@@ -26,7 +26,7 @@ public class Registrar {
 
         app_id = AppStorage.get(AppStorage.NOTIFICATION_ID, context);
 
-        user_id = AppStorage.get(AppStorage.TRACS_ID, context);
+        user_id = AppStorage.get(AppStorage.USERNAME, context);
 
         //TODO: Write subclass for blacklist, then turn it into a JsonArray
         blacklist = new String[0];

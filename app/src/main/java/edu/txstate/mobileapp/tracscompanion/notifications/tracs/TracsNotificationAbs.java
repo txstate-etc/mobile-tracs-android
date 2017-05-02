@@ -1,7 +1,6 @@
 package edu.txstate.mobileapp.tracscompanion.notifications.tracs;
 
 abstract class TracsNotificationAbs implements TracsNotification {
-    static final String NOT_SET = "NOT SET";
 
     private String title;
     private String id;

@@ -11,6 +11,7 @@ import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 public class TracsAnnouncement extends TracsNotificationAbs {
 
     private static final String TAG = "TracsAnnouncement";
+    private String pageId;
 
     public TracsAnnouncement() {}
 
@@ -21,9 +22,17 @@ public class TracsAnnouncement extends TracsNotificationAbs {
     }
 
     public String getUrl() {
-        String announcementUrl = TracsClient.makeUrl(this.getType());
-        announcementUrl += super.getId();
+        String announcementUrl = TracsClient.makeUrl("SITE");
+        announcementUrl += this.getSiteId() + "/page/" + this.getPageId();
         return announcementUrl;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
+
+    private String getPageId() {
+        return this.pageId;
     }
 
     @Override

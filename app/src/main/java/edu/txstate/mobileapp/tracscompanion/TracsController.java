@@ -26,10 +26,9 @@ import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
 class TracsController {
     private static final String TAG = "TracsController";
-
-    private String tracsPortalUrl = "https://tracs.txstate.edu/portal";
     private final String loginUrl = "https://login.its.txstate.edu/login?" +
             "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
+    private String urlToLoad;
 
     private FileDownloader fileDownloader;
     private Context context;
@@ -46,6 +45,7 @@ class TracsController {
         LoginStatus.getInstance().logout();
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
+        this.urlToLoad = "https://tracs.txstate.edu/portal";
 
         if (Build.VERSION.SDK_INT >= 19) {
             this.tracsView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -63,7 +63,8 @@ class TracsController {
         this.fileDownloader.downloadFile(url, mimetype);
     }
 
-    void loadUrl() {
+    void loadUrl(String url) {
+        this.urlToLoad = url;
         String userId = AppStorage.get(AppStorage.USERNAME, context);
         if ("".equals(userId)) {
             LoginStatus.getInstance().logout();
@@ -111,7 +112,7 @@ class TracsController {
     }
 
     private void onUserEidReturned(TracsSession session) {
-        AppStorage.put(AppStorage.TRACS_ID, session.getUserEid(), context);
+        AppStorage.put(AppStorage.USERNAME, session.getUserEid(), context);
     }
 
     private void onResponse(TracsSession session) {
@@ -120,15 +121,15 @@ class TracsController {
 
         //Session is good if this check passes
         if (storedNetId.equals(fetchedNetId)) {
-            tracsView.loadUrl(tracsPortalUrl);
+            tracsView.loadUrl(urlToLoad);
             LoginStatus.getInstance().login();
         } else {
             LoginStatus.getInstance().logout();
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new TracsLoginRequest(TracsClient.LOGIN_URL,
                             response -> {
-                                CookieManager.getInstance().setCookie(tracsPortalUrl, "JSESSIONID=" + response + "; Path=/");
-                                tracsView.loadUrl(tracsPortalUrl);
+                                CookieManager.getInstance().setCookie(urlToLoad, "JSESSIONID=" + response + "; Path=/");
+                                tracsView.loadUrl(urlToLoad);
                             },
                             error -> tracsView.loadUrl(loginUrl)));
         }

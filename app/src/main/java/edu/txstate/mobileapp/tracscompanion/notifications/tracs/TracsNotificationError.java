@@ -23,6 +23,11 @@ public class TracsNotificationError extends TracsNotificationAbs {
     }
 
     @Override
+    public void setPageId(String pageId) {
+        throw new UnsupportedOperationException("Operation is not implemented");
+    }
+
+    @Override
     public String getType() {
         return NotificationTypes.ERROR;
     }

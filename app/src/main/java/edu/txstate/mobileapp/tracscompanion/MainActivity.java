@@ -32,6 +32,7 @@ import edu.txstate.mobileapp.tracscompanion.util.LoginStatus;
 public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
+    private static final String DEFAULT_TRACS_URL = "https://tracs.txstate.edu/portal";
     private static Menu optionsMenu;
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     private Tracker analyticsTracker;
@@ -44,18 +45,29 @@ public class MainActivity extends AppCompatActivity implements Observer {
             }
         }
         super.onCreate(savedInstanceState);
-        LoginStatus.getInstance().addObserver(this);
-        LoginStatus.getInstance().logout();
-
-        AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
 
         //Analytics tracker setup for this view.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
 
-        //This is how you check for security setting
+        //This is how you check for security setting, not currently using the result.
         KeyguardManager keyguardManager = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
         Log.d(TAG, keyguardManager.isKeyguardSecure() ? "Device is secure" : "Device is not secure");
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = getIntent();
+        String urlToLoad = intent.getStringExtra("url");
+        if (urlToLoad == null) {
+            urlToLoad = DEFAULT_TRACS_URL;
+        }
+        //TODO: Only add observers if this one is not an observer.
+        LoginStatus.getInstance().addObserver(this);
+        LoginStatus.getInstance().logout();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.tracs_toolbar);
@@ -63,7 +75,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
-        tracsWebView.loadUrl();
+        AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
+        Log.i(TAG, "MainActivity resumed");
+        analyticsTracker.setScreenName(SCREEN_NAME);
+        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        tracsWebView.loadUrl(urlToLoad);
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
     }
 
@@ -94,14 +111,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-    @Override
-    public void onResume() {
-        Log.i(TAG, "MainActivity resumed");
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        super.onResume();
     }
 
     @TargetApi(value = Build.VERSION_CODES.M)
