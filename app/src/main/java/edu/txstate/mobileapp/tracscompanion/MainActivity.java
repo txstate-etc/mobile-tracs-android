@@ -60,12 +60,20 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Intent intent = getIntent();
-        String urlToLoad = intent.getStringExtra("url");
+        Intent callingIntent = getIntent();
+        String urlToLoad = callingIntent.getStringExtra("url");
+
         if (urlToLoad == null) {
             urlToLoad = DEFAULT_TRACS_URL;
         }
-        //TODO: Only add observers if this one is not an observer.
+
+        String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
+        if ("true".equals(shouldLoadNotificationsView)) {
+            Intent intent = new Intent(this, NotificationsActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         LoginStatus.getInstance().addObserver(this);
         LoginStatus.getInstance().logout();
 
@@ -82,6 +90,17 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         tracsWebView.loadUrl(urlToLoad);
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LoginStatus.getInstance().deleteObserver(this);
     }
 
     @Override

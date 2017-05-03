@@ -2,6 +2,7 @@ package edu.txstate.mobileapp.tracscompanion.util;
 
 
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Really basic helper class to track whether the user is logged in
@@ -23,6 +24,7 @@ public class LoginStatus extends Observable {
     public boolean isUserLoggedIn() {
         return userIsLoggedIn;
     }
+
 
     public void login() {
         if (!userIsLoggedIn) {

@@ -26,8 +26,7 @@ import edu.txstate.mobileapp.tracscompanion.util.http.responses.TracsSession;
 
 class TracsController {
     private static final String TAG = "TracsController";
-    private final String loginUrl = "https://login.its.txstate.edu/login?" +
-            "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
+    private final String loginUrl = AnalyticsApplication.getContext().getString(R.string.cas_login_tracs);
     private String urlToLoad;
 
     private FileDownloader fileDownloader;
@@ -73,8 +72,10 @@ class TracsController {
             HttpQueue requestQueue=HttpQueue.getInstance(context);
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSessionRequest<>(
-                    TracsSession.class, headers, TracsController.this::onResponse,
-                    error->Log.wtf(TAG,error))
+                    TracsSession.class, headers,
+                    TracsController.this::onResponse,
+                    error->Log.wtf(TAG,error)
+                ), TAG
             );
         }
     }
@@ -107,7 +108,7 @@ class TracsController {
                         TracsSession.class, headers,
                         TracsController.this::onUserEidReturned,
                         error -> Log.wtf(TAG, error.getMessage())
-                )
+                ), TAG
         );
     }
 
@@ -131,7 +132,7 @@ class TracsController {
                                 CookieManager.getInstance().setCookie(urlToLoad, "JSESSIONID=" + response + "; Path=/");
                                 tracsView.loadUrl(urlToLoad);
                             },
-                            error -> tracsView.loadUrl(loginUrl)));
+                            error -> tracsView.loadUrl(loginUrl)), TAG);
         }
     }
 
@@ -145,9 +146,13 @@ class TracsController {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            String loginUrl = "https://login.its.txstate.edu/login";
+            Log.wtf(TAG, url);
+            String loginUrl = "https://login.its.txstate.edu/login?" +
+                    "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
             String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container?ticket";
             String logoutUrl = "https://login.its.txstate.edu/logout?url=https://tracs.txstate.edu";
+
+
 
             if (url.equals(loginUrl)) {
                 LoginStatus.getInstance().logout();

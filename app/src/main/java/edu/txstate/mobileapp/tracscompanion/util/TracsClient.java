@@ -91,8 +91,7 @@ public class TracsClient {
             ));
 
             requestQueue.addToRequestQueue(new TracsNotificationRequest(
-                    url, headers,
-                    listener, errorHandler));
+                    url, headers, listener, errorHandler), TAG);
         }
 
     }

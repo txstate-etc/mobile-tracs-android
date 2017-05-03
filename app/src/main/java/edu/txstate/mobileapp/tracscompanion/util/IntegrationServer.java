@@ -1,6 +1,6 @@
 package edu.txstate.mobileapp.tracscompanion.util;
 
-import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -9,18 +9,23 @@ import com.android.volley.VolleyError;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;
+import edu.txstate.mobileapp.tracscompanion.MainActivity;
+import edu.txstate.mobileapp.tracscompanion.R;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.DispatchNotificationRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
 
 /**
  * Singleton Integration Server
  */
+
 public class IntegrationServer {
     private static String integrationServerUrl;
     private static IntegrationServer integrationServer;
     private static final String TAG = "IntegrationServer";
-
+    private Response.Listener<NotificationsBundle> listener;
     private IntegrationServer() {
         integrationServerUrl = "http://ajt79.its.txstate.edu:3000/";
     }
@@ -36,18 +41,46 @@ public class IntegrationServer {
 
     }
 
-    public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener, Context context) {
-        HttpQueue requestQueue = HttpQueue.getInstance(context.getApplicationContext());
-        String url = integrationServerUrl + "?user=" + AppStorage.get(AppStorage.USERNAME, context);
+    public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener) {
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        this.listener = listener;
+        if (credentialsAreStored()) {
+            requestQueue.addToRequestQueue(new TracsLoginRequest(
+                    TracsClient.LOGIN_URL, IntegrationServer.getInstance()::onResponse, IntegrationServer.getInstance()::onLoginError
+            ), TAG);
+        } else {
+            loadFailedLoginIntent();
+        }
+    }
+
+    private boolean credentialsAreStored() {
+        String username = AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
+        String password = AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+
+        return !("".equals(username) || "".equals(password)) ;
+    }
+
+    public void onResponse(String sessionId) {
+        if ("".equals(sessionId)) {
+            loadFailedLoginIntent();
+        }
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        String url = integrationServerUrl + "?user=" + AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
-        Response.ErrorListener errorHandler = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.wtf(TAG, error.getMessage());
-            }
-        };
+        Response.ErrorListener errorHandler = error -> Log.wtf(TAG, error.getMessage());
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
-                url, headers,
-                listener, errorHandler));
+                url, headers, this.listener, errorHandler), TAG);
+    }
+
+    private void onLoginError(VolleyError error) {
+        Log.wtf(TAG, "Could not login with stored credentials");
+        loadFailedLoginIntent();
+    }
+
+    private void loadFailedLoginIntent() {
+        String url = AnalyticsApplication.getContext().getString(R.string.cas_login_tracs);
+        Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);
+        intent.putExtra("url", url);
+        AnalyticsApplication.getContext().startActivity(intent);
     }
 }

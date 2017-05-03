@@ -73,10 +73,7 @@ public class NotificationsActivity
     }
 
     private void init() {
-        this.tracsNotifications = new NotificationsBundle();
-
         loadingDialog = new ProgressDialog(this);
-        loadingDialog.setMessage("Loading Notifications...");
 
         setContentView(R.layout.activity_notifications);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -119,11 +116,14 @@ public class NotificationsActivity
     }
 
     private void refreshNotifications(boolean showDialog) {
-        if (showDialog) { loadingDialog.show(); }
+        if (showDialog) {
+            loadingDialog.setMessage("Loading Notifications...");
+            loadingDialog.show();
+        }
         this.tracsNotifications = new NotificationsBundle();
         this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
-                .getDispatchNotifications(NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
+                .getDispatchNotifications(NotificationsActivity.this::onResponse);
     }
 
     protected void onResponse(NotificationsBundle response) {
@@ -177,7 +177,7 @@ public class NotificationsActivity
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSiteRequest(
                     notification, headers, NotificationsActivity.this::onSiteNameReturned
-            ));
+            ), TAG);
         }
     }
 
