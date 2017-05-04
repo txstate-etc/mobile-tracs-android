@@ -78,6 +78,7 @@ public class IntegrationServer {
     }
 
     private void loadFailedLoginIntent() {
+        LoginStatus.getInstance().logout();
         String url = AnalyticsApplication.getContext().getString(R.string.cas_login_tracs);
         Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);
         intent.putExtra("url", url);
