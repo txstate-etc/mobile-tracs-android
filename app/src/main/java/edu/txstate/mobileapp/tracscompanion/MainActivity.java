@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
-        AppStorage.put(AppStorage.NOTIFICATION_ID, FirebaseInstanceId.getInstance().getToken(), this);
         Log.i(TAG, "MainActivity resumed");
         analyticsTracker.setScreenName(SCREEN_NAME);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());

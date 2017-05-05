@@ -20,7 +20,7 @@ public class TracsLoginRequest extends StringRequest {
     private Map<String, String> params = new HashMap<>();
 
     public TracsLoginRequest (String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        super(Request.Method.POST, url, listener, errorListener);
+        super(Method.POST, url, listener, errorListener);
     }
 
     @Override

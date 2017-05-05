@@ -2,56 +2,93 @@ package edu.txstate.mobileapp.tracscompanion.util;
 
 
 import android.content.Context;
+import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class Registrar {
-    private String token;
-    private String platform;
-    private String app_id;
-    private String user_id;
-    private boolean global_disable = false;
-    private String[] blacklist;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;
+import edu.txstate.mobileapp.tracscompanion.BuildConfig;
+import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.DispatchNotificationRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.DispatchRegistrationRequest;
+import edu.txstate.mobileapp.tracscompanion.util.http.requests.JwtRequest;
+
+public class Registrar {
+
+    private Map<String, String> registration = new HashMap<>();
+    private String jwt;
+
+    private static final String tokenUrl = "https://dispatchqa1.its.qual.txstate.edu:3000/token.pl";
+    private static final String dispatchUrl = "https://dispatchqa1.its.qual.txstate.edu/registrations";
+    private static final String TAG = "Registrar";
     private static Registrar registrar;
 
-    private Registrar(Context context) {
-        init(context);
+    private Registrar() {
+        init();
     }
 
-    private void init(Context context) {
-        token = AppInstanceId.getInstanceId(context).toString();
-        platform = "android";
-
-        app_id = AppStorage.get(AppStorage.NOTIFICATION_ID, context);
-
-        user_id = AppStorage.get(AppStorage.USERNAME, context);
-
-        //TODO: Write subclass for blacklist, then turn it into a JsonArray
-        blacklist = new String[0];
+    private void init() {
+        Context context = AnalyticsApplication.getContext();
+        registration.put("token", FirebaseInstanceId.getInstance().getToken());
+        registration.put("platform", "android");
+        registration.put("app_id", BuildConfig.APPLICATION_ID);
+        registration.put("user_id", AppStorage.get(AppStorage.USERNAME, context));
     }
 
-    public static Registrar getRegistrationInfo(Context context) {
+    public static Registrar getInstance() {
         if (registrar == null) {
-            registrar = new Registrar(context);
+            registrar = new Registrar();
         }
         return registrar;
     }
 
-    public void refreshRegistartion(Context context) {
-        init(context);
-    }
-
-    public void toggleGlobalDisable() {
-        this.global_disable = !this.global_disable;
-    }
-
-    public JsonObject getJsonRegistration() {
+    private JSONObject getJsonRegistration() {
+        JSONObject regInfo = new JSONObject();
         if (registrar == null) {
-            return new JsonObject();
+            return regInfo;
         }
-        Gson gson = new Gson();
-        return gson.toJsonTree(registrar).getAsJsonObject();
+        regInfo = new JSONObject(registration);
+        return regInfo;
+    }
+
+    public void getJwt() {
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        Map<String, String> headers = new HashMap<>();
+        requestQueue.addToRequestQueue(new JwtRequest(
+                tokenUrl,
+                headers,
+                Registrar.getInstance()::receiveJwt,
+                error -> Log.wtf(TAG, error.getMessage())
+        ), TAG);
+    }
+
+    private void receiveJwt(String jwt) {
+        registration.put("jwt", jwt);
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
+        JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST, dispatchUrl,
+                regInfo, this::onResponse, this::onError);
+        requestQueue.addToRequestQueue(registerRequest, TAG);
+    }
+
+    private void onError(VolleyError error) {
+        String msg = new String(error.networkResponse.data);
+        Log.wtf(TAG, msg);
+    }
+
+    private void onResponse(JSONObject response) {
+        Log.wtf(TAG, "Response Returned");
     }
 }

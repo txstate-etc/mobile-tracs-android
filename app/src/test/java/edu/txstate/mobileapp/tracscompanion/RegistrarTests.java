@@ -1,11 +1,8 @@
 package edu.txstate.mobileapp.tracscompanion;
 
-import android.test.mock.MockContext;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -20,20 +17,16 @@ import static org.junit.Assert.assertTrue;
 @PrepareForTest({AppInstanceId.class})
 public class RegistrarTests {
     private Registrar registration;
-    private MockContext context;
 
     @Before
     public void setUp() {
-        PowerMockito.mockStatic(AppInstanceId.class);
-        context = new MockContext();
-        PowerMockito.when(AppInstanceId.getInstanceId(context)).thenReturn(UUID.randomUUID());
-        registration = Registrar.getRegistrationInfo(context);
+        registration = Registrar.getInstance();
     }
 
     @Test
     public void twoCallsToRegistrarProduceSameUUID() {
-        UUID firstCallUUID = UUID.fromString(Registrar.getRegistrationInfo(context).getJsonRegistration().get("token").getAsString());
-        UUID secondCallUUID = UUID.fromString(Registrar.getRegistrationInfo(context).getJsonRegistration().get("token").getAsString());
+        UUID firstCallUUID = UUID.fromString(registration.getJsonRegistration().get("token").getAsString());
+        UUID secondCallUUID = UUID.fromString(registration.getJsonRegistration().get("token").getAsString());
 
         assertTrue(firstCallUUID.equals(secondCallUUID));
     }
@@ -54,17 +47,8 @@ public class RegistrarTests {
     }
 
     @Test
-    public void registrarHasBlacklistKey() {
-        assertTrue(registration.getJsonRegistration().has("blacklist"));
-    }
-
-    @Test
     public void registrarHasPlatformKey() {
         assertTrue(registration.getJsonRegistration().has("platform"));
     }
 
-    @Test
-    public void registrarHasGlobalDisableKey() {
-        assertTrue(registration.getJsonRegistration().has("global_disable"));
-    }
 }

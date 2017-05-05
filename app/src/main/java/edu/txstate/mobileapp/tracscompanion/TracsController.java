@@ -2,6 +2,7 @@ package edu.txstate.mobileapp.tracscompanion;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import java.util.Map;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;
 import edu.txstate.mobileapp.tracscompanion.util.FileDownloader;
 import edu.txstate.mobileapp.tracscompanion.util.LoginStatus;
+import edu.txstate.mobileapp.tracscompanion.util.Registrar;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.requests.TracsLoginRequest;
@@ -100,31 +102,14 @@ class TracsController {
         LoginStatus.getInstance().login();
     }
 
-
-    private void getUserEid() {
-        Map<String, String> headers = new HashMap<>();
-        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                new TracsSessionRequest<>(
-                        TracsSession.class, headers,
-                        TracsController.this::onUserEidReturned,
-                        error -> Log.wtf(TAG, error.getMessage())
-                ), TAG
-        );
-    }
-
-    private void onUserEidReturned(TracsSession session) {
-        AppStorage.put(AppStorage.USERNAME, session.getUserEid(), context);
-    }
-
     private void onResponse(TracsSession session) {
         String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
         String fetchedNetId = session.getUserEid();
 
-        //Session is good if this check passes
-        if (storedNetId.equals(fetchedNetId)) {
+        if (storedNetId.equals(fetchedNetId)) { //Session is valid
             tracsView.loadUrl(urlToLoad);
             LoginStatus.getInstance().login();
-        } else {
+        } else { //Session is not valid
             LoginStatus.getInstance().logout();
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new TracsLoginRequest(TracsClient.LOGIN_URL,
@@ -143,6 +128,7 @@ class TracsController {
             return true;
         }
 
+        @SuppressLint("ApplySharedPref")
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
@@ -173,23 +159,22 @@ class TracsController {
             }
 
             if (url.contains(loginSuccessUrl)) {
-                String ticket = url.split("=")[1];
+                SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
+                prefs.edit().putString("user-agent", tracsView.getSettings().getUserAgentString()).commit();
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = null;
                 if (cookies != null) {
                     newCookie = cookies.split("=")[1];
                 }
-                String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
                 LoginStatus.getInstance().login();
-                if (!oldCookie.equals(newCookie)) {
-                    setSessionId(newCookie);
-                } else {
-                    TracsController.this.getUserEid();
-                }
+                TracsController.this.setSessionId(newCookie);
+                Registrar.getInstance().getJwt();
+                Log.i(TAG, "Registration Info");
             }
 
             if (logoutUrl.equals(url)) {
                 LoginStatus.getInstance().logout();
+                //TODO: What the hell am I doing, I made an observer pattern to handle this.
                 AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());

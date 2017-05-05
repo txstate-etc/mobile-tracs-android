@@ -72,11 +72,4 @@ public class DispatchNotificationRequest extends Request<NotificationsBundle> {
     protected void deliverResponse(NotificationsBundle response) {
         listener.onResponse(response);
     }
-
-    private class ErrorHandler implements Response.ErrorListener {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.wtf(TAG, error);
-        }
-    }
 }
