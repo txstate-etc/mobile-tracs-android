@@ -173,12 +173,16 @@ class TracsController {
             }
 
             if (url.contains(loginSuccessUrl)) {
+                String ticket = url.split("=")[1];
                 String cookies = CookieManager.getInstance().getCookie(url);
-                String newCookie = cookies.split("=")[1];
+                String newCookie = null;
+                if (cookies != null) {
+                    newCookie = cookies.split("=")[1];
+                }
                 String oldCookie = AppStorage.get(AppStorage.SESSION_ID, context);
                 LoginStatus.getInstance().login();
-                if (!newCookie.equals(oldCookie)) {
-                    setSessionId(cookies.split("=")[1]);
+                if (!oldCookie.equals(newCookie)) {
+                    setSessionId(newCookie);
                 } else {
                     TracsController.this.getUserEid();
                 }
