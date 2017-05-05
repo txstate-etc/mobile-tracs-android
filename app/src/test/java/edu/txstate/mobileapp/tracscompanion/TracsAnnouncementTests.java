@@ -13,7 +13,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(PowerMockRunner.class)

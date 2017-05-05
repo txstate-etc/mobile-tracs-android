@@ -1,7 +1,5 @@
 package edu.txstate.mobileapp.tracscompanion.util.http.requests;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;

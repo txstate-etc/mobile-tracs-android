@@ -2,8 +2,6 @@ package edu.txstate.mobileapp.tracscompanion;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -12,8 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -30,10 +26,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
-import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsAdapter;
+import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
-import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.IntegrationServer;
 import edu.txstate.mobileapp.tracscompanion.util.TracsClient;

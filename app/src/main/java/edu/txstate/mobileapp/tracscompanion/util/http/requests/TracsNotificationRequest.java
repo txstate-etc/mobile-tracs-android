@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;
-import edu.txstate.mobileapp.tracscompanion.NotificationsActivity;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.util.AppStorage;

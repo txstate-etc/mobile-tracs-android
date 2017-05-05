@@ -11,7 +11,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 import edu.txstate.mobileapp.tracscompanion.AnalyticsApplication;

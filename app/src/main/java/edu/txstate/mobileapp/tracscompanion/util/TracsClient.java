@@ -12,7 +12,6 @@ import edu.txstate.mobileapp.tracscompanion.notifications.DispatchNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationTypes;
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
-import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobileapp.tracscompanion.util.http.HttpQueue;
 import edu.txstate.mobileapp.tracscompanion.util.http.listeners.TracsNotificationListener;

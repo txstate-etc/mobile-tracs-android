@@ -2,7 +2,6 @@ package edu.txstate.mobileapp.tracscompanion.util;
 
 
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Really basic helper class to track whether the user is logged in

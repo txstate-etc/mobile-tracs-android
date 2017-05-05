@@ -6,14 +6,12 @@ import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import edu.txstate.mobileapp.tracscompanion.notifications.NotificationsBundle;
 import edu.txstate.mobileapp.tracscompanion.notifications.TracsAppNotification;
 import edu.txstate.mobileapp.tracscompanion.notifications.tracs.TracsAnnouncement;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class NotificationsBundleTests {
     NotificationsBundle notifications;
