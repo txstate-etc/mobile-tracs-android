@@ -108,10 +108,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
                         .colorRes(R.color.colorAccent)
                         .actionBarSize()
-        )
-                .setEnabled(false);
+        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
 
-        menu.findItem(R.id.menu_refresh).setVisible(LoginStatus.getInstance().isUserLoggedIn());
+        menu.findItem(R.id.menu_refresh).setVisible(false);
         optionsMenu = menu;
         return true;
     }

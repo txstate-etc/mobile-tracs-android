@@ -26,17 +26,13 @@ public class LoginStatus extends Observable {
 
 
     public void login() {
-        if (!userIsLoggedIn) {
-            userIsLoggedIn = true;
-            updateObservers();
-        }
+        userIsLoggedIn = true;
+        updateObservers();
     }
 
     public void logout() {
-        if (userIsLoggedIn) {
-            userIsLoggedIn = false;
-            updateObservers();
-        }
+        userIsLoggedIn = false;
+        updateObservers();
     }
 
     private void updateObservers() {

@@ -75,20 +75,10 @@ public class Registrar {
     }
 
     private void receiveJwt(String jwt) {
-        registration.put("jwt", jwt);
+        String url = dispatchUrl + "?jwt=" + jwt;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
-        JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST, dispatchUrl,
-                regInfo, this::onResponse, this::onError);
+        DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo);
         requestQueue.addToRequestQueue(registerRequest, TAG);
-    }
-
-    private void onError(VolleyError error) {
-        String msg = new String(error.networkResponse.data);
-        Log.wtf(TAG, msg);
-    }
-
-    private void onResponse(JSONObject response) {
-        Log.wtf(TAG, "Response Returned");
     }
 }
