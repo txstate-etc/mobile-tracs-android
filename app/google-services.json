@@ -40,6 +40,41 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690009396668:android:7ffd3a50d5ff0887",
+        "android_client_info": {
+          "package_name": "edu.txstate.mobile.tracs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690009396668-jfcvcvimvb0jkit049mb3t0gi7use4uv.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "690009396668-k363guqftfhnhnp5sqsnhoav7p2b5c7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU_U735OSsdURH6o_mwBnZ4LD6-e6fByc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"

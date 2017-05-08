@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "edu.txstate.mobile.tracscompanion"
+        applicationId "edu.txstate.mobile.tracs"
         minSdkVersion 17
         targetSdkVersion 25
         versionCode 1
