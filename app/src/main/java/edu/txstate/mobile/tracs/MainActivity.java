@@ -29,7 +29,8 @@ import edu.txstate.mobile.tracs.util.LoginStatus;
 public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
-    private static final String DEFAULT_TRACS_URL = "https://tracs.txstate.edu/portal";
+    private static final String DEFAULT_TRACS_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
+                                                    + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
     private static Menu optionsMenu;
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     private Tracker analyticsTracker;

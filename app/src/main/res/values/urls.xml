@@ -6,6 +6,7 @@
     <string name="tracs_login">https://login.its.txstate.edu/login?service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer</string>
     <string name="tracs_session_login">direct/session</string>
     <string name="tracs_site">direct/site/</string>
+    <string name="tracs_portal">portal</string>
     <string name="dispatch_base">https://dispatchqa1.its.qual.txstate.edu/</string>
     <string name="dispatch_notifications">notifications</string>
 </resources>
