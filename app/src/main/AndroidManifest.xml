@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.txstate.mobileapp.tracscompanion">
+    package="edu.txstate.mobile.tracs">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="edu.txstate.mobileapp.tracscompanion.AnalyticsApplication"
+        android:name="edu.txstate.mobile.tracs.AnalyticsApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <activity android:name="edu.txstate.mobileapp.tracscompanion.MainActivity">
+        <activity android:name="edu.txstate.mobile.tracs.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,18 +24,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.txstate.mobileapp.tracscompanion.NotificationsActivity"
+            android:name="edu.txstate.mobile.tracs.NotificationsActivity"
             android:label="@string/title_activity_notifications"
-            android:parentActivityName="edu.txstate.mobileapp.tracscompanion.MainActivity"
+            android:parentActivityName="edu.txstate.mobile.tracs.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.txstate.mobileapp.tracscompanion.MainActivity" />
+                android:value="edu.txstate.mobile.tracs.MainActivity" />
         </activity>
 
-        <service android:name=".notifications.NotificationIdService" />
+        <service android:name="edu.txstate.mobile.tracs.notifications.NotificationIdService" />
         <service
-            android:name=".util.NotificationService"
+            android:name="edu.txstate.mobile.tracs.util.NotificationService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
