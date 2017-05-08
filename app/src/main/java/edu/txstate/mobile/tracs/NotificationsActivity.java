@@ -47,6 +47,8 @@ public class NotificationsActivity
     private SwipeRefreshLayout refreshLayout;
     private NotificationsAdapter adapter;
 
+    private int countOfSiteNameRequests = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +118,7 @@ public class NotificationsActivity
             loadingDialog.show();
         }
         this.tracsNotifications = new NotificationsBundle();
+        this.tracsNotifications.deleteObservers();
         this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
                 .getDispatchNotifications(NotificationsActivity.this::onResponse);
@@ -155,6 +158,8 @@ public class NotificationsActivity
             startActivity(intent);
             Log.i(TAG, notification.getTitle());
         });
+
+
     }
 
     @Override
@@ -173,6 +178,7 @@ public class NotificationsActivity
             requestQueue.addToRequestQueue(new TracsSiteRequest(
                     notification, headers, NotificationsActivity.this::onSiteNameReturned
             ), TAG);
+            Log.wtf(TAG, "Site Requests: " + countOfSiteNameRequests++);
         }
     }
 
