@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class IntegrationServer {
     private static final String TAG = "IntegrationServer";
     private Response.Listener<NotificationsBundle> listener;
     private IntegrationServer() {
-        integrationServerUrl = "http://ajt79.its.txstate.edu:3000/";
+        integrationServerUrl = AnalyticsApplication.getContext().getString(R.string.dispatch_base);
     }
 
     public static IntegrationServer getInstance() {
@@ -35,10 +36,6 @@ public class IntegrationServer {
             integrationServer = new IntegrationServer();
         }
         return integrationServer;
-    }
-
-    public void getRegistrationStatus() {
-
     }
 
     public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener) {
@@ -65,7 +62,12 @@ public class IntegrationServer {
             loadFailedLoginIntent();
         }
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
-        String url = integrationServerUrl + "?user=" + AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
+
+        String url = integrationServerUrl +
+                     AnalyticsApplication.getContext().getString(R.string.dispatch_notifications) +
+                     "?token=" +
+                     FirebaseInstanceId.getInstance().getToken();
+
         Map<String, String> headers = new HashMap<>();
         Response.ErrorListener errorHandler = error -> Log.wtf(TAG, error.getMessage());
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
@@ -79,7 +81,7 @@ public class IntegrationServer {
 
     private void loadFailedLoginIntent() {
         LoginStatus.getInstance().logout();
-        String url = AnalyticsApplication.getContext().getString(R.string.cas_login_tracs);
+        String url = AnalyticsApplication.getContext().getString(R.string.tracs_login);
         Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);
         intent.putExtra("url", url);
         AnalyticsApplication.getContext().startActivity(intent);

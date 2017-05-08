@@ -35,7 +35,7 @@
 
         <service android:name="edu.txstate.mobile.tracs.notifications.NotificationIdService" />
         <service
-            android:name="edu.txstate.mobile.tracs.util.NotificationService"
+            android:name="edu.txstate.mobile.tracs.services.NotificationService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

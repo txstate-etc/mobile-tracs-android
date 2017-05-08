@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.AppStorage;
 
 public class TracsSessionRequest<T> extends Request<T> {
@@ -22,10 +23,12 @@ public class TracsSessionRequest<T> extends Request<T> {
     private final Class<T> gClass;
     private final Map<String, String> headers;
     private final Response.Listener<T> listener;
+    private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
+            AnalyticsApplication.getContext().getString(R.string.tracs_session);
 
     public TracsSessionRequest(Class<T> clazz, Map<String, String> headers,
                                Response.Listener<T> listener, Response.ErrorListener errorHandler) {
-        super(Method.GET, "https://tracs.txstate.edu/direct/session.json", errorHandler);
+        super(Method.GET, URL, errorHandler);
         this.gClass = clazz;
         this.headers = headers;
         this.listener = listener;

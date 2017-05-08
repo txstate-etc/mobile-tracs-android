@@ -4,5 +4,4 @@
     <string name="title_activity_notifications">Notifications</string>
     <string name="user_data">user_data.xml</string>
     <string name="menu_refresh">Refresh Notifications</string>
-    <string name="cas_login_tracs">https://login.its.txstate.edu/login?service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer</string>
 </resources>

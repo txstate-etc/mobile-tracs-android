@@ -14,12 +14,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.AppStorage;
 
 public class TracsSiteRequest extends Request<JsonObject> {
 
-    private static final String url = "https://tracs.txstate.edu/direct/site/";
+    private static final String url = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
+                                      AnalyticsApplication.getContext().getString(R.string.tracs_site);
     private static final String TAG = "TracsSiteRequest";
 
     private final Response.Listener<JsonObject> listener;

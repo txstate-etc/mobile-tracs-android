@@ -8,23 +8,25 @@ import com.android.volley.Response;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
+import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.listeners.TracsNotificationListener;
 import edu.txstate.mobile.tracs.util.http.requests.TracsNotificationRequest;
 
 public class TracsClient {
     private static final String TAG = "TracsClient";
-    private static final String TRACS_URL = "https://tracs.txstate.edu";
+    private static final String TRACS_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base);
     private static final String TRACS_BASE = TRACS_URL + "/direct";
-    private static final String ANNOUNCEMENT_URL = TRACS_BASE + "/announcement/";
+    private static final String ANNOUNCEMENT_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_announcement);
     private static final String PORTAL_URL = TRACS_URL + "/portal";
     private static final String SITE_URL = PORTAL_URL + "/site/";
-    public static final String LOGIN_URL = TRACS_BASE + "/session";
+    public static final String LOGIN_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
 
     private static TracsClient tracsClient;
 
@@ -70,7 +72,7 @@ public class TracsClient {
     }
 
     public void getNotifications(NotificationsBundle notifications,
-                                 TracsNotificationListener listener,
+                                 Response.Listener<TracsNotification> listener,
                                  Context context) {
 
         for (TracsAppNotification notification : notifications) {
@@ -83,7 +85,8 @@ public class TracsClient {
             }
 
             HttpQueue requestQueue = HttpQueue.getInstance(context);
-            String url = makeUrl(notification.getType()) + tracsNotification.getObjectId() + ".json";
+            String entityId = tracsNotification.getSiteId() + ":main:" + tracsNotification.getObjectId();
+            String url = makeUrl(notification.getType()) + entityId + ".json";
             Map<String, String> headers = new HashMap<>();
             Response.ErrorListener errorHandler = error -> listener.onResponse(new TracsNotificationError(
                     error.networkResponse.statusCode

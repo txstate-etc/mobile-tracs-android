@@ -1,4 +1,4 @@
-package edu.txstate.mobile.tracs.util;
+package edu.txstate.mobile.tracs.services;
 
 import android.content.Intent;
 

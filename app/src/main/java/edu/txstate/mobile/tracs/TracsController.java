@@ -28,7 +28,7 @@ import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
 class TracsController {
     private static final String TAG = "TracsController";
-    private final String loginUrl = AnalyticsApplication.getContext().getString(R.string.cas_login_tracs);
+    private final String loginUrl = AnalyticsApplication.getContext().getString(R.string.tracs_login);
     private String urlToLoad;
 
     private FileDownloader fileDownloader;
