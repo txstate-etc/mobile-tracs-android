@@ -2,6 +2,7 @@
     <string name="app_name">TRACS</string>
     <string name="notificationsBundle">Notifications</string>
     <string name="title_activity_notifications">Notifications</string>
+    <string name="settings_label">Settings</string>
     <string name="user_data">user_data.xml</string>
     <string name="menu_refresh">Refresh Notifications</string>
 </resources>

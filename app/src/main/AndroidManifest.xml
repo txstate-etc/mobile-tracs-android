@@ -32,6 +32,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.txstate.mobile.tracs.MainActivity" />
         </activity>
+        <activity android:name="edu.txstate.mobile.tracs.SettingsActivity"
+            android:label="@string/settings_label"
+            android:parentActivityName="edu.txstate.mobile.tracs.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.txstate.mobile.tracs.MainActivity" />
+        </activity>
+
 
         <service android:name="edu.txstate.mobile.tracs.notifications.NotificationIdService" />
         <service
