@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs.notifications;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,11 @@ public class NotificationsAdapter extends BaseAdapter {
         rowHolder.titleText = (TextView) convertView.findViewById(R.id.notification_title);
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
+
+        if (!content.hasBeenRead()) {
+            rowHolder.titleText.setTypeface(null, Typeface.BOLD);
+            rowHolder.siteName.setTypeface(null, Typeface.BOLD);
+        }
 
         rowHolder.titleText.setText(content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
