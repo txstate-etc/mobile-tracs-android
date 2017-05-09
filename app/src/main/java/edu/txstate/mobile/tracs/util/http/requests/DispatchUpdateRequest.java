@@ -7,25 +7,24 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.txstate.mobile.tracs.notifications.DispatchNotification;
-import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.util.NotificationStatus;
 
-public class DispatchSeenRequest extends Request<Void> {
+public class DispatchUpdateRequest extends Request<Void> {
 
     private static final String responseError = "Error communicating with dispatch";
-    private static final String TAG = "DispatchSeenRequest";
+    private static final String TAG = "DispatchUpdateRequest";
     private NotificationStatus status;
 
-    private DispatchSeenRequest(String url, String notificationId, NotificationStatus status) {
+    public DispatchUpdateRequest(String url, String notificationId, NotificationStatus status) {
         super(Method.PATCH,
-                url + "/" + notificationId + "?token=" + FirebaseInstanceId.getInstance().getToken(),
-                error -> Log.wtf(TAG, error.getMessage()));
+                url,
+                DispatchUpdateRequest::onError);
         this.status = status;
     }
 
@@ -39,7 +38,14 @@ public class DispatchSeenRequest extends Request<Void> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return body.toString().getBytes();
+        String bodyString = body.toString();
+        byte[] bodyBytes = bodyString.getBytes();
+        return bodyBytes;
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return "application/json; charset=" + getParamsEncoding();
     }
 
     @Override
@@ -53,5 +59,9 @@ public class DispatchSeenRequest extends Request<Void> {
     @Override
     protected void deliverResponse(Void response) {
         //TODO: Log firebase event for notification marked as seen
+    }
+
+    private static void onError(VolleyError error) {
+        Log.wtf(TAG, error);
     }
 }

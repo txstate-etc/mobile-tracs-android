@@ -2,6 +2,7 @@ package edu.txstate.mobile.tracs;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -31,13 +32,16 @@ import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
+import edu.txstate.mobile.tracs.util.NotificationStatus;
 import edu.txstate.mobile.tracs.util.TracsClient;
+import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.requests.DispatchUpdateRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 
 public class NotificationsActivity
         extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, Observer {
-    private static final String TAG = "NotificationsActivity";
+    public static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
     private NotificationsBundle dispatchNotifications;
@@ -159,7 +163,7 @@ public class NotificationsActivity
             Log.i(TAG, notification.getTitle());
         });
 
-
+        new StatusUpdate().execute(this.tracsNotifications);
     }
 
     @Override

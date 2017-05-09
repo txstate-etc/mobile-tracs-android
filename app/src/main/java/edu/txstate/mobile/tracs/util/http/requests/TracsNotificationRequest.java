@@ -12,21 +12,29 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.NotificationStatus;
 
 public class TracsNotificationRequest extends Request<TracsNotification> {
 
     private static final String TAG = "TracsNotificationRequest";
     private final Map<String, String> headers;
     private final Response.Listener<TracsNotification> listener;
+    private String dispatchId;
+    private NotificationStatus status;
 
-    public TracsNotificationRequest(String url, Map<String, String> headers,
+    public TracsNotificationRequest(String url, Map<String, String> headers, DispatchNotification dispatchNotification,
                                        Response.Listener<TracsNotification> listener, Response.ErrorListener errorHandler) {
         super(Request.Method.GET, url, errorHandler);
         this.headers = headers;
         this.listener = listener;
+        this.dispatchId = dispatchNotification.getDispatchId();
+        this.status = new NotificationStatus(dispatchNotification.hasBeenSeen(),
+                dispatchNotification.hasBeenRead(),
+                dispatchNotification.hasBeenCleared());
     }
 
     @Override
@@ -57,6 +65,10 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
                 notification = (JsonObject) parser.next();
             }
             announcement = new TracsAnnouncement(notification);
+            announcement.setDispatchId(this.dispatchId);
+            announcement.markSeen(status.hasBeenSeen());
+            announcement.markRead(status.hasBeenRead());
+            announcement.markCleared(status.hasBeenCleared());
         }
         return Response.success(announcement, HttpHeaderParser.parseCacheHeaders(response));
     }
