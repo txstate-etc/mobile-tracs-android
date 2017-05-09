@@ -4,7 +4,11 @@ public abstract class TracsAppNotificationAbs implements TracsAppNotification {
     private boolean seen;
     private boolean read;
     private boolean cleared;
+    private String dispatchId;
 
+    public String getDispatchId() {
+        return this.dispatchId;
+    }
 
     public boolean hasBeenRead() {
         return this.read;
@@ -16,6 +20,10 @@ public abstract class TracsAppNotificationAbs implements TracsAppNotification {
 
     public boolean hasBeenCleared() {
         return this.cleared;
+    }
+
+    public void setDispatchId(String dispatchId) {
+        this.dispatchId = dispatchId;
     }
 
     @Override

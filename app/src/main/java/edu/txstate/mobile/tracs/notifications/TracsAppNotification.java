@@ -32,7 +32,10 @@ public interface TracsAppNotification {
     boolean hasBeenRead();
     boolean hasBeenCleared();
 
+    String getDispatchId();
+
     void markSeen(boolean seen);
     void markRead(boolean read);
     void markCleared(boolean cleared);
+    void setDispatchId(String dispatchId);
 }

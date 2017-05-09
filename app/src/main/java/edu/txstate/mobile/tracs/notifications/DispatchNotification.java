@@ -11,12 +11,13 @@ public class DispatchNotification extends TracsAppNotificationAbs {
     private String type;
     private String siteId;
     private String toolId;
-    
+
     public DispatchNotification(JsonObject rawNotification) {
         JsonObject keys = extractKey(rawNotification, "keys", JsonObject.class);
         JsonObject other_keys = extractKey(rawNotification, "other_keys", JsonObject.class);
 
         this.id = extractKey(rawNotification, "id", String.class);
+        super.setDispatchId(this.id);
         super.markSeen(extractKey(rawNotification, "seen", Boolean.class));
         super.markRead(extractKey(rawNotification, "read", Boolean.class));
         super.markCleared(extractKey(rawNotification, "cleared", Boolean.class));
