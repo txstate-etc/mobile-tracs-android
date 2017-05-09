@@ -15,6 +15,9 @@ abstract class TracsNotificationAbs extends TracsAppNotificationAbs implements T
         this.siteId = NOT_SET;
         this.siteName = NOT_SET;
         this.isError = false;
+        super.markCleared(false);
+        super.markSeen(false);
+        super.markRead(false);
     }
 
     public String getTitle() {
