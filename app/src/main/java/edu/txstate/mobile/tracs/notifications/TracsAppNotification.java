@@ -28,5 +28,11 @@ public interface TracsAppNotification {
      */
     <T> T extractKey(JsonObject notification, String key, Class<T> returnType);
 
+    boolean hasBeenSeen();
+    boolean hasBeenRead();
+    boolean hasBeenCleared();
 
+    void markSeen(boolean seen);
+    void markRead(boolean read);
+    void markCleared(boolean cleared);
 }

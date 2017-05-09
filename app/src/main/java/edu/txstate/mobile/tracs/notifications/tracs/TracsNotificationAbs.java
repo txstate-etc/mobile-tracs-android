@@ -1,6 +1,8 @@
 package edu.txstate.mobile.tracs.notifications.tracs;
 
-abstract class TracsNotificationAbs implements TracsNotification {
+import edu.txstate.mobile.tracs.notifications.TracsAppNotificationAbs;
+
+abstract class TracsNotificationAbs extends TracsAppNotificationAbs implements TracsNotification {
 
     private String title;
     private String id;

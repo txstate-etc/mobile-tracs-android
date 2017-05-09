@@ -3,29 +3,23 @@ package edu.txstate.mobile.tracs.notifications;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class DispatchNotification implements TracsAppNotification {
+public class DispatchNotification extends TracsAppNotificationAbs {
     private String id;
-    private Boolean seen;
-    private Boolean read;
-    private Boolean cleared;
-
     private String providerId;
     private String objectId;
     private String userId;
     private String type;
     private String siteId;
     private String toolId;
-
-    DispatchNotification() {}
-
+    
     public DispatchNotification(JsonObject rawNotification) {
         JsonObject keys = extractKey(rawNotification, "keys", JsonObject.class);
         JsonObject other_keys = extractKey(rawNotification, "other_keys", JsonObject.class);
 
         this.id = extractKey(rawNotification, "id", String.class);
-        this.seen = extractKey(rawNotification, "seen", Boolean.class);
-        this.read = extractKey(rawNotification, "read", Boolean.class);
-        this.cleared = extractKey(rawNotification, "cleared", Boolean.class);
+        super.markSeen(extractKey(rawNotification, "seen", Boolean.class));
+        super.markRead(extractKey(rawNotification, "read", Boolean.class));
+        super.markCleared(extractKey(rawNotification, "cleared", Boolean.class));
         this.type = extractKey(keys, "object_type", String.class);
         this.providerId = extractKey(keys, "provider_id", String.class);
         this.objectId = extractKey(keys, "object_id", String.class);
@@ -37,24 +31,6 @@ public class DispatchNotification implements TracsAppNotification {
     public String getId() {
         return this.id;
     }
-
-    public Boolean hasBeenRead() {
-        return this.read;
-    }
-
-    public Boolean hasBeenSeen() {
-        return this.seen;
-    }
-
-    public Boolean hasBeenCleared() {
-        return this.cleared;
-    }
-
-    public void toggleRead() {
-        this.read = !this.read;
-    }
-
-    public void toggleViewed() { this.seen = !this.seen; }
 
     public String getType() {
         return this.type;
