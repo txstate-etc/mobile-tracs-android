@@ -52,7 +52,6 @@ public class NotificationsActivity
     private ProgressDialog loadingDialog;
     private Tracker analyticsTracker;
     private SwipeRefreshLayout refreshLayout;
-    private Intent mainActivity = new Intent(this, MainActivity.class);
     private NotificationsAdapter adapter;
 
     private int countOfSiteNameRequests = 0;
