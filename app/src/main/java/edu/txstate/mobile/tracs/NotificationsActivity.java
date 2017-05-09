@@ -160,10 +160,10 @@ public class NotificationsActivity
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("url", notification.getUrl());
             startActivity(intent);
-            Log.i(TAG, notification.getTitle());
+            new StatusUpdate().updateRead(notification);
         });
 
-        new StatusUpdate().execute(this.tracsNotifications);
+        new StatusUpdate().updateSeen(this.tracsNotifications);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class DispatchUpdateRequest extends Request<Void> {
     private static final String TAG = "DispatchUpdateRequest";
     private NotificationStatus status;
 
-    public DispatchUpdateRequest(String url, String notificationId, NotificationStatus status) {
+    public DispatchUpdateRequest(String url, NotificationStatus status) {
         super(Method.PATCH,
                 url,
                 DispatchUpdateRequest::onError);
