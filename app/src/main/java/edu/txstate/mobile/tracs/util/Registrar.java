@@ -55,7 +55,7 @@ public class Registrar {
         return regInfo;
     }
 
-    public void getJwt() {
+    public void registerDevice() {
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
         requestQueue.addToRequestQueue(new JwtRequest(

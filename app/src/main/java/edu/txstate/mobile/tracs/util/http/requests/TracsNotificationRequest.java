@@ -47,7 +47,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
 
     @Override
     protected Response<TracsNotification> parseNetworkResponse(NetworkResponse response) {
-        TracsNotification announcement;
+        TracsNotification tracsNotification;
         String notificationData = null;
         try {
             notificationData = new String(response.data,
@@ -56,7 +56,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
             e.printStackTrace();
         }
         if ("".equals(notificationData) || notificationData == null) {
-            announcement = new TracsAnnouncement();
+            tracsNotification = new TracsAnnouncement();
         } else {
             JsonStreamParser parser = new JsonStreamParser(notificationData);
             JsonObject notification = null;
@@ -64,13 +64,13 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
             if (parser.hasNext()) {
                 notification = (JsonObject) parser.next();
             }
-            announcement = new TracsAnnouncement(notification);
-            announcement.setDispatchId(this.dispatchId);
-            announcement.markSeen(status.hasBeenSeen());
-            announcement.markRead(status.hasBeenRead());
-            announcement.markCleared(status.hasBeenCleared());
+            tracsNotification = new TracsAnnouncement(notification);
+            tracsNotification.setDispatchId(this.dispatchId);
+            tracsNotification.markSeen(status.hasBeenSeen());
+            tracsNotification.markRead(status.hasBeenRead());
+            tracsNotification.markCleared(status.hasBeenCleared());
         }
-        return Response.success(announcement, HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(tracsNotification, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override

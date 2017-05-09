@@ -133,12 +133,10 @@ class TracsController {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             Log.wtf(TAG, url);
-            String loginUrl = "https://login.its.txstate.edu/login?" +
-                    "service=https%3A%2F%2Ftracs.txstate.edu%2Fsakai-login-tool%2Fcontainer";
-            String loginSuccessUrl = "https://tracs.txstate.edu/sakai-login-tool/container?ticket";
-            String logoutUrl = "https://login.its.txstate.edu/logout?url=https://tracs.txstate.edu";
-
-
+            Context context = AnalyticsApplication.getContext();
+            String loginUrl = context.getString(R.string.tracs_login);
+            String loginSuccessUrl = context.getString(R.string.tracs_login_success);
+            String logoutUrl = context.getString(R.string.tracs_logout);
 
             if (url.equals(loginUrl)) {
                 LoginStatus.getInstance().logout();
@@ -168,7 +166,7 @@ class TracsController {
                 }
                 LoginStatus.getInstance().login();
                 TracsController.this.setSessionId(newCookie);
-                Registrar.getInstance().getJwt();
+                Registrar.getInstance().registerDevice();
                 Log.i(TAG, "Registration Info");
             }
 

@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -37,6 +39,7 @@ import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchUpdateRequest;
+import edu.txstate.mobile.tracs.util.http.requests.TracsPageIdRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 
 public class NotificationsActivity
@@ -49,6 +52,7 @@ public class NotificationsActivity
     private ProgressDialog loadingDialog;
     private Tracker analyticsTracker;
     private SwipeRefreshLayout refreshLayout;
+    private Intent mainActivity = new Intent(this, MainActivity.class);
     private NotificationsAdapter adapter;
 
     private int countOfSiteNameRequests = 0;
@@ -128,7 +132,7 @@ public class NotificationsActivity
                 .getDispatchNotifications(NotificationsActivity.this::onResponse);
     }
 
-    protected void onResponse(NotificationsBundle response) {
+    private void onResponse(NotificationsBundle response) {
         if (response.size() == 0) {
             return;
         }
@@ -137,7 +141,7 @@ public class NotificationsActivity
         tracs.getNotifications(response, NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
     }
 
-    public void onResponse(TracsNotification response) {
+    private void onResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.wtf(TAG, "Error retrieving notifications from TRACS");
         } else {
@@ -155,15 +159,16 @@ public class NotificationsActivity
         final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
         notificationsList.setAdapter(adapter);
-        notificationsList.setOnItemClickListener((parent, view, position, id) -> {
-            TracsNotification notification = (TracsNotification) notificationsList.getAdapter().getItem(position);
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("url", notification.getUrl());
-            startActivity(intent);
-            new StatusUpdate().updateRead(notification);
-        });
-
+        notificationsList.setOnItemClickListener(NotificationsActivity.this::onNotificationClick);
         new StatusUpdate().updateSeen(this.tracsNotifications);
+    }
+
+    private void onNotificationClick(AdapterView<?> parent, View view, int position, long id) {
+        TracsNotification notification = (TracsNotification) parent.getAdapter().getItem(position);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("url", notification.getUrl());
+        startActivity(intent);
+        new StatusUpdate().updateRead(notification);
     }
 
     @Override
@@ -182,11 +187,19 @@ public class NotificationsActivity
             requestQueue.addToRequestQueue(new TracsSiteRequest(
                     notification, headers, NotificationsActivity.this::onSiteNameReturned
             ), TAG);
+
+            String pageIdUrl = getString(R.string.tracs_base) +
+                               getString(R.string.tracs_site) +
+                               notification.getSiteId() +
+                               "/pages.json";
+            requestQueue.addToRequestQueue(new TracsPageIdRequest(
+                pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
+            ), TAG);
             Log.wtf(TAG, "Site Requests: " + countOfSiteNameRequests++);
         }
     }
 
-    public void onSiteNameReturned(JsonObject siteInfo) {
+    private void onSiteNameReturned(JsonObject siteInfo) {
         for (TracsAppNotification notification : tracsNotifications) {
             try {
                 TracsNotification tracsNotification = TracsNotification.class.cast(notification);
@@ -197,18 +210,10 @@ public class NotificationsActivity
 
                 String siteId = tracsNotification.getSiteId();
                 String fetchedSiteId = siteInfo.get("entityId").getAsString();
-                String siteName = siteInfo.get("entityTitle").getAsString();
 
                 if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
+                    String siteName = siteInfo.get("entityTitle").getAsString();
                     tracsNotification.setSiteName(siteName);
-                    JsonArray sitePages = siteInfo.get("sitePages").getAsJsonArray();
-                    for (JsonElement page : sitePages) {
-                        JsonObject jsonPage = page.getAsJsonObject();
-                        String pageName = jsonPage.get("title").getAsString();
-                        if (pageName.toLowerCase().contains(NotificationTypes.ANNOUNCEMENT)) {
-                            tracsNotification.setPageId(jsonPage.get("id").getAsString());
-                        }
-                    }
                 }
             } catch (NullPointerException | ClassCastException e) {
                 Log.wtf(TAG, "Could not set site name.");
@@ -220,4 +225,19 @@ public class NotificationsActivity
             displayListView();
         }
     }
+
+    private void onPageIdReturned(Map<String, String> pageIdPair) {
+        for (TracsAppNotification notification : tracsNotifications) {
+            try {
+                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
+                String pageId = pageIdPair.get(tracsNotification.getDispatchId());
+                if (pageId != null) {
+                    tracsNotification.setPageId(pageId);
+                }
+            } catch (NullPointerException | ClassCastException e) {
+                Log.wtf(TAG, "Could not set pageId of notification.");
+            }
+        }
+    }
+
 }

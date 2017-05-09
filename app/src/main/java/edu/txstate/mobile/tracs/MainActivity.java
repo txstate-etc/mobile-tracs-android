@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -24,7 +25,9 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.Observable;
 import java.util.Observer;
 
+import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import okhttp3.Cookie;
 
 public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         if (urlToLoad == null) {
             urlToLoad = DEFAULT_TRACS_URL;
         }
+
+        String username = AppStorage.get(AppStorage.USERNAME, getApplicationContext());
 
         String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
         if ("true".equals(shouldLoadNotificationsView)) {
