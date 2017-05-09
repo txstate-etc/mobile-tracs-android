@@ -7,6 +7,7 @@ public class DispatchNotification implements TracsAppNotification {
     private String id;
     private Boolean seen;
     private Boolean read;
+    private Boolean cleared;
 
     private String providerId;
     private String objectId;
@@ -24,6 +25,7 @@ public class DispatchNotification implements TracsAppNotification {
         this.id = extractKey(rawNotification, "id", String.class);
         this.seen = extractKey(rawNotification, "seen", Boolean.class);
         this.read = extractKey(rawNotification, "read", Boolean.class);
+        this.cleared = extractKey(rawNotification, "cleared", Boolean.class);
         this.type = extractKey(keys, "object_type", String.class);
         this.providerId = extractKey(keys, "provider_id", String.class);
         this.objectId = extractKey(keys, "object_id", String.class);
@@ -42,6 +44,10 @@ public class DispatchNotification implements TracsAppNotification {
 
     public Boolean hasBeenSeen() {
         return this.seen;
+    }
+
+    public Boolean hasBeenCleared() {
+        return this.cleared;
     }
 
     public void toggleRead() {
