@@ -17,6 +17,8 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
@@ -24,7 +26,7 @@ import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private static final String TAG = "SettingsActivity";
     private int expectedSites, retrievedSites;
@@ -39,6 +41,8 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        LoginStatus.getInstance().addObserver(this);
     }
 
     @Override
@@ -95,6 +99,13 @@ public class SettingsActivity extends AppCompatActivity {
         if (this.retrievedSites >= this.expectedSites) {
             findViewById(R.id.loading_spinner).setVisibility(View.GONE);
             this.retrievedSites = 0;
+        }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (LoginStatus.getInstance().isUserLoggedIn()) {
+            optionsMenu.getItem(R.id.notifications_menu).setEnabled(false);
         }
     }
 }
