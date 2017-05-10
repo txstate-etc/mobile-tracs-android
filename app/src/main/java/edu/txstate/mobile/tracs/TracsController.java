@@ -12,23 +12,19 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.android.volley.VolleyError;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.FileDownloader;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.Registrar;
-import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
-import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
-import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
 
 class TracsController {
     private static final String TAG = "TracsController";
-    private final String loginUrl = AnalyticsApplication.getContext().getString(R.string.tracs_login);
+    private final String LOGIN_URL = AnalyticsApplication.getContext().getString(R.string.tracs_login);
     private String urlToLoad;
 
     private FileDownloader fileDownloader;
@@ -46,7 +42,6 @@ class TracsController {
         LoginStatus.getInstance().logout();
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
-        this.urlToLoad = "https://tracs.txstate.edu/portal";
 
         if (Build.VERSION.SDK_INT >= 19) {
             this.tracsView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -69,21 +64,38 @@ class TracsController {
         String userId = AppStorage.get(AppStorage.USERNAME, context);
         if ("".equals(userId)) {
             LoginStatus.getInstance().logout();
-            tracsView.loadUrl(loginUrl);
+            this.urlToLoad = LOGIN_URL;
+            tracsView.loadUrl(this.urlToLoad);
         } else {
             HttpQueue requestQueue=HttpQueue.getInstance(context);
-            Map<String, String> headers = new HashMap<>();
-            requestQueue.addToRequestQueue(new TracsSessionRequest<>(
-                    TracsSession.class, headers,
-                    TracsController.this::onResponse,
-                    error->Log.wtf(TAG,error)
-                ), TAG
-            );
+            String loginSessionUrl = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
+                    AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
+            requestQueue.addToRequestQueue(new TracsLoginRequest(
+                    loginSessionUrl, TracsController.this::onResponse,
+                    TracsController.this::onLoginError), TAG);
         }
     }
 
     void setDownloadListener(DownloadListener downloadListener) {
         this.tracsView.setDownloadListener(downloadListener);
+    }
+
+    private void onLoginError(VolleyError error) {
+        try {
+            Log.wtf(TAG, new String(error.networkResponse.data));
+        } catch (NullPointerException e) {
+            Log.wtf(TAG, "Couldn't login, no error given.");
+        }
+        this.urlToLoad = LOGIN_URL;
+        tracsView.loadUrl(this.urlToLoad);
+    }
+
+    private void onResponse(String session) {
+        LoginStatus.getInstance().login();
+        AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
+        CookieManager.getInstance().setCookie(this.urlToLoad, "JSESSIONID=" + session + "; Path=/;");
+        tracsView.loadUrl(this.urlToLoad);
+
     }
 
     private void setSessionId(String sessionId) {
@@ -102,24 +114,6 @@ class TracsController {
         LoginStatus.getInstance().login();
     }
 
-    private void onResponse(TracsSession session) {
-        String storedNetId = AppStorage.get(AppStorage.USERNAME, context);
-        String fetchedNetId = session.getUserEid();
-
-        if (storedNetId.equals(fetchedNetId)) { //Session is valid
-            tracsView.loadUrl(urlToLoad);
-            LoginStatus.getInstance().login();
-        } else { //Session is not valid
-            LoginStatus.getInstance().logout();
-            HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                    new TracsLoginRequest(TracsClient.LOGIN_URL,
-                            response -> {
-                                CookieManager.getInstance().setCookie(urlToLoad, "JSESSIONID=" + response + "; Path=/");
-                                tracsView.loadUrl(urlToLoad);
-                            },
-                            error -> tracsView.loadUrl(loginUrl)), TAG);
-        }
-    }
 
     private class TracsWebViewClient extends WebViewClient {
         @Override

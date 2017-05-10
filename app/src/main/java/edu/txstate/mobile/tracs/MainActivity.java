@@ -14,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.CookieManager;
 import android.webkit.WebView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -27,16 +26,16 @@ import java.util.Observer;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
-import okhttp3.Cookie;
 
 public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
-    private static final String DEFAULT_TRACS_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
+    private static final String TRACS_PORTAL_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
                                                     + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
     private static Menu optionsMenu;
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
     private Tracker analyticsTracker;
+    private String urlToLoad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +64,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         String urlToLoad = callingIntent.getStringExtra("url");
 
         if (urlToLoad == null) {
-            urlToLoad = DEFAULT_TRACS_URL;
+            urlToLoad = TRACS_PORTAL_URL;
         }
-
-        String username = AppStorage.get(AppStorage.USERNAME, getApplicationContext());
 
         String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
         if ("true".equals(shouldLoadNotificationsView)) {

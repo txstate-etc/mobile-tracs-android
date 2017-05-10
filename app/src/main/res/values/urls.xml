@@ -8,7 +8,7 @@
     <string name="tracs_session_login">direct/session</string>
     <string name="tracs_site">direct/site/</string>
     <string name="tracs_portal">portal</string>
-    <string name="tracs_logout">https://login.its.txstate.edu/logout?url=https://staging.tracs.txstate.edu</string>
+    <string name="tracs_logout">https://login.its.txstate.edu/logout?service=https://staging.tracs.txstate.edu/sakai-login-tool/container</string>
     <string name="dispatch_base">https://dispatchqa1.its.qual.txstate.edu/</string>
     <string name="dispatch_notifications">notifications</string>
 </resources>
