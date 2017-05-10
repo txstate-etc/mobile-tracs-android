@@ -2,7 +2,6 @@ package edu.txstate.mobile.tracs;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -17,8 +16,6 @@ import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -29,17 +26,15 @@ import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
-import edu.txstate.mobile.tracs.notifications.NotificationsAdapter;
+import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
 import edu.txstate.mobile.tracs.util.MenuController;
-import edu.txstate.mobile.tracs.util.NotificationStatus;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.requests.DispatchUpdateRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsPageIdRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 

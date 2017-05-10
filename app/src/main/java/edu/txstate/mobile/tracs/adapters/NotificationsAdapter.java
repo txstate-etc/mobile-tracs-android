@@ -1,4 +1,4 @@
-package edu.txstate.mobile.tracs.notifications;
+package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.FontAwesome;
 

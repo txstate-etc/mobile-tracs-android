@@ -1,27 +1,30 @@
 package edu.txstate.mobile.tracs;
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ListView;
 
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
+import edu.txstate.mobile.tracs.adapters.SettingsAdapter;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
@@ -30,8 +33,8 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private static final String TAG = "SettingsActivity";
     private int expectedSites, retrievedSites;
-    private Map<String, String> siteNames;
-
+    private LinkedHashMap<String, String> siteNames;
+    private SettingsAdapter adapter;
     private Menu optionsMenu;
 
     @Override
@@ -68,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         return true;
     }
 
-    private void onSiteIdResponse(Map<String, String> siteIds) {
+    private void onSiteIdResponse(LinkedHashMap<String, String> siteIds) {
         this.siteNames = siteIds;
         this.expectedSites = siteIds.size();
         Iterator iterator = siteNames.entrySet().iterator();
@@ -97,9 +100,16 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
             this.retrievedSites++;
         }
         if (this.retrievedSites >= this.expectedSites) {
-            findViewById(R.id.loading_spinner).setVisibility(View.GONE);
             this.retrievedSites = 0;
+            displayListView();
         }
+    }
+
+    private void displayListView() {
+        findViewById(R.id.loading_spinner).setVisibility(View.GONE);
+        final ListView settingsList = (ListView) findViewById(R.id.settings_list);
+        adapter = new SettingsAdapter(this.siteNames, this.getApplicationContext());
+        settingsList.setAdapter(adapter);
     }
 
     @Override

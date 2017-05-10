@@ -13,22 +13,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonStreamParser;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.AppStorage;
 
-public class UserSitesRequest extends Request<Map<String, String>> {
+public class UserSitesRequest extends Request<LinkedHashMap<String, String>> {
 
     private static final String TAG = "UserSitesRequest";
     private final String DEFAULT_SITE_NAME = "Site Name Not Found";
-    private Response.Listener<Map<String, String>> listener;
+    private Response.Listener<LinkedHashMap<String, String>> listener;
     private Response.ErrorListener errorListener;
     private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
             AnalyticsApplication.getContext().getString(R.string.user_sites_url);
 
-    public UserSitesRequest(Response.Listener<Map<String, String>> listener, Response.ErrorListener errorListener) {
+    public UserSitesRequest(Response.Listener<LinkedHashMap<String, String>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, URL, errorListener);
         this.listener = listener;
         this.errorListener = errorListener;
@@ -43,10 +44,10 @@ public class UserSitesRequest extends Request<Map<String, String>> {
     }
 
     @Override
-    protected Response<Map<String, String>> parseNetworkResponse(NetworkResponse response) {
+    protected Response<LinkedHashMap<String, String>> parseNetworkResponse(NetworkResponse response) {
         String responseData = new String(response.data);
         JsonStreamParser parser = new JsonStreamParser(responseData);
-        Map<String, String> siteNames = new HashMap<>();
+        LinkedHashMap<String, String> siteNames = new LinkedHashMap<>();
         JsonArray sites;
         try {
             sites = parser.hasNext() ? parser.next().getAsJsonObject().get("membership_collection").getAsJsonArray() : new JsonArray();
@@ -70,7 +71,7 @@ public class UserSitesRequest extends Request<Map<String, String>> {
     }
 
     @Override
-    protected void deliverResponse(Map<String, String> response) {
+    protected void deliverResponse(LinkedHashMap<String, String> response) {
         this.listener.onResponse(response);
     }
 }
