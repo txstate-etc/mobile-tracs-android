@@ -34,6 +34,7 @@ import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
+import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.NotificationStatus;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
@@ -115,6 +116,11 @@ public class NotificationsActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onRefresh() {
         refreshNotifications(false);
     }
@@ -184,7 +190,7 @@ public class NotificationsActivity
             HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSiteRequest(
-                    notification, headers, NotificationsActivity.this::onSiteNameReturned
+                    notification.getSiteId(), headers, NotificationsActivity.this::onSiteNameReturned
             ), TAG);
 
             String pageIdUrl = getString(R.string.tracs_base) +

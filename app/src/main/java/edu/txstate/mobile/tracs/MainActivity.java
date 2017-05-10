@@ -26,6 +26,7 @@ import java.util.Observer;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.MenuController;
 
 public class MainActivity extends AppCompatActivity implements Observer {
     private static final String TAG = "MainActivity";
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         LoginStatus.getInstance().logout();
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tracs_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
@@ -119,15 +120,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuId = item.getItemId();
-        switch (menuId) {
-            case R.id.notifications_menu:
-                Intent intent = new Intent(this, NotificationsActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
+        return MenuController.handleMenuClick(menuId, this) || super.onOptionsItemSelected(item);
     }
 
     @TargetApi(value = Build.VERSION_CODES.M)

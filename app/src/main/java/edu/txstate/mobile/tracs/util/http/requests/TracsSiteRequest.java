@@ -27,11 +27,11 @@ public class TracsSiteRequest extends Request<JsonObject> {
     private final Response.Listener<JsonObject> listener;
     private Map<String, String> headers;
 
-    public TracsSiteRequest(TracsNotification notification,
+    public TracsSiteRequest(String siteId,
                             Map<String, String> headers,
                             Response.Listener<JsonObject> listener) {
         super(Method.GET,
-                url + notification.getSiteId() + ".json",
+                url + siteId + ".json",
                 error -> Log.wtf(TAG, error.getMessage()));
         this.listener = listener;
         this.headers = headers;
