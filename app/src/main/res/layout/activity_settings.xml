@@ -8,5 +8,6 @@
     tools:context=".SettingsActivity">
 
     <include layout="@layout/toolbar" />
+    <include layout="@layout/loading_spinner" />
     <include layout="@layout/notifications_settings" />
 </LinearLayout>

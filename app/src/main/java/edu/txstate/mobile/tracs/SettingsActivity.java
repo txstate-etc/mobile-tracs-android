@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -92,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity {
             this.retrievedSites++;
         }
         if (this.retrievedSites >= this.expectedSites) {
-            //Show the view here
+            findViewById(R.id.loading_spinner).setVisibility(View.GONE);
             this.retrievedSites = 0;
         }
     }
