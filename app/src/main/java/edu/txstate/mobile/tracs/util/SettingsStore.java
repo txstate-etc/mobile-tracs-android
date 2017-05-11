@@ -24,6 +24,7 @@ public class SettingsStore {
     }
 
     public void putFromString(String settings) {
+        if ("".equals(settings)) { return; }
         JsonStreamParser parser = new JsonStreamParser(settings);
         if (parser.hasNext()) {
             this.settings = parser.next().getAsJsonObject();

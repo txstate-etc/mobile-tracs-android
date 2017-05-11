@@ -17,8 +17,11 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.SettingsActivity;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.SettingsStore;
+import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 
 public class SettingsAdapter extends BaseAdapter {
 
@@ -34,7 +37,7 @@ public class SettingsAdapter extends BaseAdapter {
             Pair<String, String> settingPair = new Pair<>(namePair.getKey().toString(), namePair.getValue().toString());
             this.settings.add(settingPair);
         }
-        Pair<String, String> settingPair = new Pair<>("announcements", "Announcements");
+        Pair<String, String> settingPair = new Pair<>("announcement", "Announcements");
         this.settings.add(settingPair);
     }
 
@@ -81,14 +84,10 @@ public class SettingsAdapter extends BaseAdapter {
         String settingId;
     }
 
-    @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
-        super.registerDataSetObserver(observer);
-    }
-
     private void onClicked(View view) {
         RowHolder tag = (RowHolder) view.getTag();
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
+        SettingsActivity.saveSettings();
     }
 }

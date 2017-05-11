@@ -1,5 +1,6 @@
 package edu.txstate.mobile.tracs;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.google.android.gms.analytics.HitBuilders;
@@ -28,6 +30,7 @@ import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 
@@ -144,5 +147,14 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         if (LoginStatus.getInstance().isUserLoggedIn()) {
             optionsMenu.getItem(R.id.notifications_menu).setEnabled(false);
         }
+    }
+
+    public static void saveSettings() {
+        Context context = AnalyticsApplication.getContext();
+        String settingsUrl = context.getString(R.string.dispatch_base) +
+                             context.getString(R.string.dispatch_settings);
+        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                new SettingsRequest(settingsUrl,
+                        response -> Toast.makeText(context, "Settings updated", Toast.LENGTH_SHORT).show()), TAG);
     }
 }

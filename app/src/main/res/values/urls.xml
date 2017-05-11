@@ -11,5 +11,6 @@
     <string name="tracs_logout">https://login.its.txstate.edu/logout?service=https://staging.tracs.txstate.edu/sakai-login-tool/container</string>
     <string name="dispatch_base">https://dispatchqa1.its.qual.txstate.edu/</string>
     <string name="dispatch_notifications">notifications</string>
+    <string name="dispatch_settings">settings</string>
     <string name="user_sites_url">direct/membership.json</string>
 </resources>
