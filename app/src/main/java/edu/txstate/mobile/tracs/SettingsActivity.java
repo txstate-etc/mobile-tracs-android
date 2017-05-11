@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.android.volley.VolleyError;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -31,29 +34,48 @@ import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private static final String TAG = "SettingsActivity";
+    private static final String SCREEN_NAME = "Settings";
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
     private SettingsAdapter adapter;
+    private Tracker analyticsTracker;
+
     private Menu optionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        LoginStatus.getInstance().addObserver(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        setContentView(R.layout.activity_settings);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        LoginStatus.getInstance().addObserver(this);
+        analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
+
+
+        analyticsTracker.setScreenName(SCREEN_NAME);
+        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                 new UserSitesRequest(SettingsActivity.this::onSiteIdResponse,
                         SettingsActivity.this::onSiteIdError), TAG
         );
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LoginStatus.getInstance().deleteObserver(this);
     }
 
     @Override
@@ -109,13 +131,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         ListView settingsListView = (ListView) findViewById(R.id.settings_list);
         adapter = new SettingsAdapter(this.siteNames, this);
         settingsListView.setAdapter(adapter);
-        settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Pair<String, String> setting = (Pair<String, String>) parent.getAdapter().getItem(position);
-                Log.i(TAG, setting.first + " - " + setting.second);
-            }
-        });
+        settingsListView.setOnItemClickListener(SettingsActivity.this::onSettingsClick);
     }
 
     @Override
@@ -126,7 +142,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
     }
 
     private void onSettingsClick(AdapterView<?> parent, View view, int position, long id) {
-        Pair<String, String> clickedSetting = (Pair<String, String>) parent.getAdapter().getItem(position);
-        Log.i(TAG, clickedSetting.first);
+        Pair<String, String> setting = (Pair<String, String>) parent.getAdapter().getItem(position);
+        Log.i(TAG, setting.first + " - " + setting.second);
     }
 }

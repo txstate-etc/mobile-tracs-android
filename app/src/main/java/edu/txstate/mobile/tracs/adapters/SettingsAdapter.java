@@ -61,7 +61,7 @@ public class SettingsAdapter extends BaseAdapter {
 
         rowHolder.settingStatus = (Switch) convertView.findViewById(R.id.setting_toggle);
         rowHolder.settingId = setting.first;
-        
+
         rowHolder.settingStatus.setText(setting.second);
         rowHolder.settingStatus.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 28);
         rowHolder.settingStatus.setOnCheckedChangeListener(this::onSettingChanged);
