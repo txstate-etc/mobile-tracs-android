@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.android.volley.VolleyError;
@@ -19,12 +21,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
-import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
 import edu.txstate.mobile.tracs.adapters.SettingsAdapter;
 import edu.txstate.mobile.tracs.util.LoginStatus;
-import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
@@ -107,9 +106,16 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        final ListView settingsList = (ListView) findViewById(R.id.settings_list);
-        adapter = new SettingsAdapter(this.siteNames, this.getApplicationContext());
-        settingsList.setAdapter(adapter);
+        ListView settingsListView = (ListView) findViewById(R.id.settings_list);
+        adapter = new SettingsAdapter(this.siteNames, this);
+        settingsListView.setAdapter(adapter);
+        settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Pair<String, String> setting = (Pair<String, String>) parent.getAdapter().getItem(position);
+                Log.i(TAG, setting.first + " - " + setting.second);
+            }
+        });
     }
 
     @Override
@@ -117,5 +123,10 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         if (LoginStatus.getInstance().isUserLoggedIn()) {
             optionsMenu.getItem(R.id.notifications_menu).setEnabled(false);
         }
+    }
+
+    private void onSettingsClick(AdapterView<?> parent, View view, int position, long id) {
+        Pair<String, String> clickedSetting = (Pair<String, String>) parent.getAdapter().getItem(position);
+        Log.i(TAG, clickedSetting.first);
     }
 }
