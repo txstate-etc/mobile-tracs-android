@@ -1,25 +1,25 @@
 package edu.txstate.mobile.tracs.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.securepreferences.SecurePreferences;
-
 import edu.txstate.mobile.tracs.R;
 
+@SuppressLint("ApplySharedPref")
 public class AppStorage {
 
+    private static final int DEFAULT_MODE = Context.MODE_PRIVATE;
     public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
+    public static final String SETTINGS = "settings";
     public static final String SESSION_ID = "sessionId";
-//    public static final String NOTIFICATION_ID = "notificationId";
+    public static final String PASSWORD = "password";
 
     private AppStorage() {}
 
     private static SharedPreferences getPrefs(Context context) {
-        String encryptionKey = AppInstanceId.getKey(context).toString();
         String user_data = context.getText(R.string.user_data).toString();
-        return new SecurePreferences(context, encryptionKey, user_data);
+        return context.getSharedPreferences(user_data, DEFAULT_MODE);
     }
 
     public static String get(String key, Context context) {
@@ -32,18 +32,18 @@ public class AppStorage {
 
     public static void put(String key, String value, Context context) {
         if (keyIsValid(key)) {
-            AppStorage.getPrefs(context).edit().putString(key, value).apply();
+            AppStorage.getPrefs(context).edit().putString(key, value).commit();
         }
     }
 
     public static void remove(String key, Context context) {
         if (keyIsValid(key)) {
-            AppStorage.getPrefs(context).edit().remove(key).apply();
+            AppStorage.getPrefs(context).edit().remove(key).commit();
         }
     }
 
     private static boolean keyIsValid(String key) {
-        return USERNAME.equals(key) || PASSWORD.equals(key)
-                || SESSION_ID.equals(key);
+        //This is here in case validation of keys is ever desired.
+        return true;
     }
 }

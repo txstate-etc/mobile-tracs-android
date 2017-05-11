@@ -5,10 +5,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.android.volley.VolleyError;
@@ -26,7 +24,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobile.tracs.adapters.SettingsAdapter;
+import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
@@ -34,7 +34,7 @@ import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private static final String TAG = "SettingsActivity";
-    private static final String SCREEN_NAME = "Settings";
+    private static final String SCREEN_NAME = "SettingsStore";
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
     private SettingsAdapter adapter;
@@ -50,6 +50,8 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onResume() {
         super.onResume();
+
+        SettingsStore.getInstance().putFromString(AppStorage.get(AppStorage.SETTINGS, AnalyticsApplication.getContext()));
 
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -131,7 +133,10 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         ListView settingsListView = (ListView) findViewById(R.id.settings_list);
         adapter = new SettingsAdapter(this.siteNames, this);
         settingsListView.setAdapter(adapter);
-        settingsListView.setOnItemClickListener(SettingsActivity.this::onSettingsClick);
+        int size = settingsListView.getCount();
+        for (int i = 0; i < size; i++) {
+
+        }
     }
 
     @Override
@@ -139,10 +144,5 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         if (LoginStatus.getInstance().isUserLoggedIn()) {
             optionsMenu.getItem(R.id.notifications_menu).setEnabled(false);
         }
-    }
-
-    private void onSettingsClick(AdapterView<?> parent, View view, int position, long id) {
-        Pair<String, String> setting = (Pair<String, String>) parent.getAdapter().getItem(position);
-        Log.i(TAG, setting.first + " - " + setting.second);
     }
 }
