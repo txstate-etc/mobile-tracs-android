@@ -4,15 +4,21 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.android.volley.VolleyError;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.FileDownloader;
@@ -111,7 +117,6 @@ class TracsController {
             AppStorage.put(AppStorage.USERNAME, username, context);
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
-        LoginStatus.getInstance().login();
     }
 
 
@@ -120,6 +125,12 @@ class TracsController {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            Log.i(TAG, request.toString());
+            return super.shouldInterceptRequest(view, request);
         }
 
         @SuppressLint("ApplySharedPref")
@@ -134,20 +145,23 @@ class TracsController {
 
             if (url.equals(loginUrl)) {
                 LoginStatus.getInstance().logout();
-                String javascript = "document.getElementsByTagName('form')[0].onsubmit = function() {\n" +
-                        "\tvar username, password;\n" +
-                        "\tvar inputs = document.getElementsByTagName('input');\n" +
-                        "\tfor (var i = 0; i < inputs.length; i++) {\n" +
-                        "\t\tif (inputs[i].name.toLowerCase() === 'password') {\n" +
-                        "\t\t\tpassword = inputs[i] == null ? \"\" : inputs[i].value;\n" +
-                        "\t\t} else if (inputs[i].name.toLowerCase() === 'username') {\n" +
-                        "\t\t\tusername = inputs[i] === null ? \"\" : inputs[i].value;\n" +
-                        "\t\t}\n" +
-                        "\t}\n" +
-                        "\twindow.TracsController.deliver(username, password);\n" +
-                        "\treturn true;\n" +
-                        "}";
-                view.loadUrl("javascript:" + javascript);
+                String javascript;
+                try {
+                    InputStream input = context.getAssets().open("js/logins.js");
+                    byte[] buffer = new byte[input.available()];
+                    input.read(buffer);
+                    input.close();
+                    javascript = Base64.encodeToString(buffer, Base64.NO_WRAP);
+                    view.loadUrl("javascript:(function() {" +
+                                 "var parent = document.getElementsByTagName('head').item(0);" +
+                                 "var script = document.createElement('script');" +
+                                 "script.type = 'text/javascript';" +
+                                 "script.innerHTML = window.atob('" + javascript + "');" +
+                                 "parent.appendChild(script)" +
+                                 "})()");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (url.contains(loginSuccessUrl)) {
