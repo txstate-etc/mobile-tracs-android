@@ -3,6 +3,7 @@ package edu.txstate.mobile.tracs.util;
 import android.content.Context;
 import android.content.Intent;
 
+import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.SettingsActivity;
@@ -17,6 +18,10 @@ public class MenuController {
             case R.id.menu_settings:
                 Intent settingsIntent = new Intent(context, SettingsActivity.class);
                 context.startActivity(settingsIntent);
+                break;
+            case R.id.menu_home:
+                Intent homeIntent = new Intent(context, MainActivity.class);
+                context.startActivity(homeIntent);
                 break;
             default:
                 return false;
