@@ -17,6 +17,7 @@ import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsNotificationRequest;
 
 public class TracsClient {
@@ -96,5 +97,13 @@ public class TracsClient {
                     url, headers, tracsNotification, listener, errorHandler), TAG);
         }
 
+    }
+
+    public void login (Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        String loginSessionUrl = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
+                AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
+        requestQueue.addToRequestQueue(new TracsLoginRequest(
+                loginSessionUrl, listener, errorListener), TAG);
     }
 }

@@ -16,20 +16,19 @@ import java.util.Map;
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
-public class TracsSessionRequest<T> extends Request<T> {
+public class TracsSessionRequest extends Request<TracsSession> {
     private static final String TAG = "TracsSessionRequest";
     private Gson gson = new Gson();
-    private final Class<T> gClass;
     private final Map<String, String> headers;
-    private final Response.Listener<T> listener;
+    private final Response.Listener<TracsSession> listener;
     private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
             AnalyticsApplication.getContext().getString(R.string.tracs_session);
 
-    public TracsSessionRequest(Class<T> clazz, Map<String, String> headers,
-                               Response.Listener<T> listener, Response.ErrorListener errorHandler) {
+    public TracsSessionRequest(Map<String, String> headers,
+                               Response.Listener<TracsSession> listener, Response.ErrorListener errorHandler) {
         super(Method.GET, URL, errorHandler);
-        this.gClass = clazz;
         this.headers = headers;
         this.listener = listener;
     }
@@ -42,7 +41,7 @@ public class TracsSessionRequest<T> extends Request<T> {
     }
 
     @Override
-    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+    protected Response<TracsSession> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
@@ -59,7 +58,7 @@ public class TracsSessionRequest<T> extends Request<T> {
             if (sessionId != null) {
                 session.addProperty("sessionId", sessionId.split(";")[0].split("=")[1]);
             }
-            T tracsSession = gson.fromJson(session, gClass);
+            TracsSession tracsSession = gson.fromJson(session, TracsSession.class);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -68,7 +67,7 @@ public class TracsSessionRequest<T> extends Request<T> {
     }
 
     @Override
-    protected void deliverResponse(T response) {
+    protected void deliverResponse(TracsSession response) {
         listener.onResponse(response);
     }
 }
