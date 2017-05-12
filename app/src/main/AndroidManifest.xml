@@ -25,7 +25,7 @@
         </activity>
         <activity
             android:name="edu.txstate.mobile.tracs.NotificationsActivity"
-            android:label="@string/title_activity_notifications"
+            android:label="@string/notifications_label"
             android:parentActivityName="edu.txstate.mobile.tracs.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data

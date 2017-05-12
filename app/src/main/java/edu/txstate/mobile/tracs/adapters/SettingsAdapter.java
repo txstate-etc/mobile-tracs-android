@@ -1,8 +1,6 @@
 package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -18,10 +16,9 @@ import java.util.Map;
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.SettingsActivity;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.SettingsStore;
-import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 
 public class SettingsAdapter extends BaseAdapter {
 
@@ -33,12 +30,16 @@ public class SettingsAdapter extends BaseAdapter {
     public SettingsAdapter(LinkedHashMap<String, String> settings, Context context) {
         this.context = context;
         this.settings = new ArrayList<>();
+
         for (Map.Entry namePair : settings.entrySet()) {
             Pair<String, String> settingPair = new Pair<>(namePair.getKey().toString(), namePair.getValue().toString());
             this.settings.add(settingPair);
         }
-        Pair<String, String> settingPair = new Pair<>("announcement", "Announcements");
-        this.settings.add(settingPair);
+        this.settings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
+        this.settings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
+        this.settings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
+        this.settings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
+        this.settings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
     }
 
     @Override
