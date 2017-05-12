@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<Switch xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/setting_toggle"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <Switch
+        android:id="@+id/setting_toggle"
+        android:layout_width="match_parent"
+        android:textSize="17sp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
