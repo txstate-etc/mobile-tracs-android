@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,20 +28,32 @@ public class SettingsAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<Pair<String, String>> settings;
+    private int additionalSettingsSize;
+    private int settingsSize;
 
     public SettingsAdapter(LinkedHashMap<String, String> settings, Context context) {
         this.context = context;
         this.settings = new ArrayList<>();
 
-        for (Map.Entry namePair : settings.entrySet()) {
-            Pair<String, String> settingPair = new Pair<>(namePair.getKey().toString(), namePair.getValue().toString());
-            this.settings.add(settingPair);
-        }
         this.settings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
         this.settings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
         this.settings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
         this.settings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
         this.settings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
+
+        Collections.sort(this.settings, (o1, o2) -> {
+            int order = String.CASE_INSENSITIVE_ORDER.compare(o1.second, o2.second);
+            if (order == 0) {
+                order = o1.second.compareTo(o2.second);
+            }
+            return order;
+        });
+
+        for (Map.Entry namePair : settings.entrySet()) {
+            Pair<String, String> settingPair = new Pair<>(namePair.getKey().toString(), namePair.getValue().toString());
+            this.settings.add(settingPair);
+        }
+
     }
 
     @Override
