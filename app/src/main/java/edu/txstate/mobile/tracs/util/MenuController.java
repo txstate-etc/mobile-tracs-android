@@ -10,7 +10,7 @@ import edu.txstate.mobile.tracs.SettingsActivity;
 public class MenuController {
     public static boolean handleMenuClick(int menuId, Context context) {
         switch (menuId) {
-            case R.id.notifications_menu:
+            case R.id.menu_notifications:
                 Intent notificationsIntent = new Intent(context, NotificationsActivity.class);
                 context.startActivity(notificationsIntent);
                 break;

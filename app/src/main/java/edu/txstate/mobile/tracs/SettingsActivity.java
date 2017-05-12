@@ -88,13 +88,13 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.notifications_menu).setIcon(
+        menu.findItem(R.id.menu_notifications).setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
                         .colorRes(R.color.colorAccent)
                         .actionBarSize()
         ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
 
-        menu.findItem(R.id.menu_refresh).setVisible(false);
+        menu.findItem(R.id.menu_settings).setVisible(false);
         optionsMenu = menu;
         return true;
     }
@@ -152,7 +152,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (LoginStatus.getInstance().isUserLoggedIn()) {
-            optionsMenu.getItem(R.id.notifications_menu).setEnabled(false);
+            optionsMenu.getItem(R.id.menu_notifications).setEnabled(false);
         }
     }
 

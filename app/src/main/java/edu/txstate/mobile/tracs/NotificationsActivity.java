@@ -93,7 +93,7 @@ public class NotificationsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.notifications_menu).setVisible(false);
+        menu.findItem(R.id.menu_notifications).setVisible(false);
         MenuItem refreshButton = menu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)

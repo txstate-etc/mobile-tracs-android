@@ -24,7 +24,6 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.Observable;
 import java.util.Observer;
 
-import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 
@@ -106,13 +105,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.notifications_menu).setIcon(
+        menu.findItem(R.id.menu_notifications).setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
                         .colorRes(R.color.colorAccent)
                         .actionBarSize()
         ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-
-        menu.findItem(R.id.menu_refresh).setVisible(false);
         optionsMenu = menu;
         return true;
     }
@@ -133,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         if (optionsMenu == null) {
             return;
         }
-        optionsMenu.findItem(R.id.notifications_menu).setEnabled(shouldEnableNotifications);
+        optionsMenu.findItem(R.id.menu_notifications).setEnabled(shouldEnableNotifications);
     }
 
     private boolean writePermissionNotGranted() {
