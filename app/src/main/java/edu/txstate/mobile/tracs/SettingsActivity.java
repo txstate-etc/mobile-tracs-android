@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import java.util.Observer;
 import edu.txstate.mobile.tracs.adapters.SettingsAdapter;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.SettingsRequest;
@@ -95,6 +97,11 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         menu.findItem(R.id.menu_refresh).setVisible(false);
         optionsMenu = menu;
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
     }
 
     private void onSiteIdResponse(LinkedHashMap<String, String> siteIds) {
