@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -140,12 +141,11 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
 
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        ListView settingsListView = (ListView) findViewById(R.id.settings_list);
-        adapter = new SettingsAdapter(this.siteNames, this);
+        ExpandableListView settingsListView = (ExpandableListView) findViewById(R.id.settings_list);
+        adapter = new SettingsAdapter(this, this.siteNames);
         settingsListView.setAdapter(adapter);
-        int size = settingsListView.getCount();
-        for (int i = 0; i < size; i++) {
-
+        for (int groupPosition = 0; groupPosition < adapter.getGroupCount(); groupPosition++) {
+            settingsListView.expandGroup(groupPosition);
         }
     }
 
