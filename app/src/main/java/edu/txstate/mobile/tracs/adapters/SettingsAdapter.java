@@ -1,18 +1,21 @@
 package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
@@ -22,26 +25,36 @@ import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 
-public class SettingsAdapter extends BaseAdapter {
+public class SettingsAdapter extends BaseExpandableListAdapter {
 
     private static final String TAG = "SettingsAdapter";
 
+    private interface Settings {
+        String DEFAULT = "Notification Types";
+        String COURSES = "Courses";
+        String PROJECTS = "Projects"; //Future use
+    }
+
     private Context context;
-    private ArrayList<Pair<String, String>> settings;
-    private int additionalSettingsSize;
-    private int settingsSize;
+    private List<String> settingHeaders;
+    private HashMap<String, ArrayList<Pair<String, String>>> settings;
 
-    public SettingsAdapter(LinkedHashMap<String, String> settings, Context context) {
+    public SettingsAdapter(Context context, LinkedHashMap<String, String> settings) {
         this.context = context;
-        this.settings = new ArrayList<>();
+        this.settingHeaders = new LinkedList<>();
+        this.settings = new HashMap<>();
 
-        this.settings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
-        this.settings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
-        this.settings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
-        this.settings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
-        this.settings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
 
-        Collections.sort(this.settings, (o1, o2) -> {
+        ArrayList<Pair<String, String>> defaultSettings = new ArrayList<>();
+        ArrayList<Pair<String, String>> coursesSettings = new ArrayList<>();
+
+        defaultSettings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
+        defaultSettings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
+        defaultSettings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
+        defaultSettings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
+        defaultSettings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
+
+        Collections.sort(defaultSettings, (o1, o2) -> {
             int order = String.CASE_INSENSITIVE_ORDER.compare(o1.second, o2.second);
             if (order == 0) {
                 order = o1.second.compareTo(o2.second);
@@ -51,47 +64,96 @@ public class SettingsAdapter extends BaseAdapter {
 
         for (Map.Entry namePair : settings.entrySet()) {
             Pair<String, String> settingPair = new Pair<>(namePair.getKey().toString(), namePair.getValue().toString());
-            this.settings.add(settingPair);
+            coursesSettings.add(settingPair);
         }
 
+        settingHeaders.add(Settings.DEFAULT);
+        settingHeaders.add(Settings.COURSES);
+
+        this.settings.put(Settings.DEFAULT, defaultSettings);
+        this.settings.put(Settings.COURSES, coursesSettings);
+    }
+
+
+
+    @Override
+    public int getGroupCount() {
+        return this.settingHeaders.size();
     }
 
     @Override
-    public int getCount() {
-        return settings.size();
+    public int getChildrenCount(int groupPosition) {
+        String groupName = (String) getGroup(groupPosition);
+        return this.settings.get(groupName).size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return this.settings.get(position);
+    public Object getGroup(int groupPosition) {
+        return this.settingHeaders.get(groupPosition);
     }
 
     @Override
-    public long getItemId(int position) {
-        return settings.get(position).hashCode();
+    public Object getChild(int groupPosition, int childPosition) {
+        String groupName = (String) getGroup(groupPosition);
+        return this.settings.get(groupName).get(childPosition);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public long getGroupId(int groupPosition) {
+        return getGroup(groupPosition).hashCode();
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        String groupName = (String) getGroup(groupPosition);
+        return this.settings.get(groupName).get(childPosition).hashCode();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.settings_row, parent, false);
+            LayoutInflater inflater = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+            convertView = inflater.inflate(R.layout.settings_header, parent, false);
         }
-        SettingsAdapter.RowHolder rowHolder = new SettingsAdapter.RowHolder();
-        Pair<String, String> setting = (Pair<String, String>) getItem(position);
 
+        TextView settingsHeader = (TextView) convertView.findViewById(R.id.settings_header);
+        settingsHeader.setTypeface(null, Typeface.BOLD);
+        settingsHeader.setText((String) getGroup(groupPosition));
+
+        return convertView;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            LayoutInflater inflater = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+            convertView = inflater.inflate(R.layout.settings_row, parent, false);
+        }
+
+        RowHolder rowHolder = new RowHolder();
+
+        Pair<String, String> setting = (Pair<String, String>) getChild(groupPosition, childPosition);
         rowHolder.settingStatus = (Switch) convertView.findViewById(R.id.setting_toggle);
         rowHolder.settingStatus.setChecked(SettingsStore.getInstance().get(setting.first));
         rowHolder.settingId = setting.first;
 
         rowHolder.settingStatus.setText(setting.second);
-        rowHolder.settingStatus.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 28);
-
         rowHolder.settingStatus.setOnClickListener(this::onClicked);
-
 
         convertView.setTag(rowHolder);
 
         return convertView;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
     }
 
     static class RowHolder {
@@ -100,7 +162,8 @@ public class SettingsAdapter extends BaseAdapter {
     }
 
     private void onClicked(View view) {
-        RowHolder tag = (RowHolder) view.getTag();
+        View parent = (View) view.getParent();
+        RowHolder tag = (RowHolder) parent.getTag();
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
         SettingsActivity.saveSettings();
