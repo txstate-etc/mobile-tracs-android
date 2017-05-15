@@ -15,26 +15,18 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.android.volley.VolleyError;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.FileDownloader;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.Registrar;
 import edu.txstate.mobile.tracs.util.TracsClient;
-import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
-import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
 
 class TracsController {
     private static final String TAG = "TracsController";
-    private final String LOGIN_URL = AnalyticsApplication.getContext().getString(R.string.tracs_login);
     private String urlToLoad;
 
     private FileDownloader fileDownloader;
@@ -71,54 +63,22 @@ class TracsController {
 
     void loadUrl(String url) {
         this.urlToLoad = url;
-        String userId = AppStorage.get(AppStorage.USERNAME, context);
-        if ("".equals(userId)) {
-            LoginStatus.getInstance().logout();
-
-            HttpQueue requestQueue = HttpQueue.getInstance(context);
-            Map<String, String> headers = new HashMap<>();
-            requestQueue.addToRequestQueue(new TracsSessionRequest(headers,
-                    this::onSessionResponse, error -> Log.wtf(TAG, new String(error.networkResponse.data))),
-            TAG);
-        } else {
-            TracsClient.getInstance().login(this::onLoginResponse, this::onLoginError);
-        }
+        TracsClient.getInstance().verifySession(TracsController.this::onLoginResponse);
     }
 
     void setDownloadListener(DownloadListener downloadListener) {
         this.tracsView.setDownloadListener(downloadListener);
     }
 
-    private void onSessionResponse(TracsSession session) {
-        String username = AppStorage.get(AppStorage.USERNAME, context);
-        String password = AppStorage.get(AppStorage.PASSWORD, context);
-
-        String sessionUser = session.getUserEid();
-        if (sessionUser == null || sessionUser.equals(username)) {
-            this.urlToLoad = LOGIN_URL;
-        }
-
-        if (username != null && password != null) {
-            TracsClient.getInstance().login(this::onLoginResponse, this::onLoginError);
-        }
-        tracsView.loadUrl(this.urlToLoad);
-    }
-
-    private void onLoginError(VolleyError error) {
-        try {
-            Log.wtf(TAG, new String(error.networkResponse.data));
-        } catch (NullPointerException e) {
-            Log.wtf(TAG, "Couldn't login, no error given.");
-        }
-        this.urlToLoad = LOGIN_URL;
-        tracsView.loadUrl(this.urlToLoad);
-    }
-
     private void onLoginResponse(String session) {
-        LoginStatus.getInstance().login();
-        AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
-        CookieManager.getInstance().setCookie(context.getString(R.string.tracs_base), "JSESSIONID=" + session + "; Path=/;");
-        tracsView.loadUrl(this.urlToLoad);
+        if (session != null) {
+            LoginStatus.getInstance().login();
+            AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
+            CookieManager.getInstance().setCookie(context.getString(R.string.tracs_base), "JSESSIONID=" + session + "; Path=/;");
+            tracsView.loadUrl(this.urlToLoad);
+            return;
+        }
+        tracsView.loadUrl(context.getString(R.string.tracs_login));
     }
 
     private void setSessionId(String sessionId) {

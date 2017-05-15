@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.SettingsStore;
+import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
@@ -74,10 +76,8 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
 
         analyticsTracker.setScreenName(SCREEN_NAME);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                new UserSitesRequest(SettingsActivity.this::onSiteIdResponse,
-                        SettingsActivity.this::onSiteIdError), TAG
-        );
+
+        TracsClient.getInstance().verifySession(SettingsActivity.this::onSessionVerified);
     }
 
     @Override
@@ -103,6 +103,19 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
+    }
+
+    private void onSessionVerified(String session) {
+        if (session != null) {
+            AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
+            HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
+                    new UserSitesRequest(SettingsActivity.this::onSiteIdResponse,
+                            SettingsActivity.this::onSiteIdError), TAG
+            );
+        } else {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void onSiteIdResponse(LinkedHashMap<String, String> siteIds) {

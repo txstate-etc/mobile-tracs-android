@@ -57,6 +57,8 @@ public class TracsSessionRequest extends Request<TracsSession> {
             JsonObject session = sessions.get(0).getAsJsonObject();
             if (sessionId != null) {
                 session.addProperty("sessionId", sessionId.split(";")[0].split("=")[1]);
+            } else {
+                session.addProperty("sessionId", AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext()));
             }
             TracsSession tracsSession = gson.fromJson(session, TracsSession.class);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));

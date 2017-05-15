@@ -46,4 +46,10 @@ public class AppStorage {
         //This is here in case validation of keys is ever desired.
         return true;
     }
+
+    public static boolean credentialsAreStored(Context context) {
+        String username = AppStorage.getPrefs(context).getString(USERNAME, "");
+        String password = AppStorage.getPrefs(context).getString(PASSWORD, "");
+        return username.length() > 0 && password.length() > 0;
+    }
 }

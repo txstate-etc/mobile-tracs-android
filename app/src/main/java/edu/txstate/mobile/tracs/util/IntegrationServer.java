@@ -17,6 +17,7 @@ import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchNotificationRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
+import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
 
 /**
  * Singleton Integration Server
@@ -39,26 +40,26 @@ public class IntegrationServer {
     }
 
     public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener) {
-        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         this.listener = listener;
-        if (credentialsAreStored()) {
-            requestQueue.addToRequestQueue(new TracsLoginRequest(
-                    TracsClient.LOGIN_URL, IntegrationServer.getInstance()::onResponse, IntegrationServer.getInstance()::onLoginError
-            ), TAG);
-        } else {
-            loadFailedLoginIntent();
-        }
+        TracsClient.getInstance().verifySession(IntegrationServer.getInstance()::onResponse);
+//        if (credentialsAreStored()) {
+//            requestQueue.addToRequestQueue(new TracsLoginRequest(
+//                    TracsClient.SESSION_URL, IntegrationServer.getInstance()::onResponse, IntegrationServer.getInstance()::onLoginError
+//            ), TAG);
+//        } else {
+//            loadFailedLoginIntent();
+//        }
     }
-
-    private boolean credentialsAreStored() {
-        String username = AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
-        String password = AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
-
-        return !("".equals(username) || "".equals(password)) ;
-    }
+//
+//    private boolean credentialsAreStored() {
+//        String username = AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
+//        String password = AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+//
+//        return !("".equals(username) || "".equals(password)) ;
+//    }
 
     public void onResponse(String sessionId) {
-        if ("".equals(sessionId)) {
+        if (sessionId == null) {
             loadFailedLoginIntent();
         }
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
@@ -73,11 +74,11 @@ public class IntegrationServer {
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
                 url, headers, this.listener, errorHandler), TAG);
     }
-
-    private void onLoginError(VolleyError error) {
-        Log.wtf(TAG, "Could not login with stored credentials");
-        loadFailedLoginIntent();
-    }
+//
+//    private void onLoginError(VolleyError error) {
+//        Log.wtf(TAG, "Could not login with stored credentials");
+//        loadFailedLoginIntent();
+//    }
 
     private void loadFailedLoginIntent() {
         LoginStatus.getInstance().logout();

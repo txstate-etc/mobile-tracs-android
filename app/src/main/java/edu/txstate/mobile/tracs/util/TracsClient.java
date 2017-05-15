@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,8 @@ import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsNotificationRequest;
+import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
+import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
 public class TracsClient {
     private static final String TAG = "TracsClient";
@@ -27,9 +30,11 @@ public class TracsClient {
     private static final String ANNOUNCEMENT_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_announcement);
     private static final String PORTAL_URL = TRACS_URL + "/portal";
     private static final String SITE_URL = PORTAL_URL + "/site/";
-    public static final String LOGIN_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
+    public static final String SESSION_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
 
     private static TracsClient tracsClient;
+
+    private Response.Listener<String> loginListener;
 
     private TracsClient() {
     }
@@ -99,11 +104,43 @@ public class TracsClient {
 
     }
 
-    public void login (Response.Listener<String> listener, Response.ErrorListener errorListener) {
+    public void verifySession (Response.Listener<String> listener) {
+        this.loginListener = listener;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
-        String loginSessionUrl = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
-                AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
+        Map<String, String> headers = new HashMap<>();
+        requestQueue.addToRequestQueue(new TracsSessionRequest(headers,
+                TracsClient.this::onSessionReturned,
+                TracsClient.this::onStatusError), TAG);
+    }
+
+    private void login () {
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         requestQueue.addToRequestQueue(new TracsLoginRequest(
-                loginSessionUrl, listener, errorListener), TAG);
+                SESSION_URL, this.loginListener, TracsClient.this::onStatusError), TAG);
+    }
+
+    private void onSessionReturned(TracsSession session) {
+        Context context = AnalyticsApplication.getContext();
+        String currentUser = AppStorage.get(AppStorage.USERNAME, context);
+        if (session.hasNetId() && session.getUserEid().equals(currentUser)) {
+            AppStorage.put(AppStorage.SESSION_ID, session.getSessionId(), context);
+            this.loginListener.onResponse(session.getSessionId());
+        }
+
+        if (AppStorage.credentialsAreStored(context)) {
+            login();
+        } else {
+            resetLoginState();
+        }
+    }
+
+    private void onStatusError(VolleyError error) {
+        Log.wtf(TAG, new String(error.networkResponse.data));
+        resetLoginState();
+    }
+
+    private void resetLoginState() {
+        LoginStatus.getInstance().logout();
+        this.loginListener.onResponse(null);
     }
 }
