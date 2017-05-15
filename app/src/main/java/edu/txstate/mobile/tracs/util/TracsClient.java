@@ -125,9 +125,7 @@ public class TracsClient {
         if (session.hasNetId() && session.getUserEid().equals(currentUser)) {
             AppStorage.put(AppStorage.SESSION_ID, session.getSessionId(), context);
             this.loginListener.onResponse(session.getSessionId());
-        }
-
-        if (AppStorage.credentialsAreStored(context)) {
+        } else if (AppStorage.credentialsAreStored(context)) {
             login();
         } else {
             resetLoginState();

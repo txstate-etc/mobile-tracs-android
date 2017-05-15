@@ -42,21 +42,7 @@ public class IntegrationServer {
     public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener) {
         this.listener = listener;
         TracsClient.getInstance().verifySession(IntegrationServer.getInstance()::onResponse);
-//        if (credentialsAreStored()) {
-//            requestQueue.addToRequestQueue(new TracsLoginRequest(
-//                    TracsClient.SESSION_URL, IntegrationServer.getInstance()::onResponse, IntegrationServer.getInstance()::onLoginError
-//            ), TAG);
-//        } else {
-//            loadFailedLoginIntent();
-//        }
     }
-//
-//    private boolean credentialsAreStored() {
-//        String username = AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
-//        String password = AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
-//
-//        return !("".equals(username) || "".equals(password)) ;
-//    }
 
     public void onResponse(String sessionId) {
         if (sessionId == null) {
@@ -74,11 +60,6 @@ public class IntegrationServer {
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
                 url, headers, this.listener, errorHandler), TAG);
     }
-//
-//    private void onLoginError(VolleyError error) {
-//        Log.wtf(TAG, "Could not login with stored credentials");
-//        loadFailedLoginIntent();
-//    }
 
     private void loadFailedLoginIntent() {
         LoginStatus.getInstance().logout();

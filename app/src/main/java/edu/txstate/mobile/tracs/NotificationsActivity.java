@@ -125,8 +125,10 @@ public class NotificationsActivity
             loadingDialog.setMessage("Loading Notifications...");
             loadingDialog.show();
         }
+        if (this.tracsNotifications != null ){
+            this.tracsNotifications.deleteObservers();
+        }
         this.tracsNotifications = new NotificationsBundle();
-        this.tracsNotifications.deleteObservers();
         this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
                 .getDispatchNotifications(NotificationsActivity.this::onResponse);
