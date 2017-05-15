@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs;
 
 import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -86,9 +87,12 @@ class TracsController {
     }
 
     @JavascriptInterface
-    public void deliver(String username, String password, boolean shouldStorePassword) {
+    public void deliver(String username, String password, boolean privateDevice) {
         AppStorage.put(AppStorage.USERNAME, username, context);
         AppStorage.remove(AppStorage.PASSWORD, context);
+        KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+
+        boolean shouldStorePassword = keyguardManager.isKeyguardSecure() && privateDevice;
         if (shouldStorePassword) {
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
@@ -150,7 +154,6 @@ class TracsController {
                 LoginStatus.getInstance().login();
                 TracsController.this.setSessionId(newCookie);
                 Registrar.getInstance().registerDevice();
-                Log.i(TAG, "Registration Info");
             }
 
             if (logoutUrl.equals(url)) {

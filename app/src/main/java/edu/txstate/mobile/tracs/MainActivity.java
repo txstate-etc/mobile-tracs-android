@@ -49,12 +49,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
         //Analytics tracker setup for this view.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
-
-        //This is how you check for security setting, not currently using the result.
-        KeyguardManager keyguardManager = (KeyguardManager) this.getSystemService(Context.KEYGUARD_SERVICE);
-        Log.d(TAG, keyguardManager.isKeyguardSecure() ? "Device is secure" : "Device is not secure");
-
-
     }
 
     @Override
