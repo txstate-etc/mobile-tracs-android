@@ -86,12 +86,10 @@ class TracsController {
     }
 
     @JavascriptInterface
-    public void deliver(String username, String password) {
-        String userNameAndPass = AppStorage.get(AppStorage.USERNAME, context)
-                               + AppStorage.get(AppStorage.PASSWORD, context);
-
-        if (!userNameAndPass.equals(username + password)) {
-            AppStorage.put(AppStorage.USERNAME, username, context);
+    public void deliver(String username, String password, boolean shouldStorePassword) {
+        AppStorage.put(AppStorage.USERNAME, username, context);
+        AppStorage.remove(AppStorage.PASSWORD, context);
+        if (shouldStorePassword) {
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
     }
