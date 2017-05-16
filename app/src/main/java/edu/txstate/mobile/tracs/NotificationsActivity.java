@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,8 +26,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
+import edu.txstate.mobile.tracs.gestures.NotificationTouchListener;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
@@ -49,13 +51,22 @@ public class NotificationsActivity
     private Tracker analyticsTracker;
     private SwipeRefreshLayout refreshLayout;
     private NotificationsAdapter adapter;
-
+    private ListView notificationsList;
     private int countOfSiteNameRequests = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
+
+        setContentView(R.layout.activity_notifications);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -74,15 +85,6 @@ public class NotificationsActivity
 
     private void init() {
         loadingDialog = new ProgressDialog(this);
-
-        setContentView(R.layout.activity_notifications);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.notification_swipe_refresh);
         refreshLayout.setOnRefreshListener(NotificationsActivity.this);
@@ -158,19 +160,14 @@ public class NotificationsActivity
     private void displayListView() {
         loadingDialog.dismiss();
         refreshLayout.setRefreshing(false);
-        final ListView notificationsList = (ListView) findViewById(R.id.notifications_list);
+        notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
         notificationsList.setAdapter(adapter);
-        notificationsList.setOnItemClickListener(NotificationsActivity.this::onNotificationClick);
         new StatusUpdate().updateSeen(this.tracsNotifications);
     }
 
-    private void onNotificationClick(AdapterView<?> parent, View view, int position, long id) {
-        TracsNotification notification = (TracsNotification) parent.getAdapter().getItem(position);
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("url", notification.getUrl());
-        startActivity(intent);
-        new StatusUpdate().updateRead(notification);
+    public void disallowTouchEvent(boolean touchDisabled) {
+        this.notificationsList.requestDisallowInterceptTouchEvent(touchDisabled);
     }
 
     @Override

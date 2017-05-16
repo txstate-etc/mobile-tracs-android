@@ -8,10 +8,10 @@
     tools:context="edu.txstate.mobile.tracs.SettingsActivity"
     tools:showIn="@layout/activity_notifications">
 
-    <ExpandableListView
+    <edu.txstate.mobile.tracs.util.SettingsListView
         android:id="@+id/settings_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-    </ExpandableListView>
+    </edu.txstate.mobile.tracs.util.SettingsListView>
 
 </android.support.constraint.ConstraintLayout>
