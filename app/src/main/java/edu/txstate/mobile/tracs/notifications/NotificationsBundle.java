@@ -32,16 +32,11 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
         this.clearChanged();
     }
 
-    public void remove(String id) {
-        if (id == null) { return; }
-        for(int i = 0; i < allNotifications.size(); i++) {
-            if (id.equals(allNotifications.get(i).getId())){
-                String type = allNotifications.get(i).getType();
-                this.notificationsCount.put(type, this.notificationsCount.get(type)-1);
-                allNotifications.remove(i);
-                return;
-            }
-        }
+    public void remove(Object notification) {
+        String type = ((TracsAppNotification) notification).getType();
+        int newCount = notificationsCount.get(type) - 1;
+        notificationsCount.put(type, newCount);
+        this.allNotifications.remove(notification);
     }
 
     public int size() {

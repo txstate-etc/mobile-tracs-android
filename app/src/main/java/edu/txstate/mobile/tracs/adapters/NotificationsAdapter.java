@@ -2,20 +2,27 @@ package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.HashMap;
 
 import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.gestures.NotificationTouchListener;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
+import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.FontAwesome;
 
 public class NotificationsAdapter extends BaseAdapter {
+
+    private static final String TAG = "NotificationsAdapter";
 
     private NotificationsBundle tracsAppNotifications;
     private Context context;
@@ -24,6 +31,14 @@ public class NotificationsAdapter extends BaseAdapter {
     public NotificationsAdapter(NotificationsBundle notifications, Context context) {
         this.tracsAppNotifications = notifications;
         this.context = context;
+        for (int i = 0; i < this.tracsAppNotifications.size(); i++) {
+            idMap.put(tracsAppNotifications.get(i).getDispatchId(), i);
+        }
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 
     @Override
@@ -36,9 +51,15 @@ public class NotificationsAdapter extends BaseAdapter {
         return tracsAppNotifications.get(position);
     }
 
+    public void remove(Object notification) {
+        this.tracsAppNotifications.remove(notification);
+        notifyDataSetChanged();
+    }
+
     @Override
     public long getItemId(int position) {
-        return tracsAppNotifications.get(position).hashCode();
+        String mapId = TracsNotification.class.cast(getItem(position)).getDispatchId();
+        return idMap.get(mapId);
     }
 
     @Override
@@ -63,7 +84,7 @@ public class NotificationsAdapter extends BaseAdapter {
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
         convertView.setTag(rowHolder);
-
+        convertView.setOnTouchListener(new NotificationTouchListener(parent.getContext()));
         return convertView;
     }
 
