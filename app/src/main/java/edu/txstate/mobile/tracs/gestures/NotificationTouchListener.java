@@ -16,6 +16,7 @@ import android.widget.ListView;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
+import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 
@@ -106,7 +107,6 @@ public class NotificationTouchListener implements View.OnTouchListener {
             break;
             case MotionEvent.ACTION_UP: {
                 if (isOnClick) {
-                    Log.i(TAG, "Clicked");
                     onClick(v);
                 }
 
@@ -177,7 +177,10 @@ public class NotificationTouchListener implements View.OnTouchListener {
         }
 
         int position = listView.getPositionForView(viewToRemove);
-        adapter.remove(adapter.getItem(position));
+        TracsAppNotification notification = (TracsAppNotification) adapter.getItem(position);
+        Log.i(TAG, notification.getId());
+        adapter.remove(notification);
+        new StatusUpdate().updateCleared(notification);
 
         final ViewTreeObserver observer = listView.getViewTreeObserver();
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -196,7 +199,6 @@ public class NotificationTouchListener implements View.OnTouchListener {
                         if (startTop != top) {
                             int delta = startTop - top;
                             child.setTranslationY(delta);
-                            Log.wtf(TAG, "Velocity: " + currentVelocityX);
                             child.animate().setDuration(Math.round(MOVE_DURATION * (1 / Math.abs(currentVelocityX)))).translationY(0);
                             if (firstAnimation) {
                                 child.animate().withEndAction(() -> {
@@ -211,7 +213,6 @@ public class NotificationTouchListener implements View.OnTouchListener {
                         startTop = top + (i > 0 ? childHeight : -childHeight);
                         int delta = startTop - top;
                         child.setTranslationY(delta);
-                        Log.wtf(TAG, "Velocity: " + currentVelocityX);
                         child.animate().setDuration(MOVE_DURATION).translationY(0);
                         if (firstAnimation) {
                             child.animate().withEndAction(() -> {
