@@ -28,11 +28,6 @@
         android:title="@string/menu_dumblabs" />
 
     <item
-        android:id="@+id/menu_beta_notify"
-        accessible:showAsAction="never"
-        android:title="@string/menu_beta_notify" />
-
-    <item
         android:id="@+id/menu_feedback"
         accessible:showAsAction="never"
         android:title="@string/menu_feedback" />
