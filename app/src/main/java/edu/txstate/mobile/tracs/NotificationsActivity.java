@@ -166,10 +166,6 @@ public class NotificationsActivity
         new StatusUpdate().updateSeen(this.tracsNotifications);
     }
 
-    public void disallowTouchEvent(boolean touchDisabled) {
-        this.notificationsList.requestDisallowInterceptTouchEvent(touchDisabled);
-    }
-
     @Override
     public void update(Observable tracsNotifications, Object newNotification) {
         TracsNotification notification;
@@ -205,6 +201,7 @@ public class NotificationsActivity
                 boolean titleIsSet = !TracsNotification.NOT_SET.equals(tracsNotification.getSiteName());
                 if (titleIsSet) {
                     this.notificationsRetrieved += 1;
+                    return;
                 }
 
                 String siteId = tracsNotification.getSiteId();
@@ -213,6 +210,7 @@ public class NotificationsActivity
                 if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
                     String siteName = siteInfo.get("entityTitle").getAsString();
                     tracsNotification.setSiteName(siteName);
+                    this.notificationsRetrieved += 1;
                 }
             } catch (NullPointerException | ClassCastException e) {
                 Log.wtf(TAG, "Could not set site name.");
