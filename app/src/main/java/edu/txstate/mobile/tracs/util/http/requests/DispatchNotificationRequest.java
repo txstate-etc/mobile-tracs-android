@@ -55,7 +55,7 @@ public class DispatchNotificationRequest extends Request<NotificationsBundle> {
 
             for (JsonElement notification : notifications) {
                 if (notification.isJsonObject()) {
-                    dispatchNotifications.addOne(new DispatchNotification((JsonObject) notification));
+                    dispatchNotifications.add(new DispatchNotification((JsonObject) notification));
                 }
             }
             return Response.success(dispatchNotifications, HttpHeaderParser.parseCacheHeaders(response));

@@ -2,6 +2,8 @@ package edu.txstate.mobile.tracs.notifications;
 
 import com.google.gson.JsonObject;
 
+import java.util.Date;
+
 public interface TracsAppNotification {
     /**
      * getId should return a String representation of the ID of this notification, regardless
@@ -38,4 +40,7 @@ public interface TracsAppNotification {
     void markRead(boolean read);
     void markCleared(boolean cleared);
     void setDispatchId(String dispatchId);
+
+    void setNotifyAfter(Date date);
+    Date getNotifyAfter();
 }

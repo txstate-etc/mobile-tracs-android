@@ -133,8 +133,14 @@ public class TracsClient {
     }
 
     private void onStatusError(VolleyError error) {
-        Log.wtf(TAG, new String(error.networkResponse.data));
-        resetLoginState();
+       try {
+           Log.wtf(TAG, new String(error.networkResponse.data));
+       } catch (NullPointerException e) {
+           Log.wtf(TAG, "Error with no message available");
+       } finally {
+           resetLoginState();
+       }
+
     }
 
     private void resetLoginState() {

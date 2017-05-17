@@ -1,7 +1,14 @@
 package edu.txstate.mobile.tracs.notifications;
 
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class DispatchNotification extends TracsAppNotificationAbs {
     private String id;
@@ -12,6 +19,8 @@ public class DispatchNotification extends TracsAppNotificationAbs {
     private String siteId;
     private String toolId;
 
+    private static final String TAG = "DispatchNotification";
+
     public DispatchNotification(JsonObject rawNotification) {
         JsonObject keys = extractKey(rawNotification, "keys", JsonObject.class);
         JsonObject other_keys = extractKey(rawNotification, "other_keys", JsonObject.class);
@@ -21,6 +30,7 @@ public class DispatchNotification extends TracsAppNotificationAbs {
         super.markSeen(extractKey(rawNotification, "seen", Boolean.class));
         super.markRead(extractKey(rawNotification, "read", Boolean.class));
         super.markCleared(extractKey(rawNotification, "cleared", Boolean.class));
+        super.setNotifyAfter(extractKey(rawNotification, "notify_after", Date.class));
         this.type = extractKey(keys, "object_type", String.class);
         this.providerId = extractKey(keys, "provider_id", String.class);
         this.objectId = extractKey(keys, "object_id", String.class);
@@ -63,6 +73,15 @@ public class DispatchNotification extends TracsAppNotificationAbs {
         }
         if (Type == JsonObject.class) {
             return Type.cast(value.getAsJsonObject());
+        }
+        if (Type == Date.class) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+            try {
+                return Type.cast(dateFormat.parse(value.getAsString()));
+            } catch (ParseException e) {
+                Log.wtf(TAG, "Could not parse date");
+                return Type.cast(new Date());
+            }
         }
         return Type.cast(value.getAsString());
     }

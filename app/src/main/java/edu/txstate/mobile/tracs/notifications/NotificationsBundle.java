@@ -3,6 +3,8 @@ package edu.txstate.mobile.tracs.notifications;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,20 +18,31 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
     private ArrayList<TracsAppNotification> allNotifications;
     private Map<String, Integer> notificationsCount;
 
+    private Comparator<TracsAppNotification> comparator;
     /**
      * Creates a new empty notifications container
      */
     public NotificationsBundle() {
         this.allNotifications = new ArrayList<>();
         this.notificationsCount = new HashMap<>();
+        comparator = (o1, o2) -> {
+            if ( o1.getNotifyAfter().after(o2.getNotifyAfter()) ) {
+                return -1;
+            }
+            if ( o1.getNotifyAfter().before(o2.getNotifyAfter()) ) {
+                return 1;
+            }
+            return 0;
+        };
     }
 
-    public void addOne(TracsAppNotification notification) {
+    public void add(TracsAppNotification notification) {
         this.incrementCount(notification.getType());
         this.allNotifications.add(notification);
         this.setChanged();
         this.notifyObservers(notification);
         this.clearChanged();
+        Collections.sort(allNotifications, comparator);
     }
 
     public void remove(Object notification) {

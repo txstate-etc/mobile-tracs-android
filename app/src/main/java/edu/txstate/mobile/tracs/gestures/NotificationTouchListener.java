@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.VelocityTrackerCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.widget.ListView;
 
@@ -44,7 +47,7 @@ public class NotificationTouchListener implements View.OnTouchListener {
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(View view, MotionEvent event) {
         int index = event.getActionIndex();
         int action = event.getActionMasked();
         int pointerId = event.getPointerId(index);
@@ -63,6 +66,8 @@ public class NotificationTouchListener implements View.OnTouchListener {
                 }
                 itemPressed = true;
 
+                disallowIntercepts(true, view);
+
                 downPressX = event.getX();
                 downPressY = event.getY();
                 isOnClick = true;
@@ -74,12 +79,12 @@ public class NotificationTouchListener implements View.OnTouchListener {
                 velocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_CANCEL:
-                v.setAlpha(1);
-                v.setTranslationX(0);
+                view.setAlpha(1);
+                view.setTranslationX(0);
                 itemPressed = false;
                 break;
             case MotionEvent.ACTION_MOVE: {
-                float xPos = event.getX() + v.getTranslationX();
+                float xPos = event.getX() + view.getTranslationX();
                 float deltaX = xPos - downPressX;
                 float deltaXAbs = Math.abs(deltaX);
 
@@ -91,14 +96,12 @@ public class NotificationTouchListener implements View.OnTouchListener {
                 if (!swiping) {
                     if (deltaXAbs > swipeSlop) {
                         swiping = true;
-                        ListView listView = (ListView) this.activity.findViewById(R.id.notifications_list);
-                        listView.requestDisallowInterceptTouchEvent(true);
                     }
                 }
 
                 if (swiping) {
-                    v.setTranslationX(xPos - downPressX);
-                    v.setAlpha(1 - deltaXAbs / v.getWidth());
+                    view.setTranslationX(xPos - downPressX);
+                    view.setAlpha(1 - deltaXAbs / view.getWidth());
                 }
                 velocityTracker.addMovement(event);
                 velocityTracker.computeCurrentVelocity(1000);
@@ -107,19 +110,19 @@ public class NotificationTouchListener implements View.OnTouchListener {
             break;
             case MotionEvent.ACTION_UP: {
                 if (isOnClick) {
-                    onClick(v);
+                    onClick(view);
                 }
 
                 if (swiping) {
-                    float xPos = event.getX() + v.getTranslationX();
+                    float xPos = event.getX() + view.getTranslationX();
                     float deltaX = xPos - downPressX;
                     float deltaXAbs = Math.abs(deltaX);
                     float endX, endAlpha;
                     final boolean remove;
 
-                    float fractionCovered = deltaXAbs / v.getWidth();
-                    if (deltaXAbs > v.getWidth() / 4) {
-                        endX = deltaX < 0 ? -v.getWidth() : v.getWidth();
+                    float fractionCovered = deltaXAbs / view.getWidth();
+                    if (deltaXAbs > view.getWidth() / 4) {
+                        endX = deltaX < 0 ? -view.getWidth() : view.getWidth();
                         endAlpha = 0;
                         remove = true;
                     } else {
@@ -132,13 +135,14 @@ public class NotificationTouchListener implements View.OnTouchListener {
                     long duration = (int) ((1 - fractionCovered) * SWIPE_DURATION);
                     ListView listView = (ListView) this.activity.findViewById(R.id.notifications_list);
                     listView.setEnabled(false);
-                    v.animate().setDuration(duration)
+                    view.animate().setDuration(duration)
                             .alpha(endAlpha).translationX(endX)
                             .withEndAction(() -> {
-                                v.setAlpha(1);
-                                v.setTranslationX(0);
+                                view.setAlpha(1);
+                                view.setTranslationX(0);
+                                disallowIntercepts(false, view);
                                 if (remove) {
-                                    animateRemoval(listView, v);
+                                    animateRemoval(listView, view);
                                 } else {
                                     swiping = false;
                                     listView.setEnabled(true);
@@ -152,6 +156,11 @@ public class NotificationTouchListener implements View.OnTouchListener {
                 return false;
         }
         return true;
+    }
+
+    private void disallowIntercepts(boolean disallow, View v) {
+        ViewParent listParent = v.getParent();
+        listParent.requestDisallowInterceptTouchEvent(disallow);
     }
 
     private void onClick(View view) {
@@ -180,7 +189,8 @@ public class NotificationTouchListener implements View.OnTouchListener {
         TracsAppNotification notification = (TracsAppNotification) adapter.getItem(position);
         Log.i(TAG, notification.getId());
         adapter.remove(notification);
-        new StatusUpdate().updateCleared(notification);
+        //Commented out for testing
+//        new StatusUpdate().updateCleared(notification);
 
         final ViewTreeObserver observer = listView.getViewTreeObserver();
         observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {

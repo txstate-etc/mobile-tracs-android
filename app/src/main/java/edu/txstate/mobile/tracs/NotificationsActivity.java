@@ -1,7 +1,6 @@
 package edu.txstate.mobile.tracs;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -10,9 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -27,7 +23,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
-import edu.txstate.mobile.tracs.gestures.NotificationTouchListener;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
@@ -49,7 +44,6 @@ public class NotificationsActivity
     private int notificationsRetrieved;
     private ProgressDialog loadingDialog;
     private Tracker analyticsTracker;
-    private SwipeRefreshLayout refreshLayout;
     private NotificationsAdapter adapter;
     private ListView notificationsList;
     private int countOfSiteNameRequests = 0;
@@ -85,10 +79,6 @@ public class NotificationsActivity
 
     private void init() {
         loadingDialog = new ProgressDialog(this);
-
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.notification_swipe_refresh);
-        refreshLayout.setOnRefreshListener(NotificationsActivity.this);
-        refreshLayout.setColorSchemeResources(R.color.colorPrimary);
         refreshNotifications(true);
     }
 
@@ -149,7 +139,7 @@ public class NotificationsActivity
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.wtf(TAG, "Error retrieving notifications from TRACS");
         } else {
-            this.tracsNotifications.addOne(response);
+            this.tracsNotifications.add(response);
         }
     }
 
@@ -159,7 +149,6 @@ public class NotificationsActivity
 
     private void displayListView() {
         loadingDialog.dismiss();
-        refreshLayout.setRefreshing(false);
         notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
         notificationsList.setAdapter(adapter);
