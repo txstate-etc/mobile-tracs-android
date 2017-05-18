@@ -128,6 +128,7 @@ public class NotificationsActivity
 
     private void onResponse(NotificationsBundle response) {
         if (response.size() == 0) {
+            displayListView();
             return;
         }
         this.dispatchNotifications = response;
