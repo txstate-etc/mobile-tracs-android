@@ -21,12 +21,12 @@ import java.io.InputStreamReader;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 
-public class FeedbackActivity extends AppCompatActivity {
+public class ContactActivity extends AppCompatActivity {
 
     private Tracker analyticsTracker;
 
-    private static final String TAG = "FeedbackActivity";
-    private static final String SCREEN_NAME = "Feedback";
+    private static final String TAG = "ContactActivity";
+    private static final String SCREEN_NAME = "Contact Info";
     private Menu optionsMenu;
 
     @Override
@@ -42,21 +42,13 @@ public class FeedbackActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
 
-        setContentView(R.layout.activity_feedback);
+        setContentView(R.layout.activity_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         analyticsTracker.setScreenName(SCREEN_NAME);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        final WebView webView = (WebView) findViewById(R.id.feedback_webview);
-
-        try {
-            String html = readFile("html/blank_page.html");
-            webView.loadData(html, "text/html", null);
-        } catch (IOException e) {
-            Log.wtf(TAG, e.getMessage());
-        }
     }
 
     @Override
@@ -67,7 +59,7 @@ public class FeedbackActivity extends AppCompatActivity {
                         .colorRes(R.color.colorAccent)
                         .actionBarSize()
         ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-        menu.findItem(R.id.menu_feedback).setVisible(false);
+        menu.findItem(R.id.menu_contact_us).setVisible(false);
         this.optionsMenu = menu;
         return true;
     }
@@ -76,25 +68,5 @@ public class FeedbackActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuId = item.getItemId();
         return MenuController.handleMenuClick(menuId, this) || super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("TryFinallyCanBeTryWithResources")
-    private String readFile(String file) throws IOException {
-        InputStream input = getAssets().open(file);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        String         line;
-        StringBuilder  stringBuilder = new StringBuilder();
-        String         ls = System.getProperty("line.separator");
-
-        try {
-            while((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-                stringBuilder.append(ls);
-            }
-
-            return stringBuilder.toString();
-        } finally {
-            reader.close();
-        }
     }
 }
