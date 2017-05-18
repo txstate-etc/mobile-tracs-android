@@ -6,6 +6,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
@@ -55,7 +56,12 @@ public class TracsSiteRequest extends Request<JsonObject> {
         }
 
         JsonStreamParser parser = new JsonStreamParser(siteData);
-        JsonObject siteInfo = parser.hasNext() ? (JsonObject) parser.next() : new JsonObject();
+        JsonObject siteInfo;
+        try {
+            siteInfo = parser.hasNext() ? (JsonObject) parser.next() : new JsonObject();
+        } catch (ClassCastException e) {
+            return Response.error(new VolleyError("Could not parse site id."));
+        }
 
         return Response.success(siteInfo, HttpHeaderParser.parseCacheHeaders(response));
     }

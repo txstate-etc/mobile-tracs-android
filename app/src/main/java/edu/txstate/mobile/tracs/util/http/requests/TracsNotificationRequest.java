@@ -1,5 +1,7 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -16,6 +18,7 @@ import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsAnnouncement;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
+import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.NotificationStatus;
 
@@ -65,7 +68,12 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
             JsonObject notification = null;
 
             if (parser.hasNext()) {
-                notification = (JsonObject) parser.next();
+                try {
+                    notification = (JsonObject) parser.next();
+                } catch (ClassCastException e) {
+                    Log.wtf(TAG, "Could not parse JSON response.");
+                    Response.success(new TracsNotificationError(response.statusCode), HttpHeaderParser.parseCacheHeaders(response));
+                }
             }
             tracsNotification = new TracsAnnouncement(notification);
             tracsNotification.setDispatchId(this.dispatchId);
