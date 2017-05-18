@@ -68,12 +68,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
             finish();
         }
 
-        LoginStatus.getInstance().addObserver(this);
-        LoginStatus.getInstance().logout();
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        LoginStatus.getInstance().addObserver(this);
+        LoginStatus.getInstance().logout();
 
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
 
