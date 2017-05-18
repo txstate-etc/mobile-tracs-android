@@ -2,8 +2,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     >
     <color name="colorPrimary">#501214</color>
-    <color name="colorPrimaryDark">#6a5638</color>
-    <color name="colorAccent">#e8e3db</color>
+    <color name="colorIcons">@color/colorPrimary</color>
+    <color name="colorAccent">#EEEEEE</color>
+    <color name="badgeCount">@color/colorPrimary</color>
+    <color name="colorHeader">#EEEEEE</color>
+    <color name="colorHeaderText">@color/colorPrimary</color>
+    <color name="colorHeaderIcons">@color/colorPrimary</color>
+    <color name="badgeTextColor">#FFFFFF</color>
+    <color name="unreadNotificationBackground">#EFEFF4</color>
+    <color name="unreadNotificationText">#000000</color>
+    <color name="dismissBackground">#E51C1C</color>
     <color tools:override="true" name="foreground_material_light">#e8e3db</color>
     <color tools:override="true" name="secondary_text_default_material_dark">#ffffff</color>
     <color tools:override="true" name="primary_text_default_material_dark">#b4ffffff</color>

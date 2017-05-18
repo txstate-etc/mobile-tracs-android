@@ -1,10 +1,12 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">#EEEEEE</item>
+        <item name="colorPrimaryDark">#111</item>
+        <item name="colorAccent">#15db22</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -20,10 +22,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="TxStateAlert" />
+    <style name="ActionButtonStyle" parent="@android:style/Widget.Holo.Light.ActionButton">
+        <item name="android:textColor">#000</item>
+    </style>
 
-    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="ActionBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">#FFF</item>
+    </style>
 
 </resources>

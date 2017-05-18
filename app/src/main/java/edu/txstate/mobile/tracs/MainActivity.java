@@ -46,6 +46,16 @@ public class MainActivity extends AppCompatActivity implements Observer {
         }
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.colorHeader));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorHeaderText));
+        toolbar.setOverflowIcon(new IconDrawable(this, FontAwesomeIcons.fa_ellipsis_v)
+                .colorRes(R.color.colorHeaderIcons)
+                .actionBarSize()
+        );
+        setSupportActionBar(toolbar);
+
         //Analytics tracker setup for this view.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
@@ -67,10 +77,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
             startActivity(intent);
             finish();
         }
-
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         LoginStatus.getInstance().addObserver(this);
         LoginStatus.getInstance().logout();
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.menu_notifications).setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorAccent)
+                        .colorRes(R.color.colorHeaderIcons)
                         .actionBarSize()
         ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
         optionsMenu = menu;
