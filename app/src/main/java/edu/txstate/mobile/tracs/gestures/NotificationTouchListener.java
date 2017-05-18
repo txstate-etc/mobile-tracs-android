@@ -65,9 +65,6 @@ public class NotificationTouchListener implements View.OnTouchListener {
                     return false;
                 }
                 itemPressed = true;
-
-                disallowIntercepts(true, view);
-
                 downPressX = event.getX();
                 downPressY = event.getY();
                 isOnClick = true;
@@ -96,6 +93,7 @@ public class NotificationTouchListener implements View.OnTouchListener {
                 if (!swiping) {
                     if (deltaXAbs > swipeSlop) {
                         swiping = true;
+                        disallowIntercepts(true, view);
                     }
                 }
 
