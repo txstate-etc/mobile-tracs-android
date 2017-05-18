@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.FeedbackActivity;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
@@ -16,6 +16,7 @@ public class MenuController {
     private static final String MAIN_ACTIVITY = "MainActivity";
     private static final String NOTIFICATIONS_ACTIVITY = "NotificationActivity";
     private static final String SETTINGS_ACTIVITY = "SettingsActivity";
+    private static final String FEEDBACK_ACTIVITY = "FeedbackActivity";
 
     private static final String DUBLABS_APP = "edu.txstate.mobileapp";
 
@@ -23,17 +24,17 @@ public class MenuController {
         switch (menuId) {
             case R.id.menu_notifications:
                 Intent notificationsIntent = new Intent(context, NotificationsActivity.class);
-                checkBackStack(notificationsIntent, context, NOTIFICATIONS_ACTIVITY);
+                configureBackstack(notificationsIntent, context, NOTIFICATIONS_ACTIVITY);
                 context.startActivity(notificationsIntent);
                 break;
             case R.id.menu_settings:
                 Intent settingsIntent = new Intent(context, SettingsActivity.class);
-                checkBackStack(settingsIntent, context, SETTINGS_ACTIVITY);
+                configureBackstack(settingsIntent, context, SETTINGS_ACTIVITY);
                 context.startActivity(settingsIntent);
                 break;
             case R.id.menu_home:
                 Intent homeIntent = new Intent(context, MainActivity.class);
-                checkBackStack(homeIntent, context, MAIN_ACTIVITY);
+                configureBackstack(homeIntent, context, MAIN_ACTIVITY);
                 context.startActivity(homeIntent);
                 break;
             case R.id.menu_dublabs:
@@ -48,13 +49,18 @@ public class MenuController {
                     }
                 }
                 break;
+            case R.id.menu_feedback:
+                Intent feedbackIntent = new Intent(context, FeedbackActivity.class);
+                configureBackstack(feedbackIntent, context, FEEDBACK_ACTIVITY);
+                context.startActivity(feedbackIntent);
+                break;
             default:
                 return false;
         }
         return true;
     }
 
-    private static void checkBackStack(Intent intent, Context context, String menuName) {
+    private static void configureBackstack(Intent intent, Context context, String menuName) {
         String callingActivity = Activity.class.cast(context).getLocalClassName();
         if (callingActivity.equals(menuName)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
