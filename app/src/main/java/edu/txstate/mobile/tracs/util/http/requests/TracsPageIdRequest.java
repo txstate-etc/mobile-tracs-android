@@ -51,7 +51,12 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
         }
 
         JsonStreamParser parser = new JsonStreamParser(siteData);
-        JsonArray pages = parser.hasNext() ? (JsonArray) parser.next() : new JsonArray();
+        JsonArray pages;
+        try {
+            pages = parser.hasNext() ? (JsonArray) parser.next() : new JsonArray();
+        } catch (ClassCastException e) {
+            return Response.error(new VolleyError("Could not parse page id."));
+        }
 
         for (JsonElement page : pages) {
             JsonArray tools = page.getAsJsonObject().get("tools").getAsJsonArray();

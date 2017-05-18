@@ -1,9 +1,12 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -25,6 +28,7 @@ public class TracsSessionRequest extends Request<TracsSession> {
     private final Response.Listener<TracsSession> listener;
     private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
             AnalyticsApplication.getContext().getString(R.string.tracs_session);
+    private static final String SESSION_ERROR = "Could not retrieve session";
 
     public TracsSessionRequest(Map<String, String> headers,
                                Response.Listener<TracsSession> listener, Response.ErrorListener errorHandler) {
@@ -49,7 +53,7 @@ public class TracsSessionRequest extends Request<TracsSession> {
             JsonStreamParser parser = new JsonStreamParser(json);
             JsonArray sessions;
             if (parser.hasNext()) {
-                sessions = parser.next().getAsJsonObject().get("session_collection").getAsJsonArray();
+                    sessions = parser.next().getAsJsonObject().get("session_collection").getAsJsonArray();
             } else {
                 sessions = new JsonArray();
             }
@@ -62,8 +66,8 @@ public class TracsSessionRequest extends Request<TracsSession> {
             }
             TracsSession tracsSession = gson.fromJson(session, TracsSession.class);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException | IllegalStateException e) {
+            Log.wtf(TAG, SESSION_ERROR);
         }
         return null;
     }
