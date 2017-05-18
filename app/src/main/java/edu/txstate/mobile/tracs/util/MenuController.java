@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import edu.txstate.mobile.tracs.ContactActivity;
 import edu.txstate.mobile.tracs.FeedbackActivity;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
@@ -17,25 +18,20 @@ public class MenuController {
     private static final String NOTIFICATIONS_ACTIVITY = "NotificationActivity";
     private static final String SETTINGS_ACTIVITY = "SettingsActivity";
     private static final String FEEDBACK_ACTIVITY = "FeedbackActivity";
+    private static final String CONTACT_ACTIVITY = "ContactActivity";
 
     private static final String DUBLABS_APP = "edu.txstate.mobileapp";
 
     public static boolean handleMenuClick(int menuId, Context context) {
         switch (menuId) {
             case R.id.menu_notifications:
-                Intent notificationsIntent = new Intent(context, NotificationsActivity.class);
-                configureBackstack(notificationsIntent, context, NOTIFICATIONS_ACTIVITY);
-                context.startActivity(notificationsIntent);
+                launchIntent(NOTIFICATIONS_ACTIVITY, NotificationsActivity.class, context);
                 break;
             case R.id.menu_settings:
-                Intent settingsIntent = new Intent(context, SettingsActivity.class);
-                configureBackstack(settingsIntent, context, SETTINGS_ACTIVITY);
-                context.startActivity(settingsIntent);
+                launchIntent(SETTINGS_ACTIVITY, SettingsActivity.class, context);
                 break;
             case R.id.menu_home:
-                Intent homeIntent = new Intent(context, MainActivity.class);
-                configureBackstack(homeIntent, context, MAIN_ACTIVITY);
-                context.startActivity(homeIntent);
+                launchIntent(MAIN_ACTIVITY, MainActivity.class, context);
                 break;
             case R.id.menu_dublabs:
                 Intent dubLabsIntent = context.getPackageManager().getLaunchIntentForPackage(DUBLABS_APP);
@@ -50,10 +46,10 @@ public class MenuController {
                 }
                 break;
             case R.id.menu_feedback:
-                Intent feedbackIntent = new Intent(context, FeedbackActivity.class);
-                configureBackstack(feedbackIntent, context, FEEDBACK_ACTIVITY);
-                context.startActivity(feedbackIntent);
+                launchIntent(FEEDBACK_ACTIVITY, FeedbackActivity.class, context);
                 break;
+            case R.id.menu_contact_us:
+                launchIntent(CONTACT_ACTIVITY, ContactActivity.class, context);
             default:
                 return false;
         }
@@ -65,5 +61,11 @@ public class MenuController {
         if (callingActivity.equals(menuName)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+    }
+
+    private static void launchIntent(String activity, Class clazz, Context context) {
+        Intent intent = new Intent(context, clazz);
+        configureBackstack(intent, context, activity);
+        context.startActivity(intent);
     }
 }

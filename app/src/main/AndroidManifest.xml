@@ -56,6 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.txstate.mobile.tracs.MainActivity" />
         </activity>
+        <activity android:name=".ContactActivity"
+            android:label="@string/menu_contact_us"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.txstate.mobile.tracs.MainActivity" />
+        </activity>
 
 
         <service android:name="edu.txstate.mobile.tracs.notifications.NotificationIdService" />

@@ -6,6 +6,7 @@
         android:id="@+id/menu_notifications"
         accessible:showAsAction="ifRoom"
         android:title="@string/notificationsBundle" />
+
     <item
         android:id="@+id/menu_refresh"
         accessible:showAsAction="ifRoom"
@@ -23,13 +24,18 @@
         android:title="@string/menu_settings" />
 
     <item
-        android:id="@+id/menu_dublabs"
-        accessible:showAsAction="never"
-        android:title="@string/menu_dumblabs" />
-
-    <item
         android:id="@+id/menu_feedback"
         accessible:showAsAction="never"
         android:title="@string/menu_feedback" />
+
+    <item
+        android:id="@+id/menu_contact_us"
+        accessible:showAsAction="never"
+        android:title="@string/menu_contact_us" />
+
+    <item
+        android:id="@+id/menu_dublabs"
+        accessible:showAsAction="never"
+        android:title="@string/menu_dumblabs" />
 
 </menu>
