@@ -22,7 +22,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="https" />
+                <data android:host="tracs.mobile.txstate.edu" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name="edu.txstate.mobile.tracs.NotificationsActivity"
             android:label="@string/notifications_label"
@@ -34,6 +42,14 @@
         </activity>
         <activity android:name="edu.txstate.mobile.tracs.SettingsActivity"
             android:label="@string/settings_label"
+            android:parentActivityName="edu.txstate.mobile.tracs.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.txstate.mobile.tracs.MainActivity" />
+        </activity>
+        <activity android:name=".FeedbackActivity"
+            android:label="@string/feedback_label"
             android:parentActivityName="edu.txstate.mobile.tracs.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
