@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -39,9 +38,9 @@ import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 
-public class SettingsActivity extends AppCompatActivity implements Observer {
+public class NotificationSettingsActivity extends AppCompatActivity implements Observer {
 
-    private static final String TAG = "SettingsActivity";
+    private static final String TAG = "NotificationSettingsActivity";
     private static final String SCREEN_NAME = "SettingsStore";
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
@@ -66,8 +65,13 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            IconDrawable homeIcon = new IconDrawable(this, FontAwesomeIcons.fa_home)
+                    .colorRes(R.color.colorAccent)
+                    .actionBarSize();
+            actionBar.setHomeAsUpIndicator(homeIcon);
         }
 
         LoginStatus.getInstance().addObserver(this);
@@ -77,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         analyticsTracker.setScreenName(SCREEN_NAME);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        TracsClient.getInstance().verifySession(SettingsActivity.this::onSessionVerified);
+        TracsClient.getInstance().verifySession(NotificationSettingsActivity.this::onSessionVerified);
     }
 
     @Override
@@ -109,8 +113,8 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
         if (session != null) {
             AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                    new UserSitesRequest(SettingsActivity.this::onSiteIdResponse,
-                            SettingsActivity.this::onSiteIdError), TAG
+                    new UserSitesRequest(NotificationSettingsActivity.this::onSiteIdResponse,
+                            NotificationSettingsActivity.this::onSiteIdError), TAG
             );
         } else {
             Intent intent = new Intent(this, MainActivity.class);
@@ -130,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements Observer {
             HttpQueue queue = HttpQueue.getInstance(AnalyticsApplication.getContext());
             TracsSiteRequest siteNameRequest = new TracsSiteRequest(
                     pair.getKey().toString(), headers,
-                    SettingsActivity.this::onSiteNameResponse
+                    NotificationSettingsActivity.this::onSiteNameResponse
             );
             queue.addToRequestQueue(siteNameRequest, TAG);
         }

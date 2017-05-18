@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.NotificationSettingsActivity;
 import edu.txstate.mobile.tracs.R;
-import edu.txstate.mobile.tracs.SettingsActivity;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.SettingsStore;
@@ -166,6 +166,6 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         RowHolder tag = (RowHolder) parent.getTag();
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
-        SettingsActivity.saveSettings();
+        NotificationSettingsActivity.saveSettings();
     }
 }

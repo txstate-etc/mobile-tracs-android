@@ -35,7 +35,7 @@ public class NotificationService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.common_google_signin_btn_icon_light_normal)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(remoteMessage.getNotification().getTitle())
                 .setContentText(remoteMessage.getNotification().getBody())
                 .setContentIntent(pendingIntent)
