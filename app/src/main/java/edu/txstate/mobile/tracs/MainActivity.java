@@ -23,7 +23,7 @@ public class MainActivity extends BaseTracsActivity {
     private static final String SCREEN_NAME = "TRACS";
     private static final String TRACS_PORTAL_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
                                                     + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
-    
+
     @SuppressWarnings("unused")
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 

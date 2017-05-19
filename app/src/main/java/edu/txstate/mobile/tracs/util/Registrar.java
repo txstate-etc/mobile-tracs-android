@@ -63,7 +63,7 @@ public class Registrar {
                 headers,
                 Registrar.getInstance()::receiveJwt,
                 error -> Log.wtf(TAG, error.getMessage())
-        ), TAG);
+        ), this);
     }
 
     private void receiveJwt(String jwt) {
@@ -71,6 +71,6 @@ public class Registrar {
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
         DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo);
-        requestQueue.addToRequestQueue(registerRequest, TAG);
+        requestQueue.addToRequestQueue(registerRequest, this);
     }
 }

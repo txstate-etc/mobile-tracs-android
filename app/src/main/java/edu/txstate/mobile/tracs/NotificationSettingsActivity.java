@@ -78,7 +78,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
             AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new UserSitesRequest(NotificationSettingsActivity.this::onSiteIdResponse,
-                            NotificationSettingsActivity.this::onSiteIdError), TAG
+                            NotificationSettingsActivity.this::onSiteIdError), this
             );
         } else {
             Intent intent = new Intent(this, MainActivity.class);
@@ -100,7 +100,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
                     pair.getKey().toString(), headers,
                     NotificationSettingsActivity.this::onSiteNameResponse
             );
-            queue.addToRequestQueue(siteNameRequest, TAG);
+            queue.addToRequestQueue(siteNameRequest, this);
         }
     }
 
@@ -143,8 +143,10 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         Context context = AnalyticsApplication.getContext();
         String settingsUrl = context.getString(R.string.dispatch_base) +
                              context.getString(R.string.dispatch_settings);
+
+        //No tag needed, this request doesn't ever need to be cancelled.
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                 new SettingsRequest(settingsUrl,
-                        response -> Toast.makeText(context, "Settings updated", Toast.LENGTH_SHORT).show()), TAG);
+                        response -> Toast.makeText(context, "Settings updated", Toast.LENGTH_SHORT).show()), null);
     }
 }

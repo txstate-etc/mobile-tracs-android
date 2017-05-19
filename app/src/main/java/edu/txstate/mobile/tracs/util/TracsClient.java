@@ -99,7 +99,7 @@ public class TracsClient {
             ));
 
             requestQueue.addToRequestQueue(new TracsNotificationRequest(
-                    url, headers, tracsNotification, listener, errorHandler), TAG);
+                    url, headers, tracsNotification, listener, errorHandler), this);
         }
 
     }
@@ -110,13 +110,13 @@ public class TracsClient {
         Map<String, String> headers = new HashMap<>();
         requestQueue.addToRequestQueue(new TracsSessionRequest(headers,
                 TracsClient.this::onSessionReturned,
-                TracsClient.this::onStatusError), TAG);
+                TracsClient.this::onStatusError), this);
     }
 
     private void login () {
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         requestQueue.addToRequestQueue(new TracsLoginRequest(
-                SESSION_URL, this.loginListener, TracsClient.this::onStatusError), TAG);
+                SESSION_URL, this.loginListener, TracsClient.this::onStatusError), this);
     }
 
     private void onSessionReturned(TracsSession session) {
