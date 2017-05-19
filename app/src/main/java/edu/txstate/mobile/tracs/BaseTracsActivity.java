@@ -33,6 +33,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
                 .colorRes(R.color.colorHeaderIcons)
                 .actionBarSize()
         );
+
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -83,6 +84,11 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
                         .colorRes(R.color.colorHeaderIcons)
                         .actionBarSize()
         ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
+        menu.findItem(R.id.menu_settings).setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_gear)
+                        .colorRes(R.color.colorHeaderIcons)
+                        .actionBarSize()
+        );
         this.optionsMenu = menu;
     }
 
