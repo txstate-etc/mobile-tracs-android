@@ -31,7 +31,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
 
     private interface Settings {
         String DEFAULT = "Notification Types";
-        String COURSES = "Courses";
+        String SITES = "Sites";
         String PROJECTS = "Projects"; //Future use
     }
 
@@ -50,9 +50,9 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
 
         defaultSettings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
         defaultSettings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
-        defaultSettings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
-        defaultSettings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
-        defaultSettings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
+//        defaultSettings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
+//        defaultSettings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
+//        defaultSettings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));
 
         Collections.sort(defaultSettings, (o1, o2) -> {
             int order = String.CASE_INSENSITIVE_ORDER.compare(o1.second, o2.second);
@@ -68,10 +68,10 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         }
 
         settingHeaders.add(Settings.DEFAULT);
-        settingHeaders.add(Settings.COURSES);
+        settingHeaders.add(Settings.SITES);
 
         this.settings.put(Settings.DEFAULT, defaultSettings);
-        this.settings.put(Settings.COURSES, coursesSettings);
+        this.settings.put(Settings.SITES, coursesSettings);
     }
 
 
@@ -119,7 +119,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-            convertView = inflater.inflate(R.layout.settings_header, parent, false);
+            convertView = inflater.inflate(R.layout.notification_settings_header, parent, false);
         }
 
         TextView settingsHeader = (TextView) convertView.findViewById(R.id.settings_header);
@@ -133,7 +133,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-            convertView = inflater.inflate(R.layout.settings_row, parent, false);
+            convertView = inflater.inflate(R.layout.notification_settings_row, parent, false);
         }
 
         RowHolder rowHolder = new RowHolder();

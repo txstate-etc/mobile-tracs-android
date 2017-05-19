@@ -1,17 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.txstate.mobile.tracs.NotificationSettingsActivity"
-    tools:showIn="@layout/activity_notifications">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <edu.txstate.mobile.tracs.util.SettingsListView
-        android:id="@+id/settings_list"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </edu.txstate.mobile.tracs.util.SettingsListView>
+        android:layout_height="32dp"
+        android:background="@drawable/list_divider" />
 
-</android.support.constraint.ConstraintLayout>
+    <include android:id="@+id/notifications_setting"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        layout="@layout/settings_row" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="@drawable/list_divider" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#111" />
+    <include android:id="@+id/intro_page"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        layout="@layout/settings_row" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#111" />
+    <include android:id="@+id/feedback_page"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        layout="@layout/settings_row" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+    <include android:id="@+id/contact_page"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        layout="@layout/settings_row" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:background="@drawable/list_divider" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+
+    <include android:id="@+id/dublabs_page"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        layout="@layout/settings_row" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/list_divider" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#111" />
+</LinearLayout>

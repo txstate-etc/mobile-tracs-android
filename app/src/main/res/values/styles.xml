@@ -4,7 +4,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#EEEEEE</item>
         <item name="colorPrimaryDark">#111</item>
-        <item name="colorAccent">#15db22</item>
+        <item name="colorAccent">#4cd964</item>
         <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
     </style>
