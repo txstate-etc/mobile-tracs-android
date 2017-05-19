@@ -47,12 +47,8 @@ public class Registrar {
     }
 
     private JSONObject getJsonRegistration() {
-        JSONObject regInfo = new JSONObject();
-        if (registrar == null) {
-            return regInfo;
-        }
-        regInfo = new JSONObject(registration);
-        return regInfo;
+        Registrar.getInstance().init(); //In case the data is out of date or not populated
+        return new JSONObject(registration);
     }
 
     public void registerDevice() {
