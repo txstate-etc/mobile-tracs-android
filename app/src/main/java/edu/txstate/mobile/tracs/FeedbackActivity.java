@@ -17,38 +17,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Observable;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 
-public class FeedbackActivity extends AppCompatActivity {
-
-    private Tracker analyticsTracker;
+public class FeedbackActivity extends BaseTracsActivity {
 
     private static final String TAG = "FeedbackActivity";
     private static final String SCREEN_NAME = "Feedback";
-    private Menu optionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_feedback);
         super.onCreate(savedInstanceState);
-
-        //Analytics tracker setup for this view.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        analyticsTracker = application.getDefaultTracker();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-
-        setContentView(R.layout.activity_feedback);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
+        super.hitScreenView(SCREEN_NAME);
         final WebView webView = (WebView) findViewById(R.id.feedback_webview);
 
         try {
@@ -61,21 +49,10 @@ public class FeedbackActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorAccent)
-                        .actionBarSize()
-        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-        menu.findItem(R.id.menu_feedback).setVisible(false);
-        this.optionsMenu = menu;
+        super.setupOptionsMenu(menu);
+        super.optionsMenu.findItem(R.id.menu_feedback).setVisible(false);
+        super.optionsMenu.findItem(R.id.menu_notifications).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int menuId = item.getItemId();
-        return MenuController.handleMenuClick(menuId, this) || super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
@@ -96,5 +73,10 @@ public class FeedbackActivity extends AppCompatActivity {
         } finally {
             reader.close();
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 }

@@ -38,49 +38,25 @@ import edu.txstate.mobile.tracs.util.http.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 
-public class NotificationSettingsActivity extends AppCompatActivity implements Observer {
+public class NotificationSettingsActivity extends BaseTracsActivity {
 
     private static final String TAG = "NotificationSettingsActivity";
     private static final String SCREEN_NAME = "SettingsStore";
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
     private SettingsAdapter adapter;
-    private Tracker analyticsTracker;
-
-    private Menu optionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_settings);
         super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
-
         SettingsStore.getInstance().putFromString(AppStorage.get(AppStorage.SETTINGS, AnalyticsApplication.getContext()));
-
-        setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            IconDrawable homeIcon = new IconDrawable(this, FontAwesomeIcons.fa_home)
-                    .colorRes(R.color.colorAccent)
-                    .actionBarSize();
-            actionBar.setHomeAsUpIndicator(homeIcon);
-        }
-
-        LoginStatus.getInstance().addObserver(this);
-        analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
-
-
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
+        super.onResume();
+        super.hitScreenView(SCREEN_NAME);
         TracsClient.getInstance().verifySession(NotificationSettingsActivity.this::onSessionVerified);
     }
 
@@ -92,21 +68,9 @@ public class NotificationSettingsActivity extends AppCompatActivity implements O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorAccent)
-                        .actionBarSize()
-        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-
-        menu.findItem(R.id.menu_settings).setVisible(false);
-        optionsMenu = menu;
+        super.setupOptionsMenu(menu);
+        super.optionsMenu.findItem(R.id.menu_settings).setVisible(false);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
     }
 
     private void onSessionVerified(String session) {

@@ -2,40 +2,31 @@ package edu.txstate.mobile.tracs;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
 import java.util.Observable;
-import java.util.Observer;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
-import edu.txstate.mobile.tracs.util.MenuController;
 
-public class MainActivity extends AppCompatActivity implements Observer {
+public class MainActivity extends BaseTracsActivity {
     private static final String TAG = "MainActivity";
     private static final String SCREEN_NAME = "TRACS";
     private static final String TRACS_PORTAL_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
                                                     + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
-    private static Menu optionsMenu;
+    
+    @SuppressWarnings("unused")
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
-    private Tracker analyticsTracker;
-    private String urlToLoad;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,50 +35,25 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 requestWritePermission();
             }
         }
-        super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.colorHeader));
-        toolbar.setTitleTextColor(getResources().getColor(R.color.colorHeaderText));
-        toolbar.setOverflowIcon(new IconDrawable(this, FontAwesomeIcons.fa_ellipsis_v)
-                .colorRes(R.color.colorHeaderIcons)
-                .actionBarSize()
-        );
-        setSupportActionBar(toolbar);
-
-        //Analytics tracker setup for this view.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        analyticsTracker = application.getDefaultTracker();
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Intent callingIntent = getIntent();
-        String urlToLoad = callingIntent.getStringExtra("url");
-
-        if (urlToLoad == null) {
-            urlToLoad = TRACS_PORTAL_URL;
-        }
-
-        String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
-        if ("true".equals(shouldLoadNotificationsView)) {
-            Intent intent = new Intent(this, NotificationsActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        super.hitScreenView(SCREEN_NAME);
 
         LoginStatus.getInstance().addObserver(this);
         LoginStatus.getInstance().logout();
 
+        if (launchedFromNotification()) {
+            goToNotifications();
+        }
+
+        String destinationUrl = getDestinationUrl();
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
-
-        Log.i(TAG, "MainActivity resumed");
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
-        tracsWebView.loadUrl(urlToLoad);
+        tracsWebView.loadUrl(destinationUrl);
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
     }
 
@@ -104,20 +70,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorHeaderIcons)
-                        .actionBarSize()
-        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-        optionsMenu = menu;
+        super.onCreateOptionsMenu(menu);
+        super.setupOptionsMenu(menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int menuId = item.getItemId();
-        return MenuController.handleMenuClick(menuId, this) || super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @TargetApi(value = Build.VERSION_CODES.M)
@@ -126,11 +90,31 @@ public class MainActivity extends AppCompatActivity implements Observer {
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 
-    public static void setNotificationsEnabled(boolean shouldEnableNotifications) {
+    private void setNotificationsEnabled(boolean shouldEnableNotifications) {
         if (optionsMenu == null) {
             return;
         }
         optionsMenu.findItem(R.id.menu_notifications).setEnabled(shouldEnableNotifications);
+    }
+
+    private boolean launchedFromNotification() {
+        Intent callingIntent = getIntent();
+        String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
+        return "true".equals(shouldLoadNotificationsView);
+    }
+
+    private void goToNotifications() {
+        Intent intent = new Intent(this, NotificationsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private String getDestinationUrl() {
+        String urlToLoad = getIntent().getStringExtra("url");
+        if (urlToLoad == null) {
+            urlToLoad = TRACS_PORTAL_URL;
+        }
+        return urlToLoad;
     }
 
     private boolean writePermissionNotGranted() {
