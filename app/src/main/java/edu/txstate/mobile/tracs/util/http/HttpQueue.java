@@ -51,7 +51,7 @@ public class HttpQueue {
         return requestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
+    public <T> void addToRequestQueue(Request<T> req, Object tag) {
         req.setTag(tag);
         getRequestQueue().add(req);
     }

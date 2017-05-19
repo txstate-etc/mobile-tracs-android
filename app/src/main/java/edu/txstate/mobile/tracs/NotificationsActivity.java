@@ -153,7 +153,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSiteRequest(
                     notification.getSiteId(), headers, NotificationsActivity.this::onSiteNameReturned
-            ), TAG);
+            ), this);
 
             String pageIdUrl = getString(R.string.tracs_base) +
                                getString(R.string.tracs_site) +
@@ -161,7 +161,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                                "/pages.json";
             requestQueue.addToRequestQueue(new TracsPageIdRequest(
                 pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
-            ), TAG);
+            ), this);
             Log.wtf(TAG, "Site Requests: " + countOfSiteNameRequests++);
         }
     }

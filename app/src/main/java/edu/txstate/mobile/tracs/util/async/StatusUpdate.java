@@ -40,9 +40,11 @@ public class StatusUpdate {
 
     private void sendUpdate(TracsAppNotification notification, NotificationStatus status) {
         String url = formUrl(notification);
+
+        //Should not need to cancel this request
         HttpQueue.getInstance(context).addToRequestQueue(
                 new DispatchUpdateRequest(url, status),
-                NotificationsActivity.TAG
+                null
         );
     }
 

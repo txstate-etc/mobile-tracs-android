@@ -58,7 +58,7 @@ public class IntegrationServer {
         Map<String, String> headers = new HashMap<>();
         Response.ErrorListener errorHandler = error -> Log.wtf(TAG, error.getMessage());
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
-                url, headers, this.listener, errorHandler), TAG);
+                url, headers, this.listener, errorHandler), this);
     }
 
     private void loadFailedLoginIntent() {
