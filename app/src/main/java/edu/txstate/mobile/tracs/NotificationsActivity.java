@@ -76,7 +76,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         MenuItem refreshButton = super.optionsMenu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)
-                        .colorRes(R.color.colorAccent)
+                        .colorRes(R.color.colorHeaderIcons)
                         .actionBarSize()
         );
         refreshButton.setOnMenuItemClickListener(
@@ -85,7 +85,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                     return false;
                 }
         );
-        refreshButton.setVisible(true);
+        refreshButton.setVisible(false);
         return true;
     }
 
