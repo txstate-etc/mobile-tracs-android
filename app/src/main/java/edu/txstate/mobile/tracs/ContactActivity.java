@@ -17,56 +17,38 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Observable;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 
-public class ContactActivity extends AppCompatActivity {
-
-    private Tracker analyticsTracker;
+public class ContactActivity extends BaseTracsActivity {
 
     private static final String TAG = "ContactActivity";
-    private static final String SCREEN_NAME = "Contact Info";
-    private Menu optionsMenu;
+    private static final String SCREEN_NAME = "Contact";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_contact);
         super.onCreate(savedInstanceState);
-
-        //Analytics tracker setup for this view.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        analyticsTracker = application.getDefaultTracker();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-
-        setContentView(R.layout.activity_contact);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.hitScreenView(SCREEN_NAME);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorAccent)
-                        .actionBarSize()
-        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-        menu.findItem(R.id.menu_contact_us).setVisible(false);
-        this.optionsMenu = menu;
+        super.setupOptionsMenu(menu);
+        super.optionsMenu.findItem(R.id.menu_contact_us).setVisible(false);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int menuId = item.getItemId();
-        return MenuController.handleMenuClick(menuId, this) || super.onOptionsItemSelected(item);
+    public void update(Observable o, Object arg) {
+
     }
 }

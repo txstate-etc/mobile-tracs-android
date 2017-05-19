@@ -35,32 +35,21 @@ import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsPageIdRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 
-public class NotificationsActivity
-        extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, Observer {
+public class NotificationsActivity extends BaseTracsActivity implements SwipeRefreshLayout.OnRefreshListener {
     public static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
     private NotificationsBundle dispatchNotifications;
     private int notificationsRetrieved;
     private ProgressDialog loadingDialog;
-    private Tracker analyticsTracker;
     private NotificationsAdapter adapter;
     private ListView notificationsList;
     private int countOfSiteNameRequests = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        analyticsTracker = AnalyticsApplication.class.cast(getApplication()).getDefaultTracker();
-
         setContentView(R.layout.activity_notifications);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -71,9 +60,7 @@ public class NotificationsActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "Activity has resumed");
-        analyticsTracker.setScreenName(SCREEN_NAME);
-        analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        super.hitScreenView(SCREEN_NAME);
         init();
     }
 
@@ -84,9 +71,9 @@ public class NotificationsActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setVisible(false);
-        MenuItem refreshButton = menu.findItem(R.id.menu_refresh);
+        super.setupOptionsMenu(menu);
+        super.optionsMenu.findItem(R.id.menu_notifications).setVisible(false);
+        MenuItem refreshButton = super.optionsMenu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)
                         .colorRes(R.color.colorAccent)
@@ -100,11 +87,6 @@ public class NotificationsActivity
         );
         refreshButton.setVisible(true);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
     }
 
     @Override
