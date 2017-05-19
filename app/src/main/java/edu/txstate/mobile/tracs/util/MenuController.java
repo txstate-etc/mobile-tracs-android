@@ -30,9 +30,6 @@ public class MenuController {
             case R.id.menu_settings:
                 launchIntent(SETTINGS_ACTIVITY, NotificationSettingsActivity.class, context);
                 break;
-            case R.id.menu_home:
-                launchIntent(MAIN_ACTIVITY, MainActivity.class, context);
-                break;
             case R.id.menu_dublabs:
                 Intent dubLabsIntent = context.getPackageManager().getLaunchIntentForPackage(DUBLABS_APP);
                 if (dubLabsIntent != null) { //Dublabs app is installed

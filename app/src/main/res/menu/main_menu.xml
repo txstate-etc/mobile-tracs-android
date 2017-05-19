@@ -14,32 +14,28 @@
         android:title="@string/menu_refresh" />
 
     <item
-        android:id="@+id/menu_home"
+        android:id="@+id/menu_settings"
         accessible:showAsAction="never"
-        android:visible="false"
-        android:title="@string/menu_home" />
+        android:title="@string/menu_settings" />
 
     <item
-        android:id="@+id/menu_settings"
-        accessible:showAsAction="ifRoom"
-        android:title="@string/menu_settings" />
+        android:id="@+id/menu_about_us"
+        accessible:showAsAction="never"
+        android:title="@string/menu_beta_notify" />
 
     <item
         android:id="@+id/menu_feedback"
         accessible:showAsAction="never"
-        android:visible="false"
         android:title="@string/menu_feedback" />
 
     <item
         android:id="@+id/menu_contact_us"
         accessible:showAsAction="never"
-        android:visible="false"
         android:title="@string/menu_contact_us" />
 
     <item
         android:id="@+id/menu_dublabs"
         accessible:showAsAction="never"
-        android:visible="false"
-        android:title="@string/menu_dumblabs" />
+        android:title="@string/menu_dublabs" />
 
 </menu>
