@@ -79,11 +79,12 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
     void setupOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        menu.findItem(R.id.menu_notifications).setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-                        .colorRes(R.color.colorHeaderIcons)
-                        .actionBarSize()
-        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
+//        menu.findItem(R.id.menu_notifications).setIcon(
+//                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
+//                        .colorRes(R.color.colorHeaderIcons)
+//                        .actionBarSize()
+//        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
+        menu.findItem(R.id.menu_notifications).setActionView(R.layout.notification_menu_item);
         this.optionsMenu = menu;
     }
 

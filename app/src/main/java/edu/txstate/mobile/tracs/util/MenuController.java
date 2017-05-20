@@ -8,13 +8,11 @@ import android.net.Uri;
 
 import edu.txstate.mobile.tracs.ContactActivity;
 import edu.txstate.mobile.tracs.FeedbackActivity;
-import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationSettingsActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 
 public class MenuController {
-    private static final String MAIN_ACTIVITY = "MainActivity";
     private static final String NOTIFICATIONS_ACTIVITY = "NotificationActivity";
     private static final String SETTINGS_ACTIVITY = "NotificationSettingsActivity";
     private static final String FEEDBACK_ACTIVITY = "FeedbackActivity";

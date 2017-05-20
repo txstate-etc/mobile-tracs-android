@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.joanzapata.iconify.widget.IconTextView android:text="{fa-bell-o}"
+        android:id="@+id/notification_menu_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="@color/colorHeaderIcons"
+        android:textSize="36sp"
+        android:gravity="center"
+        android:layout_marginRight="10dp"
+        tools:ignore="HardcodedText" />
+
+    <TextView android:text="5"
+        android:layout_height="20dp"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:gravity="center"
+        android:layout_alignTop="@id/notification_menu_icon"
+        android:layout_alignRight="@id/notification_menu_icon"
+        android:background="@drawable/notification_badge"/>
+
+</RelativeLayout>
