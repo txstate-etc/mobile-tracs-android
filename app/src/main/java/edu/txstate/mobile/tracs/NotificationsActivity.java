@@ -72,7 +72,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_notifications).setVisible(false);
+        super.optionsMenu.findItem(R.id.menu_notifications).setEnabled(false);
         MenuItem refreshButton = super.optionsMenu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)

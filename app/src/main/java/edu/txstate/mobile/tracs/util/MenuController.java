@@ -27,7 +27,7 @@ public class MenuController {
             case R.id.menu_notifications:
                 launchIntent(NOTIFICATIONS_ACTIVITY, NotificationsActivity.class, context);
                 break;
-            case R.id.menu_settings:
+            case R.id.menu_notification_settings:
                 launchIntent(SETTINGS_ACTIVITY, NotificationSettingsActivity.class, context);
                 break;
             case R.id.menu_dublabs:

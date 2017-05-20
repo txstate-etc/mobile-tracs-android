@@ -59,7 +59,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_settings).setVisible(false);
+        super.optionsMenu.findItem(R.id.menu_notification_settings).setEnabled(false);
         return true;
     }
 
