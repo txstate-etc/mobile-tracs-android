@@ -74,9 +74,4 @@ public class FeedbackActivity extends BaseTracsActivity {
             reader.close();
         }
     }
-
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
 }

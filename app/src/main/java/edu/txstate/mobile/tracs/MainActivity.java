@@ -44,22 +44,16 @@ public class MainActivity extends BaseTracsActivity {
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
 
-        LoginStatus.getInstance().addObserver(this);
-        LoginStatus.getInstance().logout();
-
         if (launchedFromNotification()) {
             goToNotifications();
         }
+
+        LoginStatus.getInstance().addObserver(this);
 
         String destinationUrl = getDestinationUrl();
         final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
         tracsWebView.loadUrl(destinationUrl);
         tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override
@@ -90,13 +84,6 @@ public class MainActivity extends BaseTracsActivity {
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 
-    private void setNotificationsEnabled(boolean shouldEnableNotifications) {
-        if (optionsMenu == null) {
-            return;
-        }
-        optionsMenu.findItem(R.id.menu_notifications).setEnabled(shouldEnableNotifications);
-    }
-
     private boolean launchedFromNotification() {
         Intent callingIntent = getIntent();
         String shouldLoadNotificationsView = callingIntent.getStringExtra("shouldLoadNotificationsView");
@@ -121,11 +108,5 @@ public class MainActivity extends BaseTracsActivity {
         boolean doesNotHaveWritePermission;
         doesNotHaveWritePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
         return doesNotHaveWritePermission;
-    }
-
-    @Override
-    public void update(Observable loginStatus, Object userIsLoggedIn) {
-        setNotificationsEnabled((boolean) userIsLoggedIn);
-        Log.i(TAG, "Observer notified: user " + ((boolean) userIsLoggedIn ? "is " : "is not ") + "logged in.");
     }
 }

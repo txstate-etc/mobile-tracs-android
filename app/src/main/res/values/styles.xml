@@ -2,11 +2,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">#EEEEEE</item>
-        <item name="colorPrimaryDark">#111</item>
-        <item name="colorAccent">#4cd964</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="android:textColorPrimaryInverse">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

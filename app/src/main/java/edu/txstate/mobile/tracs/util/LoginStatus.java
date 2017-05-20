@@ -11,7 +11,9 @@ public class LoginStatus extends Observable {
     private static boolean userIsLoggedIn;
     private static LoginStatus loginStatus;
 
-    private LoginStatus() {}
+    private LoginStatus() {
+        userIsLoggedIn = false; //Just in case Java changes the default
+    }
 
     public static LoginStatus getInstance() {
         if (loginStatus == null) {

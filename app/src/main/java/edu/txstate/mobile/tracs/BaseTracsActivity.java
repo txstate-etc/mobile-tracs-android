@@ -4,14 +4,19 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.widget.IconTextView;
 
+import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
@@ -64,6 +69,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     protected void onPause() {
         super.onPause();
         LoginStatus.getInstance().deleteObserver(this);
+        cancelRequests();
     }
 
     @Override
@@ -79,13 +85,23 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
     void setupOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-//        menu.findItem(R.id.menu_notifications).setIcon(
-//                new IconDrawable(this, FontAwesomeIcons.fa_bell_o)
-//                        .colorRes(R.color.colorHeaderIcons)
-//                        .actionBarSize()
-//        ).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
-        menu.findItem(R.id.menu_notifications).setActionView(R.layout.notification_menu_item);
         this.optionsMenu = menu;
+        MenuItem notificationIcon = menu.findItem(R.id.menu_notifications);
+        notificationIcon.setActionView(R.layout.notification_menu_item);
+        notificationIcon.getActionView().setOnClickListener(v -> MenuController.handleMenuClick(notificationIcon.getItemId(), BaseTracsActivity.this));
+        updateNotificationButtonStatus(LoginStatus.getInstance().isUserLoggedIn());
+    }
+
+    @Override
+    public void update(Observable loginStatus, Object isLoggedIn) {
+        boolean loggedIn = (Boolean) isLoggedIn;
+        updateNotificationButtonStatus(loggedIn);
+    }
+
+    private void updateNotificationButtonStatus(boolean loggedIn) {
+        MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
+        notification.getActionView().setEnabled(loggedIn);
+        notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
     }
 
     private void cancelRequests() {

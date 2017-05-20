@@ -3,7 +3,7 @@
     >
     <color name="colorPrimary">#501214</color>
     <color name="colorIcons">@color/colorPrimary</color>
-    <color name="colorAccent">#EEEEEE</color>
+    <color name="colorAccent">#eeeeee</color>
     <color name="notificationColor">@color/colorPrimary</color>
     <color name="badgeCount">@color/colorPrimary</color>
     <color name="colorHeader">#EEEEEE</color>
