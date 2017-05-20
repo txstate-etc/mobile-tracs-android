@@ -37,7 +37,6 @@ public class ContactActivity extends BaseTracsActivity {
     protected void onResume(){
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
-
     }
 
     @Override
@@ -45,10 +44,5 @@ public class ContactActivity extends BaseTracsActivity {
         super.setupOptionsMenu(menu);
         super.optionsMenu.findItem(R.id.menu_contact_us).setEnabled(false);
         return true;
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-
     }
 }

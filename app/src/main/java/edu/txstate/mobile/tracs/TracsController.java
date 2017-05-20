@@ -42,7 +42,6 @@ class TracsController {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void Init() {
-        LoginStatus.getInstance().logout();
         this.fileDownloader = new FileDownloader(this.context);
         this.tracsView.setWebViewClient(new TracsWebViewClient());
 

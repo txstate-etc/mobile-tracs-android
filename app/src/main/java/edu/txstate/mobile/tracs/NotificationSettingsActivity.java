@@ -71,10 +71,9 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
                             NotificationSettingsActivity.this::onSiteIdError), this
             );
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            findViewById(R.id.loading_spinner).setVisibility(View.GONE);
+            Toast errorToast = Toast.makeText(this, "Error loading settings.", Toast.LENGTH_LONG);
+            errorToast.show();
         }
     }
 
@@ -119,13 +118,6 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         settingsListView.setAdapter(adapter);
         for (int groupPosition = 0; groupPosition < adapter.getGroupCount(); groupPosition++) {
             settingsListView.expandGroup(groupPosition);
-        }
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (LoginStatus.getInstance().isUserLoggedIn()) {
-            optionsMenu.getItem(R.id.menu_notifications).setEnabled(false);
         }
     }
 
