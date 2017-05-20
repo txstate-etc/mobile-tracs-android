@@ -67,9 +67,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.txstate.mobile.tracs.MainActivity" />
         </activity>
-        <activity android:name=".SettingsActivity"
-            android:label="@string/settings_label" >
-        </activity>
 
 
         <service android:name="edu.txstate.mobile.tracs.notifications.NotificationIdService" />

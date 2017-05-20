@@ -50,7 +50,7 @@ public class FeedbackActivity extends BaseTracsActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_feedback).setVisible(false);
+        super.optionsMenu.findItem(R.id.menu_feedback).setEnabled(false);
         super.optionsMenu.findItem(R.id.menu_notifications).setEnabled(LoginStatus.getInstance().isUserLoggedIn());
         return true;
     }

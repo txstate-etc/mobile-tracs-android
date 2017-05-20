@@ -43,7 +43,7 @@ public class ContactActivity extends BaseTracsActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_contact_us).setVisible(false);
+        super.optionsMenu.findItem(R.id.menu_contact_us).setEnabled(false);
         return true;
     }
 
