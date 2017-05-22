@@ -5,10 +5,11 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <Switch
+    <android.support.v7.widget.SwitchCompat
         android:id="@+id/setting_toggle"
         android:layout_width="match_parent"
         android:textSize="17sp"
+        android:theme="@style/SwitchTheme"
         android:layout_height="match_parent" />
 
 </LinearLayout>

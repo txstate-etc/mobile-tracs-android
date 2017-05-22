@@ -2,6 +2,7 @@ package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,7 +140,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         RowHolder rowHolder = new RowHolder();
 
         Pair<String, String> setting = (Pair<String, String>) getChild(groupPosition, childPosition);
-        rowHolder.settingStatus = (Switch) convertView.findViewById(R.id.setting_toggle);
+        rowHolder.settingStatus = (SwitchCompat) convertView.findViewById(R.id.setting_toggle);
         rowHolder.settingStatus.setChecked(SettingsStore.getInstance().get(setting.first));
         rowHolder.settingId = setting.first;
 
@@ -157,7 +158,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
     }
 
     static class RowHolder {
-        Switch settingStatus;
+        SwitchCompat settingStatus;
         String settingId;
     }
 
