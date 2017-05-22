@@ -5,7 +5,6 @@
 
     <TextView
         android:id="@+id/settings_header"
-        android:background="@color/unreadNotificationBackground"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:layout_width="fill_parent"
