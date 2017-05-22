@@ -5,9 +5,12 @@
 
     <TextView
         android:id="@+id/settings_header"
+        android:background="@color/unreadNotificationBackground"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
 </LinearLayout>
