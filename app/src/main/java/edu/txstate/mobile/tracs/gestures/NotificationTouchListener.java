@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ListView;
 
 import edu.txstate.mobile.tracs.MainActivity;
+import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;

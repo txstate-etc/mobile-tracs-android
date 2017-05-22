@@ -60,6 +60,16 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
         return this.notificationsCount.get(NotificationTypes.ANNOUNCEMENT);
     }
 
+    public int totalUnread() {
+        int unread = 0;
+        for (TracsAppNotification notification : allNotifications) {
+            if (!notification.hasBeenRead()) {
+                unread += 1;
+            }
+        }
+        return unread;
+    }
+
     public ArrayList<TracsAppNotification> getAllNotifications() {
         return this.allNotifications;
     }

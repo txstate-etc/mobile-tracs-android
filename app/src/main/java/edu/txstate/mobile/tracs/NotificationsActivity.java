@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs;
 
 import android.app.ProgressDialog;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -23,6 +24,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
+import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
@@ -44,7 +46,6 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     private ProgressDialog loadingDialog;
     private NotificationsAdapter adapter;
     private ListView notificationsList;
-    private int countOfSiteNameRequests = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,10 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_notifications).setEnabled(false);
+        MenuItem notifications = super.optionsMenu.findItem(R.id.menu_notifications);
+        notifications.setEnabled(false);
+        notifications.getActionView().setAlpha(0.5f);
+        notifications.getActionView().setClickable(false);
         MenuItem refreshButton = super.optionsMenu.findItem(R.id.menu_refresh);
         refreshButton.setIcon(
                 new IconDrawable(this, FontAwesomeIcons.fa_refresh)
@@ -114,6 +118,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
             return;
         }
         this.dispatchNotifications = response;
+        super.setBadgeCount(this.dispatchNotifications.totalUnread());
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(response, NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
     }
@@ -133,7 +138,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     private void displayListView() {
         loadingDialog.dismiss();
         notificationsList = (ListView) findViewById(R.id.notifications_list);
-        adapter = new NotificationsAdapter(tracsNotifications, this.getApplicationContext());
+        adapter = new NotificationsAdapter(tracsNotifications, this);
         notificationsList.setAdapter(adapter);
         new StatusUpdate().updateSeen(this.tracsNotifications);
     }
@@ -162,7 +167,6 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
             requestQueue.addToRequestQueue(new TracsPageIdRequest(
                 pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
             ), this);
-            Log.wtf(TAG, "Site Requests: " + countOfSiteNameRequests++);
         }
     }
 
@@ -207,6 +211,10 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                 Log.wtf(TAG, "Could not set pageId of notification.");
             }
         }
+    }
+
+    public void setBadgeCount(int count) {
+        super.setBadgeCount(count);
     }
 
 }

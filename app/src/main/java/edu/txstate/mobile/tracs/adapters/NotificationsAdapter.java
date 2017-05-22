@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.gestures.NotificationTouchListener;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
@@ -23,6 +24,7 @@ import edu.txstate.mobile.tracs.util.FontAwesome;
 public class NotificationsAdapter extends BaseAdapter {
 
     private static final String TAG = "NotificationsAdapter";
+    private int badgeCount;
 
     private NotificationsBundle tracsAppNotifications;
     private Context context;
@@ -34,6 +36,7 @@ public class NotificationsAdapter extends BaseAdapter {
         for (int i = 0; i < this.tracsAppNotifications.size(); i++) {
             idMap.put(tracsAppNotifications.get(i).getDispatchId(), i);
         }
+        this.badgeCount = this.tracsAppNotifications.totalUnread();
     }
 
     @Override
@@ -52,8 +55,13 @@ public class NotificationsAdapter extends BaseAdapter {
     }
 
     public void remove(Object notification) {
+        TracsAppNotification toBeRemoved = (TracsAppNotification) notification;
+        if (!toBeRemoved.hasBeenRead()) {
+            this.badgeCount--;
+        }
         this.tracsAppNotifications.remove(notification);
         notifyDataSetChanged();
+        NotificationsActivity.class.cast(this.context).setBadgeCount(badgeCount);
     }
 
     @Override
@@ -74,10 +82,10 @@ public class NotificationsAdapter extends BaseAdapter {
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
-        if (!content.hasBeenRead()) {
-            rowHolder.titleText.setTypeface(null, Typeface.BOLD);
-            rowHolder.siteName.setTypeface(null, Typeface.BOLD);
-        }
+        int typeface = content.hasBeenRead() ? Typeface.NORMAL : Typeface.BOLD;
+        rowHolder.titleText.setTypeface(null, typeface);
+        rowHolder.siteName.setTypeface(null, typeface);
+
 
         rowHolder.titleText.setText(content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
