@@ -28,6 +28,11 @@ public class TracsNotificationError extends TracsNotificationAbs {
     }
 
     @Override
+    public boolean hasPageId() {
+        return false;
+    }
+
+    @Override
     public String getType() {
         return NotificationTypes.ERROR;
     }

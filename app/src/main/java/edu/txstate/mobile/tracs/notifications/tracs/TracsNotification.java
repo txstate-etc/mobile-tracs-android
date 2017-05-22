@@ -38,4 +38,5 @@ public interface TracsNotification extends TracsAppNotification {
     boolean isNull();
 
     boolean hasSiteName();
+    boolean hasPageId();
 }

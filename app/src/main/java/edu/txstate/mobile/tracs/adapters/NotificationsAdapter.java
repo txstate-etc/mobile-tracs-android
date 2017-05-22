@@ -103,6 +103,12 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.siteName.setText(content.getSiteName());
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
+        convertView.findViewById(R.id.delete).setOnClickListener(v -> {
+            TracsAppNotification notification = (TracsAppNotification) getItem(position);
+            remove(notification);
+//            new StatusUpdate().updateCleared(notification);
+        });
+
         convertView.setTag(rowHolder);
         rowHolder.row.setOnClickListener(v -> {
             TracsNotification notification = (TracsNotification) getItem(position);
