@@ -26,7 +26,12 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
     private Response.Listener<Map<String, String>> listener;
 
     public TracsPageIdRequest(String url, String dispatchId, Response.Listener<Map<String, String>> listener) {
-        super(Method.GET, url, error -> Log.wtf(TAG, error.getMessage()));
+        super(Method.GET, url, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.wtf(TAG, new String(error.networkResponse.data));
+            }
+        });
         this.listener = listener;
         this.dispatchId = dispatchId;
     }

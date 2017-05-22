@@ -31,6 +31,10 @@ public class TracsAnnouncement extends TracsNotificationAbs {
         this.pageId = pageId;
     }
 
+    public boolean hasPageId() {
+        return this.pageId != null;
+    }
+
     private String getPageId() {
         return this.pageId;
     }

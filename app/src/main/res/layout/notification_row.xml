@@ -5,6 +5,7 @@
     android:id="@+id/swipe_layout" >
 
     <LinearLayout
+        android:id="@+id/delete"
         android:orientation="vertical"
         android:layout_width="80dp"
         android:background="@color/dismissBackground"

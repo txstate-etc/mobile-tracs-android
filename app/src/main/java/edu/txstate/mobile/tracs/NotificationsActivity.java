@@ -132,7 +132,17 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     }
 
     private boolean allRequestsAreBack() {
-        return this.notificationsRetrieved >= this.dispatchNotifications.size();
+        boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
+        int totalSiteNames = 0;
+        int totalPageIds = 0;
+        for (TracsAppNotification notification : this.tracsNotifications) {
+            TracsNotification tracsNote = TracsNotification.class.cast(notification);
+            if (tracsNote.hasSiteName()) { totalSiteNames++; }
+            if (tracsNote.hasPageId()) { totalPageIds++; }
+        }
+        boolean siteNamesDone = totalSiteNames == tracsNotifications.size();
+        boolean pageIdsDone = totalPageIds == tracsNotifications.size();
+        return sizeMatch && siteNamesDone && pageIdsDone;
     }
 
     private void displayListView() {
@@ -152,22 +162,22 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
             Log.wtf(TAG, e.getMessage());
             return;
         }
-
-        if (notification != null && !notification.hasSiteName()) {
-            HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        if (notification == null) { return; }
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        if (!notification.hasSiteName()) {
             Map<String, String> headers = new HashMap<>();
             requestQueue.addToRequestQueue(new TracsSiteRequest(
                     notification.getSiteId(), headers, NotificationsActivity.this::onSiteNameReturned
             ), this);
-
-            String pageIdUrl = getString(R.string.tracs_base) +
-                               getString(R.string.tracs_site) +
-                               notification.getSiteId() +
-                               "/pages.json";
-            requestQueue.addToRequestQueue(new TracsPageIdRequest(
-                pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
-            ), this);
         }
+        String pageIdUrl = getString(R.string.tracs_base) +
+                getString(R.string.tracs_site) +
+                notification.getSiteId() +
+                "/pages.json";
+        Log.wtf(TAG, pageIdUrl);
+        requestQueue.addToRequestQueue(new TracsPageIdRequest(
+                pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
+        ), this);
     }
 
     private void onSiteNameReturned(JsonObject siteInfo) {
@@ -176,8 +186,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                 TracsNotification tracsNotification = TracsNotification.class.cast(notification);
                 boolean titleIsSet = !TracsNotification.NOT_SET.equals(tracsNotification.getSiteName());
                 if (titleIsSet) {
-                    this.notificationsRetrieved += 1;
-                    return;
+                    continue;
                 }
 
                 String siteId = tracsNotification.getSiteId();
@@ -186,16 +195,10 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                 if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
                     String siteName = siteInfo.get("entityTitle").getAsString();
                     tracsNotification.setSiteName(siteName);
-                    this.notificationsRetrieved += 1;
                 }
             } catch (NullPointerException | ClassCastException e) {
                 Log.wtf(TAG, "Could not set site name.");
             }
-        }
-
-        if (allRequestsAreBack()) {
-            this.notificationsRetrieved = 0;
-            displayListView();
         }
     }
 
@@ -206,10 +209,16 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
                 String pageId = pageIdPair.get(tracsNotification.getDispatchId());
                 if (pageId != null) {
                     tracsNotification.setPageId(pageId);
+                    break;
                 }
             } catch (NullPointerException | ClassCastException e) {
                 Log.wtf(TAG, "Could not set pageId of notification.");
             }
+        }
+        if (allRequestsAreBack()) {
+            this.notificationsRetrieved = 0;
+            HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
+            displayListView();
         }
     }
 
