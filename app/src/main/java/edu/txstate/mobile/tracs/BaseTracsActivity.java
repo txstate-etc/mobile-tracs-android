@@ -10,8 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.joanzapata.iconify.widget.IconTextView;
@@ -19,9 +21,11 @@ import com.joanzapata.iconify.widget.IconTextView;
 import java.util.Observable;
 import java.util.Observer;
 
+import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.requests.NotificationCountRequest;
 
 public abstract class BaseTracsActivity extends AppCompatActivity implements Observer {
     private Tracker analyticsTracker;
@@ -96,12 +100,48 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     public void update(Observable loginStatus, Object isLoggedIn) {
         boolean loggedIn = (Boolean) isLoggedIn;
         updateNotificationButtonStatus(loggedIn);
+        getBadgeCount(loggedIn);
     }
 
     private void updateNotificationButtonStatus(boolean loggedIn) {
         MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
         notification.getActionView().setEnabled(loggedIn);
         notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
+        getBadgeCount(loggedIn);
+    }
+
+    private void getBadgeCount(boolean loggedIn) {
+        if (!loggedIn) {
+             setBadgeCount(0);
+             return;
+        }
+        String url = getString(R.string.dispatch_base) + getString(R.string.dispatch_notifications)
+                + "?token=" + FirebaseInstanceId.getInstance().getToken();
+        NotificationCountRequest badgeCount = new NotificationCountRequest(
+                url, BaseTracsActivity.this::badgeCountResponse, BaseTracsActivity.this::badgeCountError
+        );
+        HttpQueue.getInstance(this).addToRequestQueue(badgeCount, null);
+    }
+
+    private void badgeCountResponse(Integer badgeCount) {
+        setBadgeCount(badgeCount);
+    }
+
+    @SuppressWarnings("unused")
+    private void badgeCountError(VolleyError error) {
+        setBadgeCount(0);
+    }
+
+    void setBadgeCount(int count) {
+        String badgeCount = String.valueOf(count);
+        View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
+        TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+        if (count == 0) {
+            badge.setVisibility(View.INVISIBLE);
+        } else {
+            badge.setText(badgeCount);
+            badge.setVisibility(View.VISIBLE);
+        }
     }
 
     private void cancelRequests() {
