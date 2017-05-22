@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,10 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
 import java.util.HashMap;
 
+import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.gestures.NotificationTouchListener;
@@ -20,8 +28,9 @@ import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.FontAwesome;
+import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 
-public class NotificationsAdapter extends BaseAdapter {
+public class NotificationsAdapter extends BaseSwipeAdapter {
 
     private static final String TAG = "NotificationsAdapter";
     private int badgeCount;
@@ -71,14 +80,25 @@ public class NotificationsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public int getSwipeLayoutResourceId(int i) {
+        return R.id.swipe_layout;
+    }
+
+    @Override
+    public View generateView(int i, ViewGroup viewGroup) {
+        return LayoutInflater.from(context).inflate(R.layout.notification_row, viewGroup, false);
+    }
+
+    @Override
+    public void fillValues(int position, View convertView) {
         if (convertView == null) {
-            convertView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, parent, false);
+            convertView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
         }
         RowHolder rowHolder = new RowHolder();
         rowHolder.fontAwesomeIcon = (FontAwesome) convertView.findViewById(R.id.notification_icon);
         rowHolder.siteName = (TextView) convertView.findViewById(R.id.notification_site_name);
         rowHolder.titleText = (TextView) convertView.findViewById(R.id.notification_title);
+        rowHolder.row = (RelativeLayout) convertView.findViewById(R.id.notification_row);
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
@@ -92,13 +112,19 @@ public class NotificationsAdapter extends BaseAdapter {
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
         convertView.setTag(rowHolder);
-        convertView.setOnTouchListener(new NotificationTouchListener(parent.getContext()));
-        return convertView;
+        rowHolder.row.setOnClickListener(v -> {
+            TracsNotification notification = (TracsNotification) getItem(position);
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("url", notification.getUrl());
+            context.startActivity(intent);
+            new StatusUpdate().updateRead(notification);
+        });
     }
 
     static class RowHolder {
         FontAwesome fontAwesomeIcon;
         TextView siteName;
         TextView titleText;
+        RelativeLayout row;
     }
 }
