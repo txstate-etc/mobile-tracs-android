@@ -13,11 +13,12 @@
     <string name="assessment_setting">Assessments</string>
     <string name="assignment_setting">Assignments</string>
 
-    <string name="menu_refresh">Refresh Notifications</string>
+    <string name="menu_clear_all">Clear All</string>
     <string name="menu_home">Home</string>
     <string name="menu_notification_settings">Notification Settings</string>
     <string name="menu_about_us">About Us</string>
     <string name="menu_dublabs">Go to TXST Mobile</string>
     <string name="menu_feedback">Give us Feedback</string>
     <string name="menu_contact_us">Contact Us</string>
+    <string name="clear_all_prompt">Clear all notifications?</string>
 </resources>

@@ -40,6 +40,12 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         this.badgeCount = this.tracsAppNotifications.totalUnread();
     }
 
+    public void clear() {
+        for (int i = 0; i < getCount(); i++) {
+            remove(getItem(i));
+        }
+    }
+
     @Override
     public boolean hasStableIds() {
         return true;
