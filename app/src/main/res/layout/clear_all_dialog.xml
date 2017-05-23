@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clear_all_dialog"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/clear_all_prompt"
+        android:background="@color/colorHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.joanzapata.iconify.widget.IconTextView
+            android:text="{fa-exclamation}"
+            android:textSize="32sp"
+            android:textColor="@color/colorHeaderText"
+            android:gravity="center"
+            android:padding="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" />
+
+        <TextView
+            android:text="@string/clear_all_prompt"
+            android:textColor="@color/colorHeaderText"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:gravity="start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/clear_all_divider_bar"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="3dp" />
+
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:orientation="horizontal"
+        android:weightSum="2.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/clear_all_negative"
+            android:text="CANCEL"
+            android:textColor="@color/colorPrimary"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:background="@color/colorPrimary"
+            android:layout_width="1px"
+            android:layout_height="match_parent" />
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/clear_all_positive"
+            android:text="OK"
+            android:textColor="@color/colorPrimary"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

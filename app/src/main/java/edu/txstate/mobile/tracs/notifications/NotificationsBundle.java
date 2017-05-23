@@ -52,12 +52,13 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
         this.allNotifications.remove(notification);
     }
 
-    public int size() {
-        return allNotifications.size();
+    public void removeAll() {
+        this.allNotifications.clear();
+        notificationsCount.clear();
     }
 
-    public int countAnnouncements() {
-        return this.notificationsCount.get(NotificationTypes.ANNOUNCEMENT);
+    public int size() {
+        return allNotifications.size();
     }
 
     public int totalUnread() {
@@ -72,12 +73,6 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
 
     public ArrayList<TracsAppNotification> getAllNotifications() {
         return this.allNotifications;
-    }
-
-    private void announceUpdate() {
-        this.setChanged();
-        this.notifyObservers();
-        this.clearChanged();
     }
 
     @NonNull

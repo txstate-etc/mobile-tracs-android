@@ -1,10 +1,15 @@
 package edu.txstate.mobile.tracs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.gson.JsonObject;
@@ -61,22 +66,20 @@ public class NotificationsActivity extends BaseTracsActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
         MenuItem notifications = super.optionsMenu.findItem(R.id.menu_notifications);
-        notifications.setEnabled(false);
-        notifications.getActionView().setAlpha(0.5f);
-        notifications.getActionView().setClickable(false);
-        MenuItem refreshButton = super.optionsMenu.findItem(R.id.menu_refresh);
-        refreshButton.setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_refresh)
+        notifications.setVisible(false);
+        MenuItem clearAll = super.optionsMenu.findItem(R.id.clear_all);
+        clearAll.setIcon(
+                new IconDrawable(this, FontAwesomeIcons.fa_check_circle_o)
                         .colorRes(R.color.colorHeaderIcons)
                         .actionBarSize()
         );
-        refreshButton.setOnMenuItemClickListener(
+        clearAll.setOnMenuItemClickListener(
                 item -> {
-                    NotificationsActivity.this.refreshNotifications();
+                    NotificationsActivity.this.promptClearAll();
                     return false;
                 }
         );
-        refreshButton.setVisible(false);
+        clearAll.setVisible(true);
         return true;
     }
 
@@ -88,6 +91,18 @@ public class NotificationsActivity extends BaseTracsActivity {
         this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
                 .getDispatchNotifications(NotificationsActivity.this::onDispatchResponse);
+    }
+
+    private void promptClearAll() {
+        AlertDialog clearPrompt = new ClearAllDialog(this, this::clearAll);
+        clearPrompt.show();
+    }
+
+    private void clearAll(View view) {
+        this.notificationsList.setAdapter(null);
+        this.tracsNotifications.removeAll();
+        this.dispatchNotifications.removeAll();
+        Log.i(TAG, "Notifications have been cleared");
     }
 
     private void onDispatchResponse(NotificationsBundle response) {
@@ -132,9 +147,9 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        notificationsList = (ListView) findViewById(R.id.notifications_list);
+        this.notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this);
-        notificationsList.setAdapter(adapter);
+        this.notificationsList.setAdapter(adapter);
         new StatusUpdate().updateSeen(this.tracsNotifications);
     }
 
