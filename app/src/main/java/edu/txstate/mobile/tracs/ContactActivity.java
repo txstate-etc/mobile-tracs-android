@@ -1,26 +1,7 @@
 package edu.txstate.mobile.tracs;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.webkit.WebView;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Observable;
-
-import edu.txstate.mobile.tracs.util.LoginStatus;
-import edu.txstate.mobile.tracs.util.MenuController;
 
 public class ContactActivity extends BaseTracsActivity {
 

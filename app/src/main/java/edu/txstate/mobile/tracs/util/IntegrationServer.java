@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
@@ -16,8 +15,6 @@ import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchNotificationRequest;
-import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
-import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
 
 /**
  * Singleton Integration Server

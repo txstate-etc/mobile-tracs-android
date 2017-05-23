@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +15,10 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.widget.IconTextView;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;

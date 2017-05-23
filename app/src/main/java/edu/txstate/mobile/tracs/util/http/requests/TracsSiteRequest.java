@@ -16,7 +16,6 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
-import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.AppStorage;
 
 public class TracsSiteRequest extends Request<JsonObject> {
