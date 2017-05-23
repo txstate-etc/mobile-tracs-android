@@ -1,7 +1,6 @@
 package edu.txstate.mobile.tracs;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Observable;
 
 import edu.txstate.mobile.tracs.adapters.SettingsAdapter;
 import edu.txstate.mobile.tracs.util.AppStorage;

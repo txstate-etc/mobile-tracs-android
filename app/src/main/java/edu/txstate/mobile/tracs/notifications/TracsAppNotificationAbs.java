@@ -1,11 +1,6 @@
 package edu.txstate.mobile.tracs.notifications;
 
-import android.util.Log;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public abstract class TracsAppNotificationAbs implements TracsAppNotification {
     private boolean seen;

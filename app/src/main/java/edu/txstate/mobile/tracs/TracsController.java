@@ -1,11 +1,9 @@
 package edu.txstate.mobile.tracs;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
@@ -106,8 +104,6 @@ class TracsController {
 
 
     private class TracsWebViewClient extends WebViewClient {
-        private boolean hadError = false;
-
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);

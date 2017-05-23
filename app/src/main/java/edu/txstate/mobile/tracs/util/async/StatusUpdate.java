@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
-import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;

@@ -7,14 +7,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
-
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.Observable;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
 
