@@ -1,19 +1,12 @@
 package edu.txstate.mobile.tracs;
 
-import android.app.ProgressDialog;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -21,29 +14,24 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Observer;
 
 import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
-import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
-import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.TracsPageIdRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 
-public class NotificationsActivity extends BaseTracsActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class NotificationsActivity extends BaseTracsActivity {
     public static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
     private NotificationsBundle dispatchNotifications;
-    private int notificationsRetrieved;
-    private ProgressDialog loadingDialog;
     private NotificationsAdapter adapter;
     private ListView notificationsList;
 
@@ -66,8 +54,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
     }
 
     private void init() {
-        loadingDialog = new ProgressDialog(this);
-        refreshNotifications(true);
+        refreshNotifications();
     }
 
     @Override
@@ -85,7 +72,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         );
         refreshButton.setOnMenuItemClickListener(
                 item -> {
-                    NotificationsActivity.this.refreshNotifications(true);
+                    NotificationsActivity.this.refreshNotifications();
                     return false;
                 }
         );
@@ -93,26 +80,17 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         return true;
     }
 
-    @Override
-    public void onRefresh() {
-        refreshNotifications(false);
-    }
-
-    private void refreshNotifications(boolean showDialog) {
-        if (showDialog) {
-            loadingDialog.setMessage("Loading Notifications...");
-            loadingDialog.show();
-        }
+    private void refreshNotifications() {
         if (this.tracsNotifications != null ){
             this.tracsNotifications.deleteObservers();
         }
         this.tracsNotifications = new NotificationsBundle();
         this.tracsNotifications.addObserver(this);
         IntegrationServer.getInstance()
-                .getDispatchNotifications(NotificationsActivity.this::onResponse);
+                .getDispatchNotifications(NotificationsActivity.this::onDispatchResponse);
     }
 
-    private void onResponse(NotificationsBundle response) {
+    private void onDispatchResponse(NotificationsBundle response) {
         if (response.size() == 0) {
             displayListView();
             return;
@@ -120,10 +98,10 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         this.dispatchNotifications = response;
         super.setBadgeCount(this.dispatchNotifications.totalUnread());
         TracsClient tracs = TracsClient.getInstance();
-        tracs.getNotifications(response, NotificationsActivity.this::onResponse, AnalyticsApplication.getContext());
+        tracs.getNotifications(response, NotificationsActivity.this::onTracsResponse, AnalyticsApplication.getContext());
     }
 
-    private void onResponse(TracsNotification response) {
+    private void onTracsResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.wtf(TAG, "Error retrieving notifications from TRACS");
         } else {
@@ -139,6 +117,7 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
      */
     private boolean allRequestsAreBack() {
         boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
+        if (!sizeMatch) { return false; }
         int totalSiteNames = 0;
         int totalPageIds = 0;
         for (TracsAppNotification notification : this.tracsNotifications) {
@@ -148,11 +127,11 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         }
         boolean siteNamesDone = totalSiteNames == tracsNotifications.size();
         boolean pageIdsDone = totalPageIds == tracsNotifications.size();
-        return sizeMatch && siteNamesDone && pageIdsDone;
+        return siteNamesDone && pageIdsDone;
     }
 
     private void displayListView() {
-        loadingDialog.dismiss();
+        findViewById(R.id.loading_spinner).setVisibility(View.GONE);
         notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this);
         notificationsList.setAdapter(adapter);
@@ -222,7 +201,6 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
             }
         }
         if (allRequestsAreBack()) {
-            this.notificationsRetrieved = 0;
             HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
             displayListView();
         }

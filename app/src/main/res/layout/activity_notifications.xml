@@ -8,7 +8,7 @@
     tools:context="edu.txstate.mobile.tracs.NotificationsActivity">
 
     <include layout="@layout/toolbar" />
-
+    <include layout="@layout/loading_spinner" />
     <include layout="@layout/content_notifications" />
 
 </LinearLayout>
