@@ -104,9 +104,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
         convertView.findViewById(R.id.delete).setOnClickListener(v -> {
-            TracsAppNotification notification = (TracsAppNotification) getItem(position);
-            remove(notification);
-//            new StatusUpdate().updateCleared(notification);
+            deleteNotification(position);
         });
 
         convertView.setTag(rowHolder);
@@ -117,6 +115,13 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
             context.startActivity(intent);
             new StatusUpdate().updateRead(notification);
         });
+    }
+
+    private void deleteNotification(int position) {
+        TracsAppNotification notification = (TracsAppNotification) getItem(position);
+        remove(notification);
+        closeItem(position);
+//        new StatusUpdate().updateCleared(notification);
     }
 
     static class RowHolder {
