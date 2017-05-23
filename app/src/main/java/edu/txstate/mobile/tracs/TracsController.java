@@ -1,9 +1,11 @@
 package edu.txstate.mobile.tracs;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.FileDownloader;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.PageLoader;
 import edu.txstate.mobile.tracs.util.Registrar;
 import edu.txstate.mobile.tracs.util.TracsClient;
 
@@ -66,6 +69,10 @@ class TracsController {
         TracsClient.getInstance().verifySession(TracsController.this::onLoginResponse);
     }
 
+    void loadHtml(String html) {
+        this.tracsView.loadData(html, "text/html", null);
+    }
+
     void setDownloadListener(DownloadListener downloadListener) {
         this.tracsView.setDownloadListener(downloadListener);
     }
@@ -99,6 +106,8 @@ class TracsController {
 
 
     private class TracsWebViewClient extends WebViewClient {
+        private boolean hadError = false;
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -111,10 +120,18 @@ class TracsController {
             return super.shouldInterceptRequest(view, request);
         }
 
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            super.onReceivedError(view, errorCode, description, failingUrl);
+            TracsController.this.loadHtml(PageLoader.getInstance().loadHtml("html/no_internet.html"));
+            Log.wtf(TAG, description);
+        }
+
         @SuppressLint("ApplySharedPref")
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+
             Log.wtf(TAG, url);
             Context context = AnalyticsApplication.getContext();
             String loginUrl = context.getString(R.string.tracs_login);
