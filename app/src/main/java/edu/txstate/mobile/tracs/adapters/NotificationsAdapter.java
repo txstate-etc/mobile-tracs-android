@@ -121,7 +121,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         TracsAppNotification notification = (TracsAppNotification) getItem(position);
         remove(notification);
         closeItem(position);
-//        new StatusUpdate().updateCleared(notification);
+        new StatusUpdate().updateCleared(notification);
     }
 
     static class RowHolder {
