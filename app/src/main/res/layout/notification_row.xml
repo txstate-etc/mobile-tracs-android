@@ -41,12 +41,13 @@
             android:paddingEnd="10dp"
             android:paddingStart="10dp"
             android:textAlignment="gravity"
-            android:textSize="50sp" />
+            android:textSize="36sp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/notification_icon"
+            android:layout_toRightOf="@+id/notification_icon"
             android:orientation="vertical">
 
             <TextView
@@ -57,7 +58,7 @@
                 android:ellipsize="end"
                 android:paddingTop="5dp"
                 android:singleLine="true"
-                android:textSize="18sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/notification_site_name"
@@ -65,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:paddingTop="5dp"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
     </RelativeLayout>

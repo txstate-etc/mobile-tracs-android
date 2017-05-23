@@ -131,6 +131,12 @@ public class NotificationsActivity extends BaseTracsActivity implements SwipeRef
         }
     }
 
+    /**
+     * Overkill to check if notifications are back, activate only if there is a problem
+     * with not getting PageIds or SiteNames back.
+     * @return true if PageIds and Sitenames are set and both dispatch and tracs arrays
+     * are the same size.
+     */
     private boolean allRequestsAreBack() {
         boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
         int totalSiteNames = 0;
