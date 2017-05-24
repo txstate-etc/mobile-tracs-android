@@ -61,7 +61,7 @@
                 android:value="edu.txstate.mobile.tracs.MainActivity" />
         </activity>
         <activity android:name=".ContactActivity"
-            android:label="@string/menu_contact_us"
+            android:label="@string/menu_tracs_support"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

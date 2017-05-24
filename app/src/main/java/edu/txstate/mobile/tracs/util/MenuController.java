@@ -8,11 +8,13 @@ import android.net.Uri;
 
 import edu.txstate.mobile.tracs.ContactActivity;
 import edu.txstate.mobile.tracs.FeedbackActivity;
+import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationSettingsActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 
 public class MenuController {
+    private static final String HOME_ACTIVITY = "MainActivity";
     private static final String NOTIFICATIONS_ACTIVITY = "NotificationActivity";
     private static final String SETTINGS_ACTIVITY = "NotificationSettingsActivity";
     private static final String FEEDBACK_ACTIVITY = "FeedbackActivity";
@@ -43,8 +45,10 @@ public class MenuController {
             case R.id.menu_feedback:
                 launchIntent(FEEDBACK_ACTIVITY, FeedbackActivity.class, context);
                 break;
-            case R.id.menu_contact_us:
+            case R.id.menu_tracs_support:
                 launchIntent(CONTACT_ACTIVITY, ContactActivity.class, context);
+            case android.R.id.home:
+                launchIntent(HOME_ACTIVITY, MainActivity.class, context);
             default:
                 return false;
         }

@@ -11,7 +11,7 @@ document.getElementsByTagName('form')[0].onsubmit = function() {
             publicStation = inputs[i].checked;
         }
     }
-    TracsController.deliver(username, password, !publicStation);
+    TracsWebView.deliver(username, password, !publicStation);
 
     return true;
 }

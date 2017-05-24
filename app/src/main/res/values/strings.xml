@@ -19,6 +19,6 @@
     <string name="menu_about_us">About Us</string>
     <string name="menu_dublabs">Go to TXST Mobile</string>
     <string name="menu_feedback">Give us Feedback</string>
-    <string name="menu_contact_us">Contact Us</string>
+    <string name="menu_tracs_support">TRACS Support</string>
     <string name="clear_all_prompt">Clear all notifications?</string>
 </resources>

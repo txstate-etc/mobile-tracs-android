@@ -23,7 +23,7 @@ public class ContactActivity extends BaseTracsActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.setupOptionsMenu(menu);
-        super.optionsMenu.findItem(R.id.menu_contact_us).setEnabled(false);
+        super.optionsMenu.findItem(R.id.menu_tracs_support).setEnabled(false);
         return true;
     }
 }

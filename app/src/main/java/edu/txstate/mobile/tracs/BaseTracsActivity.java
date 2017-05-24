@@ -68,9 +68,9 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
     @Override
     protected void onPause() {
-        super.onPause();
         LoginStatus.getInstance().deleteObserver(this);
         cancelRequests();
+        super.onPause();
     }
 
     @Override
@@ -101,10 +101,12 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     }
 
     private void updateNotificationButtonStatus(boolean loggedIn) {
-        MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
-        notification.getActionView().setEnabled(loggedIn);
-        notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
-        getBadgeCount(loggedIn);
+        if (this.optionsMenu != null) {
+            MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
+            notification.getActionView().setEnabled(loggedIn);
+            notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
+            getBadgeCount(loggedIn);
+        }
     }
 
     private void getBadgeCount(boolean loggedIn) {
@@ -131,13 +133,15 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
     void setBadgeCount(int count) {
         String badgeCount = String.valueOf(count);
-        View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
-        TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
-        if (count == 0) {
-            badge.setVisibility(View.INVISIBLE);
-        } else {
-            badge.setText(badgeCount);
-            badge.setVisibility(View.VISIBLE);
+        if (this.optionsMenu != null) {
+            View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
+            TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+            if (count == 0) {
+                badge.setVisibility(View.INVISIBLE);
+            } else {
+                badge.setText(badgeCount);
+                badge.setVisibility(View.VISIBLE);
+            }
         }
     }
 

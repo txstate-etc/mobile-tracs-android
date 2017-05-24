@@ -18,10 +18,10 @@ public class MainActivity extends BaseTracsActivity {
     private static final String SCREEN_NAME = "TRACS";
     private static final String TRACS_PORTAL_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
                                                     + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
+    private TracsWebView tracsWebView;
 
     @SuppressWarnings("unused")
     private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,11 @@ public class MainActivity extends BaseTracsActivity {
         }
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
+        LoginStatus.getInstance().addObserver(this);
+
+        String destinationUrl = getDestinationUrl();
+        TracsWebView tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
+        tracsWebView.loadUrl(destinationUrl, true);
     }
 
     @Override
@@ -42,19 +47,6 @@ public class MainActivity extends BaseTracsActivity {
         if (launchedFromNotification()) {
             goToNotifications();
         }
-
-        LoginStatus.getInstance().addObserver(this);
-
-        String destinationUrl = getDestinationUrl();
-        final TracsController tracsWebView = new TracsController((WebView) findViewById(R.id.tracs_webview));
-        tracsWebView.loadUrl(destinationUrl);
-        tracsWebView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> tracsWebView.downloadFile(url, mimetype));
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        LoginStatus.getInstance().deleteObserver(this);
     }
 
     @Override
@@ -62,6 +54,12 @@ public class MainActivity extends BaseTracsActivity {
         super.onCreateOptionsMenu(menu);
         super.setupOptionsMenu(menu);
         return true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LoginStatus.getInstance().deleteObserver(this);
     }
 
     @Override
