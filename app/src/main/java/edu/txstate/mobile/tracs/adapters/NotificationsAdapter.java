@@ -13,6 +13,7 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
 import java.util.HashMap;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
@@ -100,11 +101,19 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
-        int typeface = content.hasBeenRead() ? Typeface.NORMAL : Typeface.BOLD;
+        int typeface;
+        if (!content.hasBeenRead()) {
+            typeface = Typeface.BOLD;
+            rowHolder.fontAwesomeIcon.setBackgroundColor(AnalyticsApplication
+                    .getContext().getResources().getColor(R.color.unreadNotificationBackground));
+        } else {
+            typeface = Typeface.NORMAL;
+            rowHolder.fontAwesomeIcon.setBackgroundColor(AnalyticsApplication
+                    .getContext().getResources().getColor(R.color.readNotificationBackground));
+        }
+
+
         rowHolder.titleText.setTypeface(null, typeface);
-        rowHolder.siteName.setTypeface(null, typeface);
-
-
         rowHolder.titleText.setText(content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
@@ -130,7 +139,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         new StatusUpdate().updateCleared(notification);
     }
 
-    static class RowHolder {
+    class RowHolder {
         FontAwesome fontAwesomeIcon;
         TextView siteName;
         TextView titleText;

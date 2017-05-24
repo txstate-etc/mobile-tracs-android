@@ -10,10 +10,11 @@
     <color name="colorHeaderText">@color/colorPrimary</color>
     <color name="colorHeaderIcons">@color/colorPrimary</color>
     <color name="badgeTextColor">#FFFFFF</color>
-    <color name="unreadNotificationBackground">#EFEFF4</color>
+    <color name="unreadNotificationBackground">#e8e3db</color>
     <color name="unreadNotificationText">#000000</color>
     <color name="dismissBackground">#E51C1C</color>
     <color name="switchAccent">#4CD964</color>
+    <color name="readNotificationBackground">@color/background_material_light</color>
     <color tools:override="true" name="foreground_material_light">#e8e3db</color>
     <color tools:override="true" name="secondary_text_default_material_dark">#ffffff</color>
     <color tools:override="true" name="primary_text_default_material_dark">#b4ffffff</color>

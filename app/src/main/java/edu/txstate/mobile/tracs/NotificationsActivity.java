@@ -69,7 +69,7 @@ public class NotificationsActivity extends BaseTracsActivity {
         notifications.setVisible(false);
         MenuItem clearAll = super.optionsMenu.findItem(R.id.clear_all);
         clearAll.setIcon(
-                new IconDrawable(this, FontAwesomeIcons.fa_check_circle_o)
+                new IconDrawable(this, FontAwesomeIcons.fa_times_circle_o)
                         .colorRes(R.color.colorHeaderIcons)
                         .actionBarSize()
         );
@@ -79,7 +79,7 @@ public class NotificationsActivity extends BaseTracsActivity {
                     return false;
                 }
         );
-        clearAll.setVisible(true);
+        clearAll.setVisible(false);
         return true;
     }
 
