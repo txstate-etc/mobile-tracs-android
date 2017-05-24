@@ -35,37 +35,42 @@
 
         <edu.txstate.mobile.tracs.util.FontAwesome
             android:id="@+id/notification_icon"
-            android:layout_width="wrap_content"
+            android:text="icon"
+            android:layout_width="68dp"
             android:layout_height="fill_parent"
-            android:gravity="center_vertical"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:gravity="center_horizontal"
             android:textAlignment="gravity"
-            android:textSize="36sp" />
+            android:textSize="28sp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:layout_toEndOf="@+id/notification_icon"
             android:layout_toRightOf="@+id/notification_icon"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/notification_title"
+                android:text="title"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:ellipsize="end"
-                android:paddingTop="5dp"
+                android:layout_marginTop="5dp"
                 android:singleLine="true"
                 android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/notification_site_name"
+                android:text="site name"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom"
-                android:paddingTop="5dp"
                 android:textSize="14sp" />
 
         </LinearLayout>
