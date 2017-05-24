@@ -29,9 +29,9 @@
         android:title="@string/menu_feedback" />
 
     <item
-        android:id="@+id/menu_contact_us"
+        android:id="@+id/menu_tracs_support"
         accessible:showAsAction="never"
-        android:title="@string/menu_contact_us" />
+        android:title="@string/menu_tracs_support" />
 
     <item
         android:id="@+id/menu_dublabs"

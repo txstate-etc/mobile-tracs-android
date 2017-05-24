@@ -16,6 +16,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            //true is default
+        }
+        network_test {
+            debuggable true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
