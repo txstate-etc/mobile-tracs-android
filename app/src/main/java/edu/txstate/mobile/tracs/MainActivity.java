@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
 
@@ -35,7 +34,7 @@ public class MainActivity extends BaseTracsActivity {
         LoginStatus.getInstance().addObserver(this);
 
         String destinationUrl = getDestinationUrl();
-        TracsWebView tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
+        tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
         tracsWebView.loadUrl(destinationUrl, true);
     }
 
@@ -71,11 +70,6 @@ public class MainActivity extends BaseTracsActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @TargetApi(value = Build.VERSION_CODES.M)
-    private void requestWritePermission() {
-        this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-    }
 
     private boolean launchedFromNotification() {
         Intent callingIntent = getIntent();
@@ -95,6 +89,12 @@ public class MainActivity extends BaseTracsActivity {
             urlToLoad = TRACS_PORTAL_URL;
         }
         return urlToLoad;
+    }
+
+    @TargetApi(value = Build.VERSION_CODES.M)
+    private void requestWritePermission() {
+        this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 
     private boolean writePermissionNotGranted() {
