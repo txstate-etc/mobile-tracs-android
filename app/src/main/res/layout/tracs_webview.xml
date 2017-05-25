@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.txstate.mobile.tracs.MainActivity"
-    tools:showIn="@layout/activity_main">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <edu.txstate.mobile.tracs.TracsWebView xmlns:android="http://schemas.android.com/apk/res/android"
+    <edu.txstate.mobile.tracs.TracsWebView
         android:id="@+id/tracs_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>

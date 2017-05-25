@@ -3,6 +3,8 @@ package edu.txstate.mobile.tracs;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.webkit.WebView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -21,6 +23,10 @@ public class AnalyticsApplication extends Application {
         super.onCreate();
         Iconify.with(new FontAwesomeModule());
         context = this.getApplicationContext();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+            TracsWebView.setWebContentsDebuggingEnabled(true);
+        }
     }
 
     public static Context getContext() {
@@ -34,6 +40,4 @@ public class AnalyticsApplication extends Application {
         }
         return tracker;
     }
-
-
 }

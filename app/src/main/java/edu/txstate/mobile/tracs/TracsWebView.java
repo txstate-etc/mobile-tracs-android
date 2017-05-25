@@ -6,16 +6,13 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -52,22 +49,24 @@ public class TracsWebView extends WebView {
         init(context);
     }
 
-    @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
+    @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled", "ClickableViewAccessibility"})
     private void init(Context context) {
         this.context = context;
         this.fileDownloader = new FileDownloader(this.context);
         setWebViewClient(new TracsWebViewClient());
-        setWebChromeClient(new TracsWebChromeClient());
-        if (Build.VERSION.SDK_INT >= 19) {
+        setWebChromeClient(new TracsWebChromeClient(this.context));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
         } else {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
-        WebSettings tracs = getSettings();
-        tracs.setJavaScriptCanOpenWindowsAutomatically(true);
-        tracs.setJavaScriptEnabled(true);
-        tracs.setBuiltInZoomControls(true);
-        tracs.setDisplayZoomControls(false);
+
+        getSettings().setSupportZoom(true);
+        getSettings().setBuiltInZoomControls(true);
+        getSettings().setDisplayZoomControls(false);
+        getSettings().setJavaScriptEnabled(true);
+        getSettings().setLoadWithOverviewMode(true);
+        getSettings().setUseWideViewPort(true);
         addJavascriptInterface(this, "TracsWebView");
         setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> downloadFile(url, mimetype));
     }
@@ -94,18 +93,10 @@ public class TracsWebView extends WebView {
         }
     }
 
-    @Override
-    public void postUrl(String url, byte[] postData) {
-        Log.i(TAG, url);
-//        super.postUrl(url, postData);
-    }
-
-
-
     private void onLoginResponse(String session) {
         if (session != null) {
             LoginStatus.getInstance().login();
-            AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
+            setSessionId(session);
             CookieManager.getInstance().setCookie(context.getString(R.string.tracs_base), "JSESSIONID=" + session + "; Path=/;");
             this.loadUrl(this.urlToLoad, false);
             return;
@@ -117,28 +108,20 @@ public class TracsWebView extends WebView {
         fileDownloader.downloadFile(url, mimetype);
     }
 
-    private void loadHtml(String html) {
+    public void loadHtml(String html) {
         loadData(html, "text/html", null);
     }
 
-    private void setSessionId(String sessionId) {
+    public void setSessionId(String sessionId) {
         AppStorage.put(AppStorage.SESSION_ID, sessionId, context);
     }
 
     private class TracsWebChromeClient extends WebChromeClient {
-        private static final String TAG = "TracsWebChromeClient";
-        @Override
-        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            Log.i(TAG, consoleMessage.message());
-            return super.onConsoleMessage(consoleMessage);
-        }
+        Context context;
 
-
-
-        @Override
-        public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            Log.i(TAG, resultMsg.toString());
-            return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
+        public TracsWebChromeClient(Context context) {
+            super();
+            this.context = context;
         }
     }
 
@@ -147,14 +130,13 @@ public class TracsWebView extends WebView {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.i(TAG, url);
             return false;
         }
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            TracsWebView.this.loadHtml(PageLoader.getInstance().loadHtml("html/no_internet.html"));
+            TracsWebView.class.cast(view).loadHtml(PageLoader.getInstance().loadHtml("html/no_internet.html"));
             Log.wtf(TAG, description);
         }
 
@@ -191,20 +173,19 @@ public class TracsWebView extends WebView {
 
             if (url.contains(loginSuccessUrl)) {
                 SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
-                prefs.edit().putString("user-agent", getSettings().getUserAgentString()).commit();
+                prefs.edit().putString("user-agent", view.getSettings().getUserAgentString()).commit();
                 String cookies = CookieManager.getInstance().getCookie(url);
                 String newCookie = null;
                 if (cookies != null) {
                     newCookie = cookies.split("=")[1];
                 }
                 LoginStatus.getInstance().login();
-                TracsWebView.this.setSessionId(newCookie);
+                TracsWebView.class.cast(view).setSessionId(newCookie);
                 Registrar.getInstance().registerDevice();
             }
 
             if (logoutUrl.equals(url)) {
                 LoginStatus.getInstance().logout();
-                //TODO: What the hell am I doing, I made an observer pattern to handle this.
                 AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());

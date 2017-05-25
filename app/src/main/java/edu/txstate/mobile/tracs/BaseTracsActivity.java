@@ -31,7 +31,6 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(getResources().getColor(R.color.colorHeader));
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorHeaderText));
@@ -39,7 +38,6 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
                 .colorRes(R.color.colorHeaderIcons)
                 .actionBarSize()
         );
-
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
