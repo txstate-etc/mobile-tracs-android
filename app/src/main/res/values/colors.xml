@@ -10,6 +10,7 @@
     <color name="colorHeaderText">@color/colorPrimary</color>
     <color name="colorHeaderIcons">@color/colorPrimary</color>
     <color name="badgeTextColor">#FFFFFF</color>
+    <color name="badgeColor">#FF3B30</color>
     <color name="unreadNotificationBackground">#e8e3db</color>
     <color name="unreadNotificationText">#000000</color>
     <color name="dismissBackground">#E51C1C</color>
