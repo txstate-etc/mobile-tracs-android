@@ -55,7 +55,8 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return MenuController.handleMenuClick(item.getItemId(), this) || super.onOptionsItemSelected(item);
+        return MenuController.handleMenuClick(item.getItemId(), this)
+               || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -87,7 +88,10 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         this.optionsMenu = menu;
         MenuItem notificationIcon = menu.findItem(R.id.menu_notifications);
         notificationIcon.setActionView(R.layout.notification_menu_item);
-        notificationIcon.getActionView().setOnClickListener(v -> MenuController.handleMenuClick(notificationIcon.getItemId(), BaseTracsActivity.this));
+        notificationIcon.getActionView()
+                .setOnClickListener(v ->
+                        MenuController.handleMenuClick(notificationIcon.getItemId(),
+                                BaseTracsActivity.this));
         updateNotificationButtonStatus(LoginStatus.getInstance().isUserLoggedIn());
     }
 
