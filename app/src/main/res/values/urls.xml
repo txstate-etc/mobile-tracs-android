@@ -9,8 +9,12 @@
     <string name="tracs_site">direct/site/</string>
     <string name="tracs_portal">portal/pda</string>
     <string name="tracs_logout">https://login.its.txstate.edu/logout?service=https://staging.tracs.txstate.edu/sakai-login-tool/container</string>
+    <string name="tracs_user_sites_url">direct/membership.json</string>
+
     <string name="dispatch_base">https://dispatchqa1.its.qual.txstate.edu/</string>
     <string name="dispatch_notifications">notifications</string>
     <string name="dispatch_settings">settings</string>
-    <string name="user_sites_url">direct/membership.json</string>
+    <string name="dispatch_registration">https://dispatchqa1.its.qual.txstate.edu/registrations</string>
+
+    <string name="jwt_url">https://dispatchqa1.its.qual.txstate.edu:3000/token.pl</string>
 </resources>

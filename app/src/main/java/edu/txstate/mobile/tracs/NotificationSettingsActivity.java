@@ -124,9 +124,8 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         String settingsUrl = context.getString(R.string.dispatch_base) +
                              context.getString(R.string.dispatch_settings);
 
-        //No tag needed, this request doesn't ever need to be cancelled.
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                 new SettingsRequest(settingsUrl,
-                        response -> Toast.makeText(context, "Settings updated", Toast.LENGTH_SHORT).show()), null);
+                        response -> Toast.makeText(context, "Settings updated!", Toast.LENGTH_SHORT).show()), null);
     }
 }

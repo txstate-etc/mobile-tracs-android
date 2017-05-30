@@ -147,6 +147,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         rowHolder.settingStatus.setOnClickListener(this::onClicked);
 
         convertView.setTag(rowHolder);
+        SettingsStore.getInstance().put(rowHolder.settingId, rowHolder.settingStatus.isChecked());
 
         return convertView;
     }

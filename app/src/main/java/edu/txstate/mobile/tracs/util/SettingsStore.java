@@ -5,7 +5,7 @@ import com.google.gson.JsonStreamParser;
 
 public class SettingsStore {
     private static final String TAG = "SettingsStore";
-    private final boolean DEFAULT_SETTING = true;
+    public static final boolean DEFAULT_SETTING = true;
     private JsonObject settings = new JsonObject();
 
     private static SettingsStore notificationSettings;

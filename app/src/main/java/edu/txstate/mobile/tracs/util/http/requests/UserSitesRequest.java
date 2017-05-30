@@ -27,7 +27,7 @@ public class UserSitesRequest extends Request<LinkedHashMap<String, String>> {
     private Response.Listener<LinkedHashMap<String, String>> listener;
     private Response.ErrorListener errorListener;
     private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
-            AnalyticsApplication.getContext().getString(R.string.user_sites_url);
+            AnalyticsApplication.getContext().getString(R.string.tracs_user_sites_url);
 
     public UserSitesRequest(Response.Listener<LinkedHashMap<String, String>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, URL, errorListener);

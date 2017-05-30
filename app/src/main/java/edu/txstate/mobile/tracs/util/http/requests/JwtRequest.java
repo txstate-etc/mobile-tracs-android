@@ -32,7 +32,7 @@ public class JwtRequest extends StringRequest {
         SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
         String userAgent = prefs.getString("user-agent", "");
         prefs.edit().remove("user-agent").apply();
-        this.headers.put("Cookie", cookies.getCookie(url).split("; ")[1]);
+        this.headers.put("Cookie", cookies.getCookie(url));
         this.headers.put("User-Agent", userAgent);
         return headers;
     }
