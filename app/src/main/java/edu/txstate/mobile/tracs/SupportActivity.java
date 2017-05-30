@@ -3,10 +3,10 @@ package edu.txstate.mobile.tracs;
 import android.os.Bundle;
 import android.view.Menu;
 
-public class ContactActivity extends BaseTracsActivity {
+public class SupportActivity extends BaseTracsActivity {
 
-    private static final String TAG = "ContactActivity";
-    private static final String SCREEN_NAME = "Contact";
+    private static final String TAG = "SupportActivity";
+    private static final String SCREEN_NAME = "Support";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
