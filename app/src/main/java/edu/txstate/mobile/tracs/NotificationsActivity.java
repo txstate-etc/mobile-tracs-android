@@ -174,7 +174,7 @@ public class NotificationsActivity extends BaseTracsActivity {
                 getString(R.string.tracs_site) +
                 notification.getSiteId() +
                 "/pages.json";
-        Log.wtf(TAG, pageIdUrl);
+        Log.i(TAG, pageIdUrl);
         requestQueue.addToRequestQueue(new TracsPageIdRequest(
                 pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
         ), this);
