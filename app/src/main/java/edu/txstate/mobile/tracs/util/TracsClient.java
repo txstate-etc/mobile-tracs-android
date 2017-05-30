@@ -18,6 +18,7 @@ import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.listeners.LoginListener;
 import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsNotificationRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
@@ -34,7 +35,7 @@ public class TracsClient {
 
     private static TracsClient tracsClient;
 
-    private Response.Listener<String> loginListener;
+    private LoginListener loginListener;
 
     private TracsClient() {
     }
@@ -104,7 +105,7 @@ public class TracsClient {
 
     }
 
-    public void verifySession (Response.Listener<String> listener) {
+    public void verifySession (LoginListener listener) {
         this.loginListener = listener;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
@@ -114,17 +115,14 @@ public class TracsClient {
     }
 
     private void login () {
-        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
-        requestQueue.addToRequestQueue(new TracsLoginRequest(
-                SESSION_URL, this.loginListener, TracsClient.this::onStatusError), this);
+        TracsLoginRequest.execute(this.loginListener);
     }
 
     private void onSessionReturned(TracsSession session) {
         Context context = AnalyticsApplication.getContext();
         String currentUser = AppStorage.get(AppStorage.USERNAME, context);
         if (session.hasNetId() && session.getUserEid().equals(currentUser)) {
-            AppStorage.put(AppStorage.SESSION_ID, session.getSessionId(), context);
-            this.loginListener.onResponse(session.getSessionId());
+            this.loginListener.onResponse(AppStorage.get(AppStorage.SESSION_ID, context));
         } else if (AppStorage.credentialsAreStored(context)) {
             login();
         } else {

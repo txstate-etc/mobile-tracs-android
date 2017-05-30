@@ -22,7 +22,7 @@ import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.SettingsRequest;
+import edu.txstate.mobile.tracs.util.http.requests.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 

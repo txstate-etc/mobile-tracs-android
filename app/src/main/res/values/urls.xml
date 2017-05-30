@@ -2,12 +2,12 @@
 <resources>
     <string name="tracs_base">https://staging.tracs.txstate.edu/</string>
     <string name="tracs_announcement">direct/announcement/</string>
-    <string name="tracs_session">direct/session.json</string>
-    <string name="tracs_login">https://login.its.txstate.edu/login?service=https%3A%2F%2Fstaging.tracs.txstate.edu%2Fsakai-login-tool%2Fcontainer</string>
-    <string name="tracs_login_success">https://staging.tracs.txstate.edu/sakai-login-tool/container?ticket</string>
-    <string name="tracs_session_login">direct/session</string>
+    <string name="tracs_session">direct/session/current.json</string>
+    <string name="tracs_cas_login">https://login.its.txstate.edu/login?service=https%3A%2F%2Fstaging.tracs.txstate.edu%2Fsakai-login-tool%2Fcontainer</string>
+    <string name="tracs_login_success">https://staging.tracs.txstate.edu/portal</string>
+    <string name="tracs_session_login">portal/relogin</string>
     <string name="tracs_site">direct/site/</string>
-    <string name="tracs_portal">portal</string>
+    <string name="tracs_portal">portal/pda</string>
     <string name="tracs_logout">https://login.its.txstate.edu/logout?service=https://staging.tracs.txstate.edu/sakai-login-tool/container</string>
     <string name="dispatch_base">https://dispatchqa1.its.qual.txstate.edu/</string>
     <string name="dispatch_notifications">notifications</string>

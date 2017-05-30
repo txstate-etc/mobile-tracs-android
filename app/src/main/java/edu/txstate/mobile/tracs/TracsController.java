@@ -11,7 +11,6 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -87,7 +86,7 @@ class TracsController {
             tracsView.loadUrl(this.urlToLoad);
             return;
         }
-        tracsView.loadUrl(context.getString(R.string.tracs_login));
+        tracsView.loadUrl(context.getString(R.string.tracs_cas_login));
     }
 
     private void setSessionId(String sessionId) {
@@ -127,7 +126,7 @@ class TracsController {
             super.onPageFinished(view, url);
 
             Context context = AnalyticsApplication.getContext();
-            String loginUrl = context.getString(R.string.tracs_login);
+            String loginUrl = context.getString(R.string.tracs_cas_login);
             String loginSuccessUrl = context.getString(R.string.tracs_login_success);
             String logoutUrl = context.getString(R.string.tracs_logout);
 

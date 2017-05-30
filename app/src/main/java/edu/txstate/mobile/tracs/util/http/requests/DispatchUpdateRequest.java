@@ -37,8 +37,7 @@ public class DispatchUpdateRequest extends Request<Void> {
             e.printStackTrace();
         }
         String bodyString = body.toString();
-        byte[] bodyBytes = bodyString.getBytes();
-        return bodyBytes;
+        return bodyString.getBytes();
     }
 
     @Override
