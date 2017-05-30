@@ -47,8 +47,10 @@ public class MenuController {
                 break;
             case R.id.menu_tracs_support:
                 launchIntent(CONTACT_ACTIVITY, ContactActivity.class, context);
+                break;
             case android.R.id.home:
                 launchIntent(HOME_ACTIVITY, MainActivity.class, context);
+                break;
             default:
                 return false;
         }
