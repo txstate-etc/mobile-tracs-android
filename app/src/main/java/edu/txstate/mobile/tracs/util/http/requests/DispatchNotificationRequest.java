@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 
 public class DispatchNotificationRequest extends Request<NotificationsBundle> {
@@ -54,7 +55,7 @@ public class DispatchNotificationRequest extends Request<NotificationsBundle> {
             }
 
             for (JsonElement notification : notifications) {
-                if (notification.isJsonObject()) {
+                if (notification.isJsonObject() && notification.getAsJsonObject().get("keys").getAsJsonObject().get("object_type").getAsString().equals(NotificationTypes.ANNOUNCEMENT)) {
                     dispatchNotifications.add(new DispatchNotification((JsonObject) notification));
                 }
             }
