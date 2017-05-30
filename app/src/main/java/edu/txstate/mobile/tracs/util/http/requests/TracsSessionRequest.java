@@ -28,6 +28,7 @@ public class TracsSessionRequest extends Request<TracsSession> {
     private static final String URL = AnalyticsApplication.getContext().getString(R.string.tracs_base) +
             AnalyticsApplication.getContext().getString(R.string.tracs_session);
     private static final String SESSION_ERROR = "Could not retrieve session";
+    private static final String JSESSIONID = "JSESSIONID";
 
     public TracsSessionRequest(Map<String, String> headers,
                                Response.Listener<TracsSession> listener, Response.ErrorListener errorHandler) {
@@ -48,21 +49,14 @@ public class TracsSessionRequest extends Request<TracsSession> {
         try {
             String json = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-            String sessionId = response.headers.get("Set-Cookie");
             JsonStreamParser parser = new JsonStreamParser(json);
-            JsonArray sessions;
+            JsonObject session;
             if (parser.hasNext()) {
-                    sessions = parser.next().getAsJsonObject().get("session_collection").getAsJsonArray();
+                    session = parser.next().getAsJsonObject();
             } else {
-                sessions = new JsonArray();
+                session = new JsonObject();
             }
 
-            JsonObject session = sessions.get(0).getAsJsonObject();
-            if (sessionId != null) {
-                session.addProperty("sessionId", sessionId.split(";")[0].split("=")[1]);
-            } else {
-                session.addProperty("sessionId", AppStorage.get(AppStorage.SESSION_ID, AnalyticsApplication.getContext()));
-            }
             TracsSession tracsSession = gson.fromJson(session, TracsSession.class);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException | IllegalStateException e) {

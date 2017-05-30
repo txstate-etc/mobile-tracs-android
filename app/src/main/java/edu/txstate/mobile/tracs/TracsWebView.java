@@ -5,11 +5,9 @@ import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -55,11 +53,6 @@ public class TracsWebView extends WebView {
         this.fileDownloader = new FileDownloader(this.context);
         setWebViewClient(new TracsWebViewClient());
         setWebChromeClient(new TracsWebChromeClient(this.context));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
 
         getSettings().setSupportZoom(true);
         getSettings().setBuiltInZoomControls(true);
@@ -99,9 +92,9 @@ public class TracsWebView extends WebView {
             setSessionId(session);
             CookieManager.getInstance().setCookie(context.getString(R.string.tracs_base), "JSESSIONID=" + session + "; Path=/;");
             this.loadUrl(this.urlToLoad, false);
-            return;
+        } else {
+            loadUrl(context.getString(R.string.tracs_cas_login), false);
         }
-        loadUrl(context.getString(R.string.tracs_login), false);
     }
 
     private void downloadFile(String url, String mimetype) {
@@ -145,8 +138,10 @@ public class TracsWebView extends WebView {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
+            Log.i(TAG, url);
+
             Context context = AnalyticsApplication.getContext();
-            String loginUrl = context.getString(R.string.tracs_login);
+            String loginUrl = context.getString(R.string.tracs_cas_login);
             String loginSuccessUrl = context.getString(R.string.tracs_login_success);
             String logoutUrl = context.getString(R.string.tracs_logout);
 
@@ -171,7 +166,7 @@ public class TracsWebView extends WebView {
                 }
             }
 
-            if (url.contains(loginSuccessUrl)) {
+            if (url.equals(loginSuccessUrl)) {
                 SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
                 prefs.edit().putString("user-agent", view.getSettings().getUserAgentString()).commit();
                 String cookies = CookieManager.getInstance().getCookie(url);

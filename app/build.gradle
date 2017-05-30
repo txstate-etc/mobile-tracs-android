@@ -39,6 +39,7 @@ dependencies {
 
     //HTTP Requests
     compile 'com.android.volley:volley:1.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.0'
 
     //Analytics library
     compile 'com.google.android.gms:play-services-analytics:10.2.1'

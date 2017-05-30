@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class IntegrationServer {
 
     public void onResponse(String sessionId) {
         if (sessionId == null) {
-            loadFailedLoginIntent();
+            loadFailedLoginIntent(new VolleyError("Could not log user in!"));
         }
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
 
@@ -53,14 +54,14 @@ public class IntegrationServer {
                      FirebaseInstanceId.getInstance().getToken();
 
         Map<String, String> headers = new HashMap<>();
-        Response.ErrorListener errorHandler = error -> Log.wtf(TAG, error.getMessage());
         requestQueue.addToRequestQueue(new DispatchNotificationRequest(
-                url, headers, this.listener, errorHandler), this);
+                url, headers, this.listener, this::loadFailedLoginIntent), this);
     }
 
-    private void loadFailedLoginIntent() {
+    private void loadFailedLoginIntent(VolleyError error) {
+        Log.wtf(TAG, error.getMessage());
         LoginStatus.getInstance().logout();
-        String url = AnalyticsApplication.getContext().getString(R.string.tracs_login);
+        String url = AnalyticsApplication.getContext().getString(R.string.tracs_cas_login);
         Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);
         intent.putExtra("url", url);
         AnalyticsApplication.getContext().startActivity(intent);

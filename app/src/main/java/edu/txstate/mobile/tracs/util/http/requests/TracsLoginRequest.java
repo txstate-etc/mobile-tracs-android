@@ -1,47 +1,134 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
+import android.os.AsyncTask;
+import android.util.Log;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.http.listeners.LoginListener;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
-public class TracsLoginRequest extends StringRequest {
+public class TracsLoginRequest {
 
     private static final String TAG = "TracsLoginRequest";
-    private Map<String, String> params = new HashMap<>();
 
-    public TracsLoginRequest (String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        super(Method.POST, url, listener, errorListener);
+    private static LoginListener loginListener;
+    private static OkHttpClient client;
+    private static Request loginRequest, loginVerify;
+
+    private static final String LOGIN_URL = AnalyticsApplication.getContext().getResources().getString(R.string.tracs_base)
+            + AnalyticsApplication.getContext().getResources().getString(R.string.tracs_session_login);
+    private static final String SESSION_VERIFY_URL = AnalyticsApplication.getContext().getResources().getString(R.string.tracs_base)
+            + AnalyticsApplication.getContext().getResources().getString(R.string.tracs_session);
+
+    private TracsLoginRequest() {}
+
+    public static void execute(LoginListener listener) {
+        loginListener = listener;
+        client = new OkHttpClient().newBuilder()
+                .followSslRedirects(false)
+                .followRedirects(false)
+                .build();
+        new TracsLoginTask().execute();
     }
 
-    @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
-        params.put("_username", AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext()));
-        params.put("_password", AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext()));
-        return params;
-    }
 
-    @Override
-    public String getBodyContentType() {
-        return "application/x-www-form-urlencoded; charset=" + getParamsEncoding();
-    }
+    private static class TracsLoginTask extends AsyncTask<String, Void, String> {
 
-    @Override
-    protected Response<String> parseNetworkResponse(NetworkResponse response) {
-        String jSessionId = response.headers.get("Set-Cookie");
-        if (jSessionId == null) {
-            return Response.error(new VolleyError("Login Attempt Failed."));
+        @Override
+        protected String doInBackground(String... strings) {
+            okhttp3.Response response = null;
+            MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+            String formBody = "eid=" + AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext())
+                    + "&pw=" + AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+            RequestBody body = RequestBody.create(mediaType, formBody);
+            loginRequest = new Request.Builder()
+                    .url(LOGIN_URL)
+                    .post(body)
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .build();
+            try {
+                response = client.newCall(loginRequest).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            boolean sessionIsPresent = response != null
+                                     && response.body() != null
+                                     && response.header("Set-Cookie") != null;
+            if (sessionIsPresent) {
+                String[] cookies = response.header("Set-Cookie").split(";");
+                for (String cookie : cookies) {
+                    String name = null;
+                    String value = null;
+                    if (cookie != null && cookie.length() >= 2) {
+                        name = cookie.split("=")[0];
+                        value = cookie.split("=")[1];
+                    }
+                    if ("JSESSIONID".equals(name)) {
+                        return value;
+                    }
+                }
+            }
+            return null;
         }
-        jSessionId = jSessionId.split(";")[0].split("=")[1];
-        AppStorage.put(AppStorage.SESSION_ID, jSessionId, AnalyticsApplication.getContext());
-        return Response.success(jSessionId, HttpHeaderParser.parseCacheHeaders(response));
+
+        @Override
+        protected void onPostExecute(String session) {
+            new TracsLoginVerification().execute(session);
+        }
     }
+
+    private static class TracsLoginVerification extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            okhttp3.Response response = null;
+            String jSessionId = strings[0];
+            loginVerify = new Request.Builder()
+                    .url(SESSION_VERIFY_URL)
+                    .get()
+                    .addHeader("Cookie", "JSESSIONID=" + jSessionId + ";")
+                    .build();
+            try {
+                response = client.newCall(loginVerify).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+                if (response != null && response.body() != null) {
+                if (response.code() != 200) {
+                    return null;
+                }
+                JSONObject body = null;
+                try {
+                    body = new JSONObject(response.body().string());
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    if (body != null && body.getString("userEid").equals(AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext()))) {
+                        return jSessionId;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String sessionId) {
+            TracsLoginRequest.loginListener.onResponse(sessionId);
+        }
+    }
+
 }
