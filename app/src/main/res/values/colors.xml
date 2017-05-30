@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools"
-    >
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#501214</color>
     <color name="colorIcons">@color/colorPrimary</color>
     <color name="colorAccent">#eeeeee</color>
@@ -10,7 +9,7 @@
     <color name="colorHeaderText">@color/colorPrimary</color>
     <color name="colorHeaderIcons">@color/colorPrimary</color>
     <color name="badgeTextColor">#FFFFFF</color>
-    <color name="badgeColor">#FF3B30</color>
+    <color name="badgeColor">@color/colorPrimary</color>
     <color name="unreadNotificationBackground">#EFEFF4</color>
     <color name="unreadNotificationText">#000000</color>
     <color name="dismissBackground">#E51C1C</color>
