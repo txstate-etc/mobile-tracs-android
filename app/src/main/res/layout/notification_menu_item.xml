@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center">
 
     <com.joanzapata.iconify.widget.IconTextView android:text="{fa-bell-o}"
         android:id="@+id/notification_menu_icon"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textColor="@color/colorHeaderText"
         android:textSize="26sp"
         android:gravity="center"
-        android:layout_marginRight="10dp"
-        android:layout_marginEnd="10dp"
+        android:padding="10dp"
         tools:ignore="HardcodedText" />
 
     <TextView android:text="0"
@@ -22,12 +22,15 @@
         android:textSize="12sp"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:gravity="center"
         android:layout_alignTop="@id/notification_menu_icon"
         android:layout_alignRight="@id/notification_menu_icon"
+        android:layout_alignEnd="@+id/notification_menu_icon"
         android:background="@drawable/notification_badge"/>
 
 </RelativeLayout>
