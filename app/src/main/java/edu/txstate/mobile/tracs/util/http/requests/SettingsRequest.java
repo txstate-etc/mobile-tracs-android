@@ -40,23 +40,27 @@ public class SettingsRequest extends Request<Void> {
         JsonObject settings = SettingsStore.getInstance().getSettings();
         JsonArray blacklist = new JsonArray();
         JsonObject blacklistEntry = new JsonObject();
-        blacklistEntry.add("keys", new JsonObject());
-        blacklistEntry.add("other_keys", new JsonObject());
-        Iterator settingsIterator = settings.entrySet().iterator();
-        while (settingsIterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) settingsIterator.next();
+        boolean firstEntry = true;
+
+        for (Map.Entry pair : settings.entrySet() ) {
             String key = pair.getKey().toString();
             boolean disabled = !((JsonPrimitive) pair.getValue()).getAsBoolean();
             if (disabled) {
+                if (firstEntry) {
+                    firstEntry = false;
+                    blacklistEntry.add("keys", new JsonObject());
+                    blacklistEntry.add("other_keys", new JsonObject());
+                }
                 if (checkNotificationType(key)) {
                     blacklistEntry.get("keys").getAsJsonObject().addProperty("object_type", pair.getKey().toString());
                 } else {
                     blacklistEntry.get("other_keys").getAsJsonObject().addProperty("site_id", pair.getKey().toString());
                 }
             }
+        }
+        if (blacklistEntry.size() > 0) {
             blacklist.add(blacklistEntry);
         }
-
         JsonObject body = new JsonObject();
         body.add("blacklist", blacklist);
         body.addProperty("global_disable", false);
@@ -67,7 +71,7 @@ public class SettingsRequest extends Request<Void> {
     @Override
     protected Response<Void> parseNetworkResponse(NetworkResponse response) {
         if (response.statusCode >= 400) {
-            return Response.error(new VolleyError("Error saving settings."));
+            return Response.error(new VolleyError("Error saving settings!"));
         }
         return Response.success(null, HttpHeaderParser.parseCacheHeaders(response));
     }

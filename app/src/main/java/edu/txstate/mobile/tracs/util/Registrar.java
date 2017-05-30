@@ -13,6 +13,7 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.BuildConfig;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchRegistrationRequest;
 import edu.txstate.mobile.tracs.util.http.requests.JwtRequest;
@@ -22,8 +23,8 @@ public class Registrar {
     private Map<String, String> registration = new HashMap<>();
     private String jwt;
 
-    private static final String tokenUrl = "https://dispatchqa1.its.qual.txstate.edu:3000/token.pl";
-    private static final String dispatchUrl = "https://dispatchqa1.its.qual.txstate.edu/registrations";
+    private static final String TOKEN_URL = AnalyticsApplication.getContext().getString(R.string.jwt_url);
+    private static final String DISPATCH_URL = AnalyticsApplication.getContext().getString(R.string.dispatch_registration);
     private static final String TAG = "Registrar";
     private static Registrar registrar;
 
@@ -55,7 +56,7 @@ public class Registrar {
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
         requestQueue.addToRequestQueue(new JwtRequest(
-                tokenUrl,
+                TOKEN_URL,
                 headers,
                 Registrar.getInstance()::receiveJwt,
                 error -> Log.wtf(TAG, error.getMessage())
@@ -63,7 +64,7 @@ public class Registrar {
     }
 
     private void receiveJwt(String jwt) {
-        String url = dispatchUrl + "?jwt=" + jwt;
+        String url = DISPATCH_URL + "?jwt=" + jwt;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
         DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo);
