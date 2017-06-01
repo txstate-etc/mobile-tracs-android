@@ -22,4 +22,20 @@
     <string name="menu_tracs_support">TRACS Support</string>
     <string name="clear_all_prompt">Clear all notifications?</string>
     <string name="about_the_app_label">About</string>
+    <string name="tracs_beta_app">TRACKS BETA APP</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="feature_intro">these are the things you can do...</string>
+    <string name="login_feature">Stay logged into TRACS longer</string>
+    <string name="clock_icon">{fa-clock-o}</string>
+    <string name="file_icon">{fa-file-o}</string>
+    <string name="document_feature">Interact with your documents</string>
+    <string name="bell_icon">{fa-bell-o}</string>
+    <string name="announcement_feature">Receive course \nAnnouncement notifications</string>
+    <string name="rotate_feature">Rotate your device</string>
+    <string name="mobile_icon">{fa-mobile-phone}</string>
+    <string name="beta_info">This version is being heavily tested over summer \nPLEASE give us your feedback</string>
+    <string name="horizontal_phone_description">Horizontal Mobile Phone</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
