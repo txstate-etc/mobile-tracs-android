@@ -69,7 +69,7 @@ public class AboutActivity extends BaseTracsActivity {
         IconDrawable horizPhoneIcon = new IconDrawable(this,
                 FontAwesomeIcons.fa_mobile_phone)
                 .colorRes(R.color.betaIconColor)
-                .sizeDp(48);
+                .sizeDp(iconSize);
 
         AnimationSet animSet = new AnimationSet(true);
         animSet.setInterpolator(new AccelerateDecelerateInterpolator());
