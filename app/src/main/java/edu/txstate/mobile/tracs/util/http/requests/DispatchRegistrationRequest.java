@@ -11,6 +11,8 @@ import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONObject;
 
+import java.util.Map;
+
 import edu.txstate.mobile.tracs.util.LoginStatus;
 
 public class DispatchRegistrationRequest extends Request<Void> {
