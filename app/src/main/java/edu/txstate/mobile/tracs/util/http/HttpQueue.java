@@ -2,19 +2,32 @@ package edu.txstate.mobile.tracs.util.http;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.LruCache;
 
+import com.android.volley.Network;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HttpClientStack;
+import com.android.volley.toolbox.HttpStack;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+
+import java.io.File;
 
 @SuppressLint("StaticFieldLeak")
 public class HttpQueue {
     private static HttpQueue httpQueue;
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
+
+    private final int THREAD_COUNT = 12;
 
     private static Context context;
 
@@ -46,7 +59,7 @@ public class HttpQueue {
 
     public RequestQueue getRequestQueue() {
         if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+            requestQueue = this.newRequestQueue(context.getApplicationContext(), THREAD_COUNT);
         }
         return requestQueue;
     }
@@ -58,5 +71,18 @@ public class HttpQueue {
 
     public ImageLoader getImageLoader() {
         return imageLoader;
+    }
+
+    private RequestQueue newRequestQueue (Context context, int threads) {
+        final String DEFAULT_CACHE_DIR = "volley";
+        File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
+
+        HttpStack stack = new HurlStack();
+        Network network = new BasicNetwork(stack);
+
+        RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network, threads);
+        queue.start();
+
+        return queue;
     }
 }
