@@ -66,7 +66,7 @@ public class TracsWebView extends WebView {
 
     @JavascriptInterface
     public void deliver(String username, String password, boolean privateDevice) {
-        AppStorage.put(AppStorage.USERNAME, username, context);
+        AppStorage.put(AppStorage.USERNAME, username.toLowerCase(), context);
         AppStorage.remove(AppStorage.PASSWORD, context);
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 
