@@ -119,7 +119,11 @@ public class NotificationsActivity extends BaseTracsActivity {
     private void onTracsResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.wtf(TAG, "Error retrieving notifications from TRACS");
+            new StatusUpdate().updateCleared(response);
             this.dispatchNotifications.remove(response.getDispatchId());
+            if (this.dispatchNotifications.size() == 0) {
+                displayListView();
+            }
         } else {
             this.tracsNotifications.add(response);
         }
