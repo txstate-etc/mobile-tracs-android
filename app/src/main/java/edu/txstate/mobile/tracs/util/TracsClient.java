@@ -95,9 +95,14 @@ public class TracsClient {
             String entityId = tracsNotification.getSiteId() + ":main:" + tracsNotification.getObjectId();
             String url = makeUrl(notification.getType()) + entityId + ".json";
             Map<String, String> headers = new HashMap<>();
-            Response.ErrorListener errorHandler = error -> listener.onResponse(new TracsNotificationError(
-                    error.networkResponse.statusCode
-            ));
+
+            Response.ErrorListener errorHandler = (error) -> {
+                TracsNotificationError errorNotification = new TracsNotificationError(
+                        error.networkResponse.statusCode
+                );
+                errorNotification.setDispatchId(tracsNotification.getDispatchId());
+                listener.onResponse(errorNotification);
+            };
 
             requestQueue.addToRequestQueue(new TracsNotificationRequest(
                     url, headers, tracsNotification, listener, errorHandler), this);

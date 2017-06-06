@@ -72,7 +72,9 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
                     notification = (JsonObject) parser.next();
                 } catch (ClassCastException e) {
                     Log.wtf(TAG, "Could not parse JSON response.");
-                    Response.success(new TracsNotificationError(response.statusCode), HttpHeaderParser.parseCacheHeaders(response));
+                    TracsNotificationError errorNotification = new TracsNotificationError(response.statusCode);
+                    errorNotification.setDispatchId(this.dispatchId);
+                    Response.success(errorNotification, HttpHeaderParser.parseCacheHeaders(response));
                 }
             }
             tracsNotification = new TracsAnnouncement(notification);
