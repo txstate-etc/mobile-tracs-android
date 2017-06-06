@@ -52,6 +52,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
 
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
+        analyticsTracker.enableExceptionReporting(true);
     }
 
     @Override
