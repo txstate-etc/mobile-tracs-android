@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -76,6 +77,20 @@ public class TracsWebView extends WebView {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (this.canGoBack()) {
+                        this.goBack();
+                        return true;
+                    }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+
+    }
 
     public void loadUrl(String url, boolean shouldVerifySession) {
         this.urlToLoad = url;
