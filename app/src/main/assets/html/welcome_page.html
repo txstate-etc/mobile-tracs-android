@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="file:///android_asset/css/bootstrap.min.css">
+    <link rel="stylesheet" href="file:///android_asset/css/font-awesome.min.css">
+    <link rel="stylesheet" href="file:///android_asset/css/welcome_page_style.css">
+    <style>
+        html, body {
+            background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #698E91), color-stop(100%, #1C3F63));
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            color: white;
+        }
+
+        #tracsLogo {
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto;
+        }
+
+        .fa {
+            color: #FFCC4F;
+        }
+
+        .phones {
+            display: inline-block;
+            width: 40px;
+        }
+
+        .icon-container {
+            width: 40px;
+        }
+
+        #introContainer, #feedbackContainer, #thingsYouCanDo {
+            text-align: center;
+        }
+
+        .list-item {
+            margin-bottom: 10px;
+        }
+
+        .fa-mobile-phone {
+            font-size: 1.35em;
+            width: 15px;
+        }
+
+        .fa-rotate-90 {
+            position: absolute;
+            bottom: 0;
+        }
+
+        @media (min-width: 500px) and (orientation: landscape) {
+            #feature-list {
+                float: right;
+                width: 50%;
+            }
+
+            #introContainer {
+                float: left;
+                display: inline-block;
+            }
+
+            #introContainer {
+                text-align: center;
+                width: 50%;
+            }
+
+            #feedbackContainer, #thingsYouCanDo {
+                width: 100%;
+            }
+
+            #thingsYouCanDo {
+                padding-left: 25px;
+            }
+        }
+
+        @media (orientation: portrait) {
+            #feature-list {
+                margin: 0 auto;
+                width: 500px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="introContainer">
+        <div id="welcomeRow">
+            <h3 class="horizontalTextCenter">Welcome to</h3>
+        </div>
+        <div id="tracsImage">
+            <img id="tracsLogo" src="http://via.placeholder.com/382x126"/>
+        </div>
+    </div>
+    <div id="feature-list">
+        <div id="thingsYouCanDo">
+            <h3>THINGS YOU CAN DO...</h3>
+        </div>
+        <ul class="fa-ul">
+            <li class="list-item"><i class="icon-container fa fa-clock-o fa-fw" aria-hidden="true"></i>Stay logged into
+                TRACS longer
+            </li>
+            <li class="list-item"><i class="icon-container fa fa-file-o fa-fw" aria-hidden="true"></i>Interact with your
+                documents
+            </li>
+            <li class="list-item">
+                <div class="phones">
+                    <i class="fa fa-mobile-phone fa-fw" aria-hidden="true"></i>
+                    <i class="fa fa-mobile-phone fa-fw fa-rotate-90" aria-hidden="true"></i>
+                </div>
+                Rotate your device
+            </li>
+            <li><i class="icon-container fa fa-bell-o fa-fw" aria-hidden="true"></i>Receive course <br></li>
+            <li><i class="icon-container fa fa-bell-o fa-fw" aria-hidden="true" style="visibility: hidden;"></i>Announcement
+                notifications
+            </li>
+        </ul>
+    </div>
+    <div id="feedbackContainer">
+        <h5>This version is being heavily tested over summer<br/>
+            <em>PLEASE</em> give us your feedback</h5>
+    </div>
+</div>
+
+</body>
+</html>

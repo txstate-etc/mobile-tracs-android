@@ -119,6 +119,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     private void onTracsResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.wtf(TAG, "Error retrieving notifications from TRACS");
+            this.dispatchNotifications.remove(response.getDispatchId());
         } else {
             this.tracsNotifications.add(response);
         }
@@ -133,6 +134,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     private boolean allRequestsAreBack() {
         boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
         if (!sizeMatch) { return false; }
+        Log.i(TAG, "Size: " + this.tracsNotifications.size());
         int totalSiteNames = 0;
         int totalPageIds = 0;
         for (TracsAppNotification notification : this.tracsNotifications) {

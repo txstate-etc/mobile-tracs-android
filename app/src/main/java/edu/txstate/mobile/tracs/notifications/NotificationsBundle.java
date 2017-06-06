@@ -52,6 +52,16 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
         this.allNotifications.remove(notification);
     }
 
+    public void remove(String dispatchId) {
+        if (dispatchId == null) { return; }
+        for (int i = 0; i < this.allNotifications.size(); i++) {
+            if (dispatchId.equals(this.allNotifications.get(i).getDispatchId())) {
+                this.allNotifications.remove(i);
+                break;
+            }
+        }
+    }
+
     public void removeAll() {
         this.allNotifications.clear();
         notificationsCount.clear();
