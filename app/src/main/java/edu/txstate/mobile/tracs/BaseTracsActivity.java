@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +27,7 @@ import java.util.Observer;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.listeners.LoginListener;
 import edu.txstate.mobile.tracs.util.http.requests.NotificationCountRequest;
 
 public abstract class BaseTracsActivity extends AppCompatActivity implements Observer {
@@ -63,7 +63,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         messageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                setBadgeCount(getBadgeCount()+1);
+                setBadgeCount(getCurrentBadgeCount()+1);
             }
         };
     }
@@ -79,6 +79,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         super.onResume();
         LoginStatus.getInstance().addObserver(this);
         this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
+        getBadgeCount(LoginStatus.getInstance().isUserLoggedIn());
     }
 
     @Override
@@ -164,7 +165,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         }
     }
 
-    int getBadgeCount() {
+    int getCurrentBadgeCount() {
         int badgeCount = 0;
         if (this.optionsMenu != null) {
             View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
