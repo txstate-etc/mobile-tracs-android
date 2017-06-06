@@ -30,7 +30,7 @@ public class TracsClient {
     private static final String TRACS_BASE = TRACS_URL + "direct";
     private static final String ANNOUNCEMENT_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_announcement);
     private static final String PORTAL_URL = TRACS_URL + "portal";
-    private static final String SITE_URL = PORTAL_URL + "/site/";
+    private static final String SITE_URL = PORTAL_URL + "/pda/";
     public static final String SESSION_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
 
     private static TracsClient tracsClient;
