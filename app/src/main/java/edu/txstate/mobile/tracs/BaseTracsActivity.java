@@ -1,10 +1,15 @@
 package edu.txstate.mobile.tracs;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +32,7 @@ import edu.txstate.mobile.tracs.util.http.requests.NotificationCountRequest;
 
 public abstract class BaseTracsActivity extends AppCompatActivity implements Observer {
     private Tracker analyticsTracker;
+    private BroadcastReceiver messageReceiver;
     Menu optionsMenu;
 
     @Override
@@ -53,6 +59,13 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         analyticsTracker = application.getDefaultTracker();
         analyticsTracker.enableExceptionReporting(true);
+
+        messageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                setBadgeCount(getBadgeCount()+1);
+            }
+        };
     }
 
     @Override
@@ -65,11 +78,13 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     protected void onResume() {
         super.onResume();
         LoginStatus.getInstance().addObserver(this);
+        this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
     }
 
     @Override
     protected void onPause() {
         LoginStatus.getInstance().deleteObserver(this);
+        this.unregisterReceiver(messageReceiver);
         cancelRequests();
         super.onPause();
     }
@@ -147,6 +162,20 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
                 badge.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    int getBadgeCount() {
+        int badgeCount = 0;
+        if (this.optionsMenu != null) {
+            View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
+            TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+            try {
+                badgeCount = Integer.valueOf(badge.getText().toString());
+            } catch (Exception e) {
+                Log.e("BaseActivity", "Badge count could not be parsed.");
+            }
+        }
+        return badgeCount;
     }
 
     private void cancelRequests() {

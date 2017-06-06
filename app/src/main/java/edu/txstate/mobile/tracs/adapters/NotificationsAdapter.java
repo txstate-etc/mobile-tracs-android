@@ -38,7 +38,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         for (int i = 0; i < this.tracsAppNotifications.size(); i++) {
             idMap.put(tracsAppNotifications.get(i).getDispatchId(), i);
         }
-        this.badgeCount = this.tracsAppNotifications.totalUnread();
+        this.badgeCount = this.tracsAppNotifications.totalUnseen();
     }
 
     public void clear() {
