@@ -1,7 +1,11 @@
 package edu.txstate.mobile.tracs;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -39,11 +43,19 @@ public class NotificationsActivity extends BaseTracsActivity {
     private NotificationsBundle dispatchNotifications;
     private NotificationsAdapter adapter;
     private ListView notificationsList;
+    private BroadcastReceiver messageReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_notifications);
         super.onCreate(savedInstanceState);
+        messageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                HttpQueue.getInstance(NotificationsActivity.this).getRequestQueue().cancelAll(NotificationsActivity.this);
+                displayListView();
+            }
+        };
     }
 
     @Override
@@ -60,6 +72,13 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void init() {
         refreshNotifications();
+        this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(messageReceiver);
     }
 
     @Override

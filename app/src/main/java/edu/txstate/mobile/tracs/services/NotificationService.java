@@ -39,6 +39,8 @@ public class NotificationService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .build();
 
+        Intent newNotificationIntent = new Intent("badge_count");
+        this.sendBroadcast(newNotificationIntent);
         notificationManager.notify(remoteMessage.getNotification().hashCode(), notification);
     }
 

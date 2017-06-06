@@ -40,16 +40,16 @@ public class NotificationCountRequest extends Request<Integer> {
                 notifications.add(data);
             }
 
-            int unreadNotifications = 0;
+            int unseenNotifications = 0;
             for (JsonElement notification : notifications) {
                 if (notification.isJsonObject()) {
                     DispatchNotification temp = new DispatchNotification((JsonObject) notification);
-                    if (!temp.hasBeenRead()) {
-                        unreadNotifications++;
+                    if (!temp.hasBeenSeen()) {
+                        unseenNotifications++;
                     }
                 }
             }
-            return Response.success(unreadNotifications, HttpHeaderParser.parseCacheHeaders(response));
+            return Response.success(unseenNotifications, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
