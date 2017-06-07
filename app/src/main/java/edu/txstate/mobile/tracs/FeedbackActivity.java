@@ -24,8 +24,10 @@ public class FeedbackActivity extends BaseTracsActivity {
         super.hitScreenView(SCREEN_NAME);
         final WebView webView = (WebView) findViewById(R.id.feedback_webview);
 
-        String html = PageLoader.getInstance().loadHtml("html/blank_page.html");
-        webView.loadData(html, "text/html", null);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.getSettings().setSupportZoom(true);
+        webView.loadUrl(getString(R.string.feedback_survey));
     }
 
     @Override

@@ -2,6 +2,7 @@ package edu.txstate.mobile.tracs;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.webkit.WebView;
 
 public class SupportActivity extends BaseTracsActivity {
 
@@ -18,6 +19,13 @@ public class SupportActivity extends BaseTracsActivity {
     protected void onResume(){
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
+
+        final WebView webView = (WebView) findViewById(R.id.contact_support_webview);
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.getSettings().setSupportZoom(true);
+        webView.loadUrl(getString(R.string.contact_support));
     }
 
     @Override
