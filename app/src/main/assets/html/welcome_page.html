@@ -4,7 +4,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="file:///android_asset/css/bootstrap.min.css">
     <link rel="stylesheet" href="file:///android_asset/css/font-awesome.min.css">
-    <link rel="stylesheet" href="file:///android_asset/css/welcome_page_style.css">
     <style>
         html, body {
             background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #698E91), color-stop(100%, #1C3F63));
@@ -20,6 +19,10 @@
             margin: auto;
         }
 
+        .container {
+            height: 100%;
+        }
+
         .fa {
             color: #FFCC4F;
         }
@@ -31,10 +34,6 @@
 
         .icon-container {
             width: 40px;
-        }
-
-        #introContainer, #feedbackContainer, #thingsYouCanDo {
-            text-align: center;
         }
 
         .list-item {
@@ -51,24 +50,28 @@
             bottom: 0;
         }
 
+        #feedbackContainer {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+        }
+
         @media (min-width: 500px) and (orientation: landscape) {
-            #feature-list {
-                float: right;
-                width: 50%;
-            }
-
-            #introContainer {
+            #feature-list, #introContainer {
                 float: left;
-                display: inline-block;
-            }
-
-            #introContainer {
-                text-align: center;
                 width: 50%;
+                min-height: 60vh;
             }
 
-            #feedbackContainer, #thingsYouCanDo {
-                width: 100%;
+            #introContainer, #feedbackContainer {
+                text-align: center;
+            }
+
+
+            #topSpacer {
+                min-height: 10vh;
             }
 
             #thingsYouCanDo {
@@ -77,22 +80,45 @@
         }
 
         @media (orientation: portrait) {
-            #feature-list {
-                margin: 0 auto;
-                width: 500px;
+            #topSpacer {
+                min-height: 15vh;
             }
 
+            #feature-list {
+                margin: 0 auto;
+            }
+
+            #introContainer, #thingsYouCanDo, #feedbackContainer {
+                text-align: center;
+            }
+
+            #introContainer, #feature-list {
+                min-height: 30vh;
+            }
+        }
+
+        @media (max-width: 599px) and (orientation: portrait){
+            #feature-list {
+                width: 75%;
+            }
+        }
+
+        @media (min-width: 600px) and (orientation: portrait) {
+            #feature-list {
+                width: 50%;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <div id="topSpacer"></div>
     <div id="introContainer">
         <div id="welcomeRow">
-            <h3 class="horizontalTextCenter">Welcome to</h3>
+            <h2 class="horizontalTextCenter">Welcome to</h2>
         </div>
         <div id="tracsImage">
-            <img id="tracsLogo" src="http://via.placeholder.com/382x126"/>
+            <img id="tracsLogo" src="file:///android_asset/images/tracs_about.png"/>
         </div>
     </div>
     <div id="feature-list">
@@ -119,10 +145,8 @@
             </li>
         </ul>
     </div>
-    <div id="feedbackContainer">
-        <h5>This version is being heavily tested over summer<br/>
-            <em>PLEASE</em> give us your feedback</h5>
-    </div>
+    <div id="feedbackContainer"><h5>This version is being heavily tested over summer <br> PLEASE give us your feedback
+    </h5></div>
 </div>
 
 </body>
