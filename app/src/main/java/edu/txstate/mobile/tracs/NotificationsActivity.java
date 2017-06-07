@@ -53,7 +53,8 @@ public class NotificationsActivity extends BaseTracsActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 HttpQueue.getInstance(NotificationsActivity.this).getRequestQueue().cancelAll(NotificationsActivity.this);
-                displayListView();
+                NotificationsActivity.this.clearNotifications();
+                refreshNotifications();
             }
         };
     }
@@ -67,6 +68,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     protected void onResume() {
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
+        clearNotifications();
         init();
     }
 
@@ -100,6 +102,15 @@ public class NotificationsActivity extends BaseTracsActivity {
         );
         clearAll.setVisible(false);
         return true;
+    }
+
+    private void clearNotifications() {
+        if (this.dispatchNotifications != null) {
+            this.dispatchNotifications.removeAll();
+        }
+        if (this.tracsNotifications != null) {
+            this.tracsNotifications.removeAll();
+        }
     }
 
     private void refreshNotifications() {
