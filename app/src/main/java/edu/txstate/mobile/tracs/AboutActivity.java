@@ -32,58 +32,6 @@ public class AboutActivity extends BaseTracsActivity {
 
         WebView webView = (WebView) findViewById(R.id.about_web_view);
         webView.loadUrl("file:///android_asset/html/welcome_page.html");
-
-//        ShapeDrawable.ShaderFactory shaderFactory = new ShapeDrawable.ShaderFactory() {
-//            @Override
-//            public Shader resize(int width, int height) {
-//                LinearGradient lg = new LinearGradient(width / 2, 0, width / 2, height,
-//                        0xFF698E91, 0xFF1C3F63, Shader.TileMode.REPEAT);
-//                return lg;
-//            }
-//        };
-//        PaintDrawable p = new PaintDrawable();
-//        p.setShape(new RectShape());
-//        p.setShaderFactory(shaderFactory);
-//
-//        View content = findViewById(android.R.id.content);
-//        content.setBackgroundDrawable(p);
-//
-//        ImageView horizontalPhone = (ImageView) findViewById(R.id.horizontal_phone_icon);
-//
-//        RotateAnimation rotateCW = new RotateAnimation(0.0f, -90.0f,
-//                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
-//                RotateAnimation.RELATIVE_TO_SELF, 0.5f);
-//        rotateCW.setDuration(1500);
-//        rotateCW.setStartOffset(1000);
-//        rotateCW.setRepeatCount(Animation.INFINITE);
-//        rotateCW.setRepeatMode(Animation.REVERSE);
-//
-//        int screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-//        int iconSize;
-//        switch (screenSize) {
-//            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-//            case Configuration.SCREENLAYOUT_SIZE_LARGE:
-//                iconSize = 48;
-//                break;
-//            default:
-//                iconSize = 34;
-//                break;
-//        }
-//
-//        IconDrawable horizPhoneIcon = new IconDrawable(this,
-//                FontAwesomeIcons.fa_mobile_phone)
-//                .colorRes(R.color.betaIconColor)
-//                .sizeDp(iconSize);
-//
-//        AnimationSet animSet = new AnimationSet(true);
-//        animSet.setInterpolator(new AccelerateDecelerateInterpolator());
-//        animSet.setFillAfter(true);
-//        animSet.setFillEnabled(true);
-//        animSet.addAnimation(rotateCW);
-//
-//        horizontalPhone.setImageDrawable(horizPhoneIcon);
-        //Dormant animation
-//        horizontalPhone.startAnimation(animSet);
     }
 
     @Override
