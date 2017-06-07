@@ -4,7 +4,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -37,6 +41,8 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentText(remoteMessage.getNotification().getBody())
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setDefaults(Notification.DEFAULT_SOUND)
                 .build();
 
         Intent newNotificationIntent = new Intent("badge_count");
