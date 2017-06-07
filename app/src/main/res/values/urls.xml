@@ -17,4 +17,7 @@
     <string name="dispatch_registration">https://dispatchqa1.its.qual.txstate.edu/registrations</string>
 
     <string name="jwt_url">https://dispatchqa1.its.qual.txstate.edu:3000/token.pl</string>
+
+    <string name="feedback_survey">https://txstate.co1.qualtrics.com/jfe/form/SV_9KY34gknXgmstXn</string>
+    <string name="contact_support">https://txstate.co1.qualtrics.com/jfe/form/SV_0B2IRTJVBxGjiDP</string>
 </resources>
