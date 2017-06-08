@@ -186,10 +186,13 @@ public class TracsWebView extends WebView {
                 Registrar.getInstance().registerDevice(this::onResponse);
                 SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
                 prefs.edit().putString("user-agent", view.getSettings().getUserAgentString()).commit();
-                String cookies = CookieManager.getInstance().getCookie(url);
+                String cookies[] = CookieManager.getInstance().getCookie(url).split(";");
                 String newCookie = null;
-                if (cookies != null) {
-                    newCookie = cookies.split("=")[1];
+                for (String cookie : cookies) {
+                    String cookieParts[] = cookie.split("=");
+                    if ("JSESSIONID".equals(cookieParts[0].trim())) {
+                        newCookie = cookieParts[1];
+                    }
                 }
                 LoginStatus.getInstance().login();
                 TracsWebView.class.cast(view).setSessionId(newCookie);

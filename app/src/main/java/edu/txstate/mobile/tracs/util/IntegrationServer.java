@@ -63,6 +63,7 @@ public class IntegrationServer {
         LoginStatus.getInstance().logout();
         String url = AnalyticsApplication.getContext().getString(R.string.tracs_cas_login);
         Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("url", url);
         AnalyticsApplication.getContext().startActivity(intent);
     }
