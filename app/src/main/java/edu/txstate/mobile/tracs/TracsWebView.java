@@ -196,6 +196,7 @@ public class TracsWebView extends WebView {
 
             if (logoutUrl.equals(url)) {
                 LoginStatus.getInstance().logout();
+                Registrar.getInstance().unregisterDevice();
                 AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
                 AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());

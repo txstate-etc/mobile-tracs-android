@@ -16,6 +16,7 @@ import edu.txstate.mobile.tracs.BuildConfig;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchRegistrationRequest;
+import edu.txstate.mobile.tracs.util.http.requests.DispatchUnregisterRequest;
 import edu.txstate.mobile.tracs.util.http.requests.JwtRequest;
 
 public class Registrar {
@@ -61,6 +62,13 @@ public class Registrar {
                 Registrar.getInstance()::receiveJwt,
                 error -> Log.wtf(TAG, error.getMessage())
         ), this);
+    }
+
+    public void unregisterDevice() {
+        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        String token = FirebaseInstanceId.getInstance().getToken();
+        DispatchUnregisterRequest unregisterRequest = new DispatchUnregisterRequest(DISPATCH_URL, token);
+        requestQueue.addToRequestQueue(unregisterRequest, this);
     }
 
     private void receiveJwt(String jwt) {
