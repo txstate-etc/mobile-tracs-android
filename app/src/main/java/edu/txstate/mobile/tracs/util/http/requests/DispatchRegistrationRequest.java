@@ -14,15 +14,19 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.http.listeners.RegisterCallback;
 
 public class DispatchRegistrationRequest extends Request<Void> {
 
     private static final String TAG = "DispatchRegistration";
     private static final String dispatchError = "Could not register with dispatch";
+
+    private RegisterCallback registerCallback;
     private JSONObject body;
 
-    public DispatchRegistrationRequest(String url, JSONObject body) {
+    public DispatchRegistrationRequest(String url, JSONObject body, RegisterCallback registerCallback) {
         super(Method.POST, url, error -> Log.wtf(TAG, error.getMessage()));
+        this.registerCallback = registerCallback;
         this.body = body;
     }
 
@@ -42,6 +46,8 @@ public class DispatchRegistrationRequest extends Request<Void> {
     @Override
     protected void deliverResponse(Void response) {
         Log.i(TAG, "Device registered.");
-        LoginStatus.getInstance().login();
+        if (this.registerCallback != null) {
+            this.registerCallback.onResponse();
+        }
     }
 }

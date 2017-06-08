@@ -167,6 +167,6 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         RowHolder tag = (RowHolder) parent.getTag();
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
-        NotificationSettingsActivity.saveSettings();
+        SettingsStore.getInstance().saveSettings();
     }
 }

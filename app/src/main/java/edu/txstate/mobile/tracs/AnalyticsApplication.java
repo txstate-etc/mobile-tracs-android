@@ -11,6 +11,8 @@ import com.google.android.gms.analytics.Tracker;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
+import edu.txstate.mobile.tracs.util.SettingsStore;
+
 public class AnalyticsApplication extends Application {
     private Tracker tracker;
 
@@ -27,6 +29,7 @@ public class AnalyticsApplication extends Application {
             WebView.setWebContentsDebuggingEnabled(true);
             TracsWebView.setWebContentsDebuggingEnabled(true);
         }
+        SettingsStore.getInstance().saveSettings();
     }
 
     public static Context getContext() {

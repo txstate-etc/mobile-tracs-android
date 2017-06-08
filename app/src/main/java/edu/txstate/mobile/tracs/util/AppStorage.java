@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 
 @SuppressLint("ApplySharedPref")
@@ -45,6 +46,11 @@ public class AppStorage {
     private static boolean keyIsValid(String key) {
         //This is here in case validation of keys is ever desired.
         return true;
+    }
+
+    public static void clear(Context context) {
+        SharedPreferences prefs = AppStorage.getPrefs(context);
+        prefs.edit().clear().commit();
     }
 
     public static boolean credentialsAreStored(Context context) {
