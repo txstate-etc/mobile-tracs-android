@@ -15,6 +15,7 @@ import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.BuildConfig;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
+import edu.txstate.mobile.tracs.util.http.listeners.RegisterCallback;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchRegistrationRequest;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchUnregisterRequest;
 import edu.txstate.mobile.tracs.util.http.requests.JwtRequest;
@@ -23,6 +24,7 @@ public class Registrar {
 
     private Map<String, String> registration = new HashMap<>();
     private String jwt;
+    private RegisterCallback registerCallback;
 
     private static final String TOKEN_URL = AnalyticsApplication.getContext().getString(R.string.jwt_url);
     private static final String DISPATCH_URL = AnalyticsApplication.getContext().getString(R.string.dispatch_registration);
@@ -53,7 +55,8 @@ public class Registrar {
         return new JSONObject(registration);
     }
 
-    public void registerDevice() {
+    public void registerDevice(RegisterCallback registerCallback) {
+        this.registerCallback = registerCallback;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
         requestQueue.addToRequestQueue(new JwtRequest(
@@ -75,7 +78,7 @@ public class Registrar {
         String url = DISPATCH_URL + "?jwt=" + jwt;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
-        DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo);
+        DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo, registerCallback);
         requestQueue.addToRequestQueue(registerRequest, this);
     }
 }

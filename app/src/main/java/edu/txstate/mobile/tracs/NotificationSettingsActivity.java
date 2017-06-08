@@ -1,6 +1,5 @@
 package edu.txstate.mobile.tracs;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,7 +21,6 @@ import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.requests.SettingsRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 
@@ -42,7 +40,6 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
 
     @Override
     protected void onResume() {
-        SettingsStore.getInstance().putFromString(AppStorage.get(AppStorage.SETTINGS, AnalyticsApplication.getContext()));
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
         TracsClient.getInstance().verifySession(NotificationSettingsActivity.this::onSessionVerified);
@@ -117,15 +114,10 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         for (int groupPosition = 0; groupPosition < adapter.getGroupCount(); groupPosition++) {
             settingsListView.expandGroup(groupPosition);
         }
+        saveSettings();
     }
 
     public static void saveSettings() {
-        Context context = AnalyticsApplication.getContext();
-        String settingsUrl = context.getString(R.string.dispatch_base) +
-                             context.getString(R.string.dispatch_settings);
-
-        HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                new SettingsRequest(settingsUrl,
-                        response -> Toast.makeText(context, "Settings updated!", Toast.LENGTH_SHORT).show()), null);
+        SettingsStore.getInstance().saveSettings();
     }
 }

@@ -40,7 +40,7 @@ public class MainActivity extends BaseTracsActivity {
 
     @Override
     public void onResume() {
-        super.onResume();
+       super.onResume();
         super.hitScreenView(SCREEN_NAME);
 
         if (launchedFromNotification()) {

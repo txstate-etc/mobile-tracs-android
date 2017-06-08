@@ -23,6 +23,7 @@ import edu.txstate.mobile.tracs.util.FileDownloader;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.PageLoader;
 import edu.txstate.mobile.tracs.util.Registrar;
+import edu.txstate.mobile.tracs.util.SettingsStore;
 import edu.txstate.mobile.tracs.util.TracsClient;
 
 public class TracsWebView extends WebView {
@@ -182,6 +183,7 @@ public class TracsWebView extends WebView {
             }
 
             if (url.equals(loginSuccessUrl)) {
+                Registrar.getInstance().registerDevice(this::onResponse);
                 SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
                 prefs.edit().putString("user-agent", view.getSettings().getUserAgentString()).commit();
                 String cookies = CookieManager.getInstance().getCookie(url);
@@ -191,16 +193,18 @@ public class TracsWebView extends WebView {
                 }
                 LoginStatus.getInstance().login();
                 TracsWebView.class.cast(view).setSessionId(newCookie);
-                Registrar.getInstance().registerDevice();
             }
 
             if (logoutUrl.equals(url)) {
                 LoginStatus.getInstance().logout();
                 Registrar.getInstance().unregisterDevice();
-                AppStorage.remove(AppStorage.USERNAME, AnalyticsApplication.getContext());
-                AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
-                AppStorage.remove(AppStorage.SESSION_ID, AnalyticsApplication.getContext());
+                SettingsStore.getInstance().clear();
+                AppStorage.clear(AnalyticsApplication.getContext());
             }
+        }
+
+        private void onResponse() {
+            SettingsStore.getInstance().saveSettings();
         }
     }
 }
