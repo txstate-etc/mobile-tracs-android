@@ -141,7 +141,6 @@ public class NotificationsActivity extends BaseTracsActivity {
             return;
         }
         this.dispatchNotifications = response;
-        super.setBadgeCount(this.dispatchNotifications.totalUnread());
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(response, NotificationsActivity.this::onTracsResponse, AnalyticsApplication.getContext());
     }
