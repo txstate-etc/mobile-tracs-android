@@ -28,7 +28,9 @@
 
         <activity android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:hardwareAccelerated="true">
+            android:hardwareAccelerated="true"
+            android:launchMode="singleInstance"
+            android:alwaysRetainTaskState="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
