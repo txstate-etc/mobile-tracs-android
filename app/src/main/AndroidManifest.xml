@@ -27,8 +27,8 @@
             android:resource="@color/notificationColor" />
 
         <activity android:name=".MainActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:hardwareAccelerated="false">
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:hardwareAccelerated="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
