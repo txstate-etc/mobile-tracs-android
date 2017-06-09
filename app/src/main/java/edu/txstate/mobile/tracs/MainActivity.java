@@ -29,23 +29,21 @@ public class MainActivity extends BaseTracsActivity {
                 requestWritePermission();
             }
         }
+        if (launchedFromNotification()) {
+            goToNotifications();
+        }
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
         LoginStatus.getInstance().addObserver(this);
-
-        String destinationUrl = getDestinationUrl();
-        tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
-        tracsWebView.loadUrl(destinationUrl, true);
     }
 
     @Override
     public void onResume() {
-       super.onResume();
+        super.onResume();
         super.hitScreenView(SCREEN_NAME);
-
-        if (launchedFromNotification()) {
-            goToNotifications();
-        }
+        String destinationUrl = getDestinationUrl();
+        tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
+        tracsWebView.loadUrl(destinationUrl, true);
     }
 
     @Override

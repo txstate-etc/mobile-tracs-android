@@ -39,7 +39,7 @@ public class IntegrationServer {
 
     public void getDispatchNotifications(Response.Listener<NotificationsBundle> listener) {
         this.listener = listener;
-        TracsClient.getInstance().verifySession(IntegrationServer.getInstance()::onResponse);
+        TracsClient.getInstance().verifySession(IntegrationServer.this::onResponse);
     }
 
     public void onResponse(String sessionId) {
