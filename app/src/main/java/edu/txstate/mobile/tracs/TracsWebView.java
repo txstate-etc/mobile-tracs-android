@@ -2,15 +2,19 @@ package edu.txstate.mobile.tracs;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -33,6 +37,10 @@ public class TracsWebView extends WebView {
     private Context context;
     private FileDownloader fileDownloader;
     private String urlToLoad;
+    private ValueCallback<Uri> valueCallback;
+    private ValueCallback<Uri[]> fileCallback;
+    private static final int RESULT_CODE_LOLLIPOP = 1;
+    private static final int RESULT_CODE_ICE_CREAM = 2;
 
     public TracsWebView(Context context) {
         super(context);
@@ -54,7 +62,6 @@ public class TracsWebView extends WebView {
         this.context = context;
         this.fileDownloader = new FileDownloader(this.context);
         setWebViewClient(new TracsWebViewClient());
-        setWebChromeClient(new TracsWebChromeClient(this.context));
 
         getSettings().setSupportZoom(true);
         getSettings().setBuiltInZoomControls(true);
@@ -123,15 +130,6 @@ public class TracsWebView extends WebView {
 
     public void setSessionId(String sessionId) {
         AppStorage.put(AppStorage.SESSION_ID, sessionId, context);
-    }
-
-    private class TracsWebChromeClient extends WebChromeClient {
-        Context context;
-
-        public TracsWebChromeClient(Context context) {
-            super();
-            this.context = context;
-        }
     }
 
     private class TracsWebViewClient extends WebViewClient {
