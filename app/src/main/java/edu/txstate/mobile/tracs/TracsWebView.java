@@ -139,6 +139,11 @@ public class TracsWebView extends WebView {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            String loginSuccessUrl = context.getString(R.string.tracs_login_success);
+            if (loginSuccessUrl.equals(url)) {
+                view.loadUrl(loginSuccessUrl + "/pda");
+                return true;
+            }
             return false;
         }
 
