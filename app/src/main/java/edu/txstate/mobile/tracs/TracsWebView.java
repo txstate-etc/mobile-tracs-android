@@ -2,10 +2,8 @@ package edu.txstate.mobile.tracs;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.AttributeSet;
@@ -15,7 +13,6 @@ import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -37,10 +34,6 @@ public class TracsWebView extends WebView {
     private Context context;
     private FileDownloader fileDownloader;
     private String urlToLoad;
-    private ValueCallback<Uri> valueCallback;
-    private ValueCallback<Uri[]> fileCallback;
-    private static final int RESULT_CODE_LOLLIPOP = 1;
-    private static final int RESULT_CODE_ICE_CREAM = 2;
 
     public TracsWebView(Context context) {
         super(context);
@@ -134,16 +127,6 @@ public class TracsWebView extends WebView {
 
     private class TracsWebViewClient extends WebViewClient {
         private static final String TAG = "TracsWebViewClient";
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            String loginSuccessUrl = context.getString(R.string.tracs_login_success);
-            if (loginSuccessUrl.equals(url)) {
-                view.loadUrl(loginSuccessUrl + "/pda");
-                return true;
-            }
-            return false;
-        }
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {

@@ -1,29 +1,3 @@
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <integer name="welcome_to_weight">10</integer>
 
-    <integer name="tracs_beta_image_container">100</integer>
-    <integer name="tracs_beta_image_weight">15</integer>
-    <integer name="tracs_beta_image_space_weight">25</integer>
-    <integer name="tracs_beta_image_horiz_weight">50</integer>
-
-    <integer name="tracs_feature_list_title_weight">10</integer>
-    <integer name="feature_list_item_weight">10</integer>
-    <integer name="feature_list_weight">40</integer>
-    <integer name="feature_list_space">5</integer>
-    <integer name="feature_list_width">90</integer>
-    <integer name="feature_list_space_large">20</integer>
-    <integer name="feature_list_width_large">60</integer>
-
-    <integer name="feature_list_item_height">7</integer>
-
-    <integer name="tracs_beta_text">25</integer>
-    <dimen name="feature_icon_width">60dp</dimen>
-
-    <dimen name="feature_icon_size">22sp</dimen>
-    <dimen name="feature_icon_size_large">32sp</dimen>
-    <dimen name="mobile_phone_large">48sp</dimen>
-    <dimen name="feature_icon_width_large">70dp</dimen>
-    <dimen name="feature_text_size_large">22sp</dimen>
-    <dimen name="feature_text_size">18sp</dimen>
 </resources>
