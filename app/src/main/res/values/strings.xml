@@ -2,19 +2,13 @@
     <string name="app_name">TRACS</string>
     <string name="notificationsBundle">Notifications</string>
     <string name="notifications_label">Notifications</string>
-    <string name="settings_label">Settings</string>
     <string name="notification_settings_label">Notification Settings</string>
     <string name="feedback_label">Feedback</string>
     <string name="user_data">user_data.xml</string>
 
     <string name="announcement_setting">Announcements</string>
-    <string name="discussion_setting">Discussions</string>
-    <string name="grade_setting">Grades</string>
-    <string name="assessment_setting">Assessments</string>
-    <string name="assignment_setting">Assignments</string>
 
     <string name="menu_clear_all">Clear All</string>
-    <string name="menu_home">Home</string>
     <string name="menu_notification_settings">Notification Settings</string>
     <string name="menu_about_the_app">About the App</string>
     <string name="menu_dublabs">Go to TXST Mobile</string>
@@ -22,20 +16,6 @@
     <string name="menu_tracs_support">TRACS Support</string>
     <string name="clear_all_prompt">Clear all notifications?</string>
     <string name="about_the_app_label">About</string>
-    <string name="tracs_beta_app">TRACKS BETA APP</string>
-    <string name="welcome_to">Welcome to</string>
-    <string name="feature_intro">these are the things you can do...</string>
-    <string name="login_feature">Stay logged into TRACS longer</string>
-    <string name="clock_icon">{fa-clock-o}</string>
-    <string name="file_icon">{fa-file-o}</string>
-    <string name="document_feature">Interact with your documents</string>
-    <string name="bell_icon">{fa-bell-o}</string>
-    <string name="announcement_feature">Receive course \nAnnouncement notifications</string>
-    <string name="rotate_feature">Rotate your device</string>
-    <string name="mobile_icon">{fa-mobile-phone}</string>
-    <string name="beta_info">This version is being heavily tested over summer \nPLEASE give us your feedback</string>
-    <string name="horizontal_phone_description">Horizontal Mobile Phone</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
