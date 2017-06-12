@@ -55,7 +55,7 @@ public class MainActivity extends BaseTracsActivity {
         } else if (requestCode == REQUEST_CODE_LOLLIPOP) {
             Uri[] results = null;
             if (resultCode == Activity.RESULT_OK) {
-                if (data.getData() == null) {
+                if (data == null || data.getData() == null) {
                     if (cameraPhotoPath != null) {
                         results = new Uri[]{Uri.parse(cameraPhotoPath)};
                     }
@@ -251,12 +251,11 @@ public class MainActivity extends BaseTracsActivity {
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES);
-            File imageFile = File.createTempFile(
+            return File.createTempFile(
                     imageFileName,  /* prefix */
                     ".jpg",         /* suffix */
                     storageDir      /* directory */
             );
-            return imageFile;
         }
     }
 }
