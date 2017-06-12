@@ -79,7 +79,6 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         super.onResume();
         LoginStatus.getInstance().addObserver(this);
         this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
-        getBadgeCount(LoginStatus.getInstance().isUserLoggedIn());
     }
 
     @Override
@@ -110,7 +109,6 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
                 .setOnClickListener(v ->
                         MenuController.handleMenuClick(notificationIcon.getItemId(),
                                 BaseTracsActivity.this));
-        updateNotificationButtonStatus(LoginStatus.getInstance().isUserLoggedIn());
     }
 
     @Override
@@ -125,7 +123,6 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
             MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
             notification.getActionView().setEnabled(loggedIn);
             notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
-            getBadgeCount(loggedIn);
         }
     }
 
@@ -136,8 +133,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         }
         String url = getString(R.string.dispatch_base) + getString(R.string.dispatch_notifications)
                 + "?token=" + FirebaseInstanceId.getInstance().getToken();
-        NotificationCountRequest badgeCount = new NotificationCountRequest(
-                url, BaseTracsActivity.this::badgeCountResponse, BaseTracsActivity.this::badgeCountError
+        NotificationCountRequest badgeCount = new NotificationCountRequest(BaseTracsActivity.this::badgeCountResponse, BaseTracsActivity.this::badgeCountError
         );
         HttpQueue.getInstance(this).addToRequestQueue(badgeCount, null);
     }

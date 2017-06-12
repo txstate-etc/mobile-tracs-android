@@ -4,6 +4,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,6 +12,8 @@ import com.google.gson.JsonStreamParser;
 
 import java.io.UnsupportedEncodingException;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 
 
@@ -18,38 +21,23 @@ public class NotificationCountRequest extends Request<Integer> {
     private static final String TAG = "NotificationCountRequest";
     private final Response.Listener<Integer> listener;
 
-    public NotificationCountRequest(String url, Response.Listener<Integer> listener, Response.ErrorListener errorHandler) {
-        super(Request.Method.GET, url, errorHandler);
+    public NotificationCountRequest(Response.Listener<Integer> listener, Response.ErrorListener errorHandler) {
+        super(Request.Method.GET,
+                AnalyticsApplication.getContext().getResources().getString(R.string.dispatch_base)
+                        + AnalyticsApplication.getContext().getResources().getString(R.string.dispatch_notifications)
+                        + "/count?token=" + FirebaseInstanceId.getInstance().getToken(),
+                errorHandler);
         this.listener = listener;
     }
 
     @Override
     protected Response<Integer> parseNetworkResponse(NetworkResponse response) {
         try {
-            String notificationData = new String(response.data,
+            String count = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-            JsonElement data = new JsonArray();
-            JsonArray notifications = new JsonArray();
-            JsonStreamParser parser = new JsonStreamParser(notificationData);
-            if (parser.hasNext()) {
-                data = parser.next();
-            }
-            if (data.isJsonArray()) {
-                notifications = (JsonArray) data;
-            } else if (data.isJsonObject()) {
-                notifications.add(data);
-            }
-
-            int unseenNotifications = 0;
-            for (JsonElement notification : notifications) {
-                if (notification.isJsonObject()) {
-                    DispatchNotification temp = new DispatchNotification((JsonObject) notification);
-                    if (!temp.hasBeenSeen()) {
-                        unseenNotifications++;
-                    }
-                }
-            }
-            return Response.success(unseenNotifications, HttpHeaderParser.parseCacheHeaders(response));
+            JsonObject countResponse = new JsonStreamParser(count).next().getAsJsonObject();
+            int unseenCount = countResponse.get("count").getAsInt();
+            return Response.success(unseenCount, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

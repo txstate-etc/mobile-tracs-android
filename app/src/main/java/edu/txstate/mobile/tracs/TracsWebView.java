@@ -180,7 +180,6 @@ public class TracsWebView extends WebView {
                         newCookie = cookieParts[1];
                     }
                 }
-                LoginStatus.getInstance().login();
                 TracsWebView.class.cast(view).setSessionId(newCookie);
             }
 
@@ -194,6 +193,7 @@ public class TracsWebView extends WebView {
 
         private void onResponse() {
             SettingsStore.getInstance().saveSettings();
+            LoginStatus.getInstance().login();
         }
     }
 }
