@@ -116,10 +116,12 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.titleText.setTypeface(null, typeface);
         rowHolder.titleText.setText(content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
+
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
         convertView.findViewById(R.id.delete).setOnClickListener(v -> {
             deleteNotification(position);
+            super.closeAllItems();
         });
 
         convertView.setTag(rowHolder);
@@ -127,7 +129,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
             TracsNotification notification = (TracsNotification) getItem(position);
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("url", notification.getUrl());
-            context.startActivity(intent);
+            AnalyticsApplication.getContext().startActivity(intent);
             new StatusUpdate().updateRead(notification);
         });
     }

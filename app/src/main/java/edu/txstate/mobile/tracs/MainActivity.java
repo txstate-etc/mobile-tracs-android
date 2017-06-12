@@ -90,7 +90,7 @@ public class MainActivity extends BaseTracsActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        shouldReloadWebView = false;
+        shouldReloadWebView = getIntent().getStringExtra("url") != null;
     }
 
     @Override
@@ -102,7 +102,15 @@ public class MainActivity extends BaseTracsActivity {
             tracsWebView.setWebChromeClient(new TracsWebChromeClient(this));
             tracsWebView.loadUrl(destinationUrl, true);
         }
-        shouldReloadWebView = true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String url = intent.getStringExtra("url");
+        if (url != null && !"".equals(url)) {
+            getIntent().putExtra("url", url);
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@
     <color name="colorHeaderIcons">@color/colorPrimary</color>
     <color name="badgeTextColor">#FFFFFF</color>
     <color name="badgeColor">@color/colorPrimary</color>
+    <color name="notifIconBg">#9E9DA2</color>
     <color name="unreadNotificationBackground">#EFEFF4</color>
     <color name="dismissBackground">#E51C1C</color>
     <color name="switchAccent">#4CD964</color>
