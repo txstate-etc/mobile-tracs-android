@@ -1,10 +1,13 @@
 package edu.txstate.mobile.tracs;
 
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +27,7 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.Observable;
 import java.util.Observer;
 
+import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
@@ -33,6 +37,7 @@ import edu.txstate.mobile.tracs.util.http.requests.NotificationCountRequest;
 public abstract class BaseTracsActivity extends AppCompatActivity implements Observer {
     private Tracker analyticsTracker;
     private BroadcastReceiver messageReceiver;
+    private static final String TAG = "BaseTracsActivity";
     Menu optionsMenu;
 
     @Override
@@ -77,6 +82,9 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     @Override
     protected void onResume() {
         super.onResume();
+        if (deviceIsNotSecured()) {
+            AppStorage.remove(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+        }
         LoginStatus.getInstance().addObserver(this);
         this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
     }
@@ -93,6 +101,20 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     protected void onDestroy() {
         super.onDestroy();
         cancelRequests();
+    }
+
+    private boolean deviceIsNotSecured() {
+        ContentResolver cr = AnalyticsApplication.getContext().getContentResolver();
+        boolean lockPatternEnabled = false;
+        try {
+             lockPatternEnabled = Settings.Secure.getInt(cr, Settings.Secure.LOCK_PATTERN_ENABLED) == 1;
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "Setting for lock pattern was not found.");
+        }
+        KeyguardManager keyguardManager = (KeyguardManager) AnalyticsApplication.getContext().getSystemService(Context.KEYGUARD_SERVICE);
+        boolean keyguardIsSecure = keyguardManager.isKeyguardSecure();
+
+        return !keyguardIsSecure && !lockPatternEnabled;
     }
 
     void hitScreenView(String screen) {
