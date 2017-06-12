@@ -104,17 +104,10 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     }
 
     private boolean deviceIsNotSecured() {
-        ContentResolver cr = AnalyticsApplication.getContext().getContentResolver();
-        boolean lockPatternEnabled = false;
-        try {
-             lockPatternEnabled = Settings.Secure.getInt(cr, Settings.Secure.LOCK_PATTERN_ENABLED) == 1;
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, "Setting for lock pattern was not found.");
-        }
         KeyguardManager keyguardManager = (KeyguardManager) AnalyticsApplication.getContext().getSystemService(Context.KEYGUARD_SERVICE);
         boolean keyguardIsSecure = keyguardManager.isKeyguardSecure();
 
-        return !keyguardIsSecure && !lockPatternEnabled;
+        return !keyguardIsSecure;
     }
 
     void hitScreenView(String screen) {
