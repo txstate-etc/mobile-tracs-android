@@ -87,6 +87,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         }
         LoginStatus.getInstance().addObserver(this);
         this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
+        getBadgeCount(LoginStatus.getInstance().isUserLoggedIn());
     }
 
     @Override
@@ -118,18 +119,25 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
     void setupOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         this.optionsMenu = menu;
+        boolean isLoggedIn = LoginStatus.getInstance().isUserLoggedIn();
         MenuItem notificationIcon = menu.findItem(R.id.menu_notifications);
         notificationIcon.setActionView(R.layout.notification_menu_item);
         notificationIcon.getActionView()
                 .setOnClickListener(v ->
                         MenuController.handleMenuClick(notificationIcon.getItemId(),
                                 BaseTracsActivity.this));
+        if (!isLoggedIn) {
+            updateNotificationButtonStatus(false);
+            updateSettingsMenuStatus(false);
+        }
+
     }
 
     @Override
     public void update(Observable loginStatus, Object isLoggedIn) {
         boolean loggedIn = (Boolean) isLoggedIn;
         updateNotificationButtonStatus(loggedIn);
+        updateSettingsMenuStatus(loggedIn);
         getBadgeCount(loggedIn);
     }
 
@@ -138,6 +146,13 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
             MenuItem notification = this.optionsMenu.findItem(R.id.menu_notifications);
             notification.getActionView().setEnabled(loggedIn);
             notification.getActionView().setAlpha(loggedIn ? 1.0f : 0.5f);
+        }
+    }
+
+    private void updateSettingsMenuStatus(boolean loggedIn) {
+        if (this.optionsMenu != null) {
+            MenuItem settingsMenu = this.optionsMenu.findItem(R.id.menu_notification_settings);
+            settingsMenu.setEnabled(loggedIn);
         }
     }
 
