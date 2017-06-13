@@ -4,6 +4,7 @@ package edu.txstate.mobile.tracs.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONObject;
@@ -58,13 +59,15 @@ public class Registrar {
     public void registerDevice(RegisterCallback registerCallback) {
         this.registerCallback = registerCallback;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
-        Map<String, String> headers = new HashMap<>();
-        requestQueue.addToRequestQueue(new JwtRequest(
+        JwtRequest jwtRequest = new JwtRequest(
                 TOKEN_URL,
-                headers,
                 Registrar.getInstance()::receiveJwt,
-                error -> Log.wtf(TAG, error.getMessage())
-        ), this);
+                error -> Log.e(TAG, "Could not retrieve JWT from service.")
+        );
+        jwtRequest.setRetryPolicy(new DefaultRetryPolicy(0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.addToRequestQueue(jwtRequest, this);
     }
 
     public void unregisterDevice() {

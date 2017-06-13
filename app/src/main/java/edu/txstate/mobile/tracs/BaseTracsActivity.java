@@ -182,10 +182,10 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         if (this.optionsMenu != null) {
             View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
             TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+            badge.setText(badgeCount);
             if (count == 0) {
                 badge.setVisibility(View.INVISIBLE);
             } else {
-                badge.setText(badgeCount);
                 badge.setVisibility(View.VISIBLE);
             }
         }

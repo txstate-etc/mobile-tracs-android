@@ -11,6 +11,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
@@ -18,9 +19,9 @@ import edu.txstate.mobile.tracs.AnalyticsApplication;
 public class JwtRequest extends StringRequest {
     private Map<String, String> headers;
 
-    public JwtRequest(String url, Map<String, String> headers, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+    public JwtRequest(String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(Method.GET, url, listener, errorListener);
-        this.headers = headers;
+        this.headers = new HashMap<>();
     }
 
 

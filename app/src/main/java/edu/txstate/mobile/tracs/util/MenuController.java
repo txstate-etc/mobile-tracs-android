@@ -16,7 +16,7 @@ import edu.txstate.mobile.tracs.R;
 
 public class MenuController {
     private static final String HOME_ACTIVITY = "MainActivity";
-    private static final String NOTIFICATIONS_ACTIVITY = "NotificationActivity";
+    private static final String NOTIFICATIONS_ACTIVITY = "NotificationsActivity";
     private static final String ABOUT_ACTIVITY = "edu.txstate.mobile.tracs.AboutActivity";
     private static final String SETTINGS_ACTIVITY = "NotificationSettingsActivity";
     private static final String FEEDBACK_ACTIVITY = "FeedbackActivity";
@@ -62,16 +62,8 @@ public class MenuController {
         return true;
     }
 
-    private static void configureBackstack(Intent intent, Context context, String menuName) {
-        String callingActivity = Activity.class.cast(context).getLocalClassName();
-        if (callingActivity.equals(menuName)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-    }
-
     private static void launchIntent(String activity, Class clazz, Context context) {
         Intent intent = new Intent(context, clazz);
-        configureBackstack(intent, context, activity);
         context.startActivity(intent);
     }
 }
