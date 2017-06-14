@@ -11,18 +11,45 @@
             overflow-x: hidden;
             overflow-y: hidden;
             color: white;
+            font-family: "Helvetica Neue",Arial,sans-serif;
+        }
+        .container {
+            height: 100%;
+            margin-top: 10%;
+
         }
 
+        #introContainer, #feedbackContainer {
+                text-align: center;
+
+            }
+
         #tracsLogo {
-            max-width: 100%;
-            max-height: 100%;
+            max-width:60%;
             margin: auto;
         }
 
-        .container {
-            height: 100%;
+        .mobile-phones {
+          padding-bottom: 3px;
         }
 
+        h2{
+            font-weight: 400;
+            font-size: 1.25em;
+        }
+
+        h3{
+            font-weight: 400;
+            font-size: 1.2em;
+        }
+        h5{
+            font-weight: 400;
+                    }
+
+         .fa-ul li{
+            line-height: 1.25em;
+
+         }
         .fa {
             color: #FFCC4F;
         }
@@ -38,16 +65,21 @@
 
         .list-item {
             margin-bottom: 10px;
-        }
+            padding-left: 5px;
+        }   
 
         .fa-mobile-phone {
             font-size: 1.35em;
             width: 15px;
+            margin-left: 10px;
         }
 
         .fa-rotate-90 {
             position: absolute;
-            bottom: 0;
+            margin-left: 25px;
+            right: 0;
+            top: 5px;
+            float: right;
         }
 
         #feedbackContainer {
@@ -65,9 +97,6 @@
                 min-height: 60vh;
             }
 
-            #introContainer, #feedbackContainer {
-                text-align: center;
-            }
 
 
             #topSpacer {
@@ -112,41 +141,37 @@
 </head>
 <body>
 <div class="container">
-    <div id="topSpacer"></div>
-    <div id="introContainer">
-        <div id="welcomeRow">
-            <h2 class="horizontalTextCenter">Welcome to</h2>
+    <div class="content">
+        <div id="introContainer">
+            <h2>Welcome to</h2>
+            <img id="tracsLogo" src="file:///android_asset/images/tracsb.logo.png">
         </div>
-        <div id="tracsImage">
-            <img id="tracsLogo" src="file:///android_asset/images/tracs_about.png"/>
+        <div id="feature-list">
+            <div id="thingsYouCanDo">
+                <h3>THINGS YOU CAN DO...</h3>
+            </div>
+            <ul class="fa-ul">
+                <li class="list-item"><i class="icon-container fa-li fa fa-clock-o fa-fw" aria-hidden="true"></i>Stay logged into
+                    TRACS longer
+                </li>
+                <li class="list-item"><i class="icon-container fa-li fa fa-file-o fa-fw" aria-hidden="true"></i>Interact with your
+                    documents
+                </li>
+                <li class="list-item">
+                    <div class="mobile-phones">
+                        <i class="fa fa-mobile-phone fa-li" aria-hidden="true"></i>
+                        <i class="fa fa-mobile-phone fa-li fa-rotate-90" aria-hidden="true"></i>
+                    </div>Rotate your device
+                </li>
+                <li class="list-item"><i class="icon-container fa-li fa fa-bell-o fa-fw" aria-hidden="true"></i>Receive course Announcement notifications
+                </li>
+            </ul>
         </div>
     </div>
-    <div id="feature-list">
-        <div id="thingsYouCanDo">
-            <h3>THINGS YOU CAN DO...</h3>
-        </div>
-        <ul class="fa-ul">
-            <li class="list-item"><i class="icon-container fa fa-clock-o fa-fw" aria-hidden="true"></i>Stay logged into
-                TRACS longer
-            </li>
-            <li class="list-item"><i class="icon-container fa fa-file-o fa-fw" aria-hidden="true"></i>Interact with your
-                documents
-            </li>
-            <li class="list-item">
-                <div class="phones">
-                    <i class="fa fa-mobile-phone fa-fw" aria-hidden="true"></i>
-                    <i class="fa fa-mobile-phone fa-fw fa-rotate-90" aria-hidden="true"></i>
-                </div>
-                Rotate your device
-            </li>
-            <li><i class="icon-container fa fa-bell-o fa-fw" aria-hidden="true"></i>Receive course <br></li>
-            <li><i class="icon-container fa fa-bell-o fa-fw" aria-hidden="true" style="visibility: hidden;"></i>Announcement
-                notifications
-            </li>
-        </ul>
-    </div>
+
     <div id="feedbackContainer"><h5>This version is being heavily tested over summer <br> PLEASE give us your feedback
     </h5></div>
+
 </div>
 
 </body>
