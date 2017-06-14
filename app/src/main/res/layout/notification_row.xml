@@ -31,17 +31,15 @@
     <RelativeLayout
         android:id="@+id/notification_row"
         android:layout_width="fill_parent"
-        android:layout_height="68dp">
+        android:padding="5dp"
+        android:layout_height="60dp">
 
         <edu.txstate.mobile.tracs.util.FontAwesome
             android:id="@+id/notification_icon"
             android:text="icon"
-            android:layout_width="68dp"
-            android:layout_height="fill_parent"
-            android:paddingTop="10dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:gravity="center_horizontal"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:textAlignment="gravity"
             android:textSize="28sp" />
 
@@ -51,7 +49,6 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:layout_toEndOf="@+id/notification_icon"
-            android:layout_toRightOf="@+id/notification_icon"
             android:orientation="vertical">
 
             <TextView
@@ -61,7 +58,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:ellipsize="end"
-                android:layout_marginTop="5dp"
                 android:singleLine="true"
                 android:textSize="22sp" />
 

@@ -13,8 +13,8 @@
     <color name="dismissBackground">#E51C1C</color>
     <color name="switchAccent">#4CD964</color>
     <color name="readNotificationBackground">@color/background_material_light</color>
-    <color tools:override="true" name="foreground_material_light">#FAFAFA</color>
-    <color tools:override="true" name="secondary_text_default_material_dark">#ffffff</color>
-    <color tools:override="true" name="primary_text_default_material_dark">#b4ffffff</color>
-    <color tools:override="true" name="primary_text_default_material_light">#de000000</color>
+    <!--<color tools:override="true" name="foreground_material_light">#FAFAFA</color>-->
+    <!--<color tools:override="true" name="secondary_text_default_material_dark">#ffffff</color>-->
+    <!--<color tools:override="true" name="primary_text_default_material_dark">#b4ffffff</color>-->
+    <!--<color tools:override="true" name="primary_text_default_material_light">#de000000</color>-->
 </resources>

@@ -1,3 +1,4 @@
 <resources>
 
+    <dimen name="default_size">60dp</dimen>
 </resources>
