@@ -3,6 +3,8 @@ package edu.txstate.mobile.tracs;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 
 public class MainActivity extends BaseTracsActivity {
@@ -81,6 +84,10 @@ public class MainActivity extends BaseTracsActivity {
         }
         if (launchedFromNotification()) {
             goToNotifications();
+        }
+
+        if (AppStorage.isFirstLoad(this)) {
+            goToAboutApp();
         }
         setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
@@ -153,6 +160,13 @@ public class MainActivity extends BaseTracsActivity {
 
     private void goToNotifications() {
         Intent intent = new Intent(this, NotificationsActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToAboutApp() {
+        Intent intent = new Intent(this, AboutActivity.class);
+        intent.putExtra("firstLaunch", true);
         startActivity(intent);
         finish();
     }

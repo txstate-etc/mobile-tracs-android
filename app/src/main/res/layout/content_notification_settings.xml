@@ -9,10 +9,10 @@
     tools:showIn="@layout/activity_notifications">
 
     <edu.txstate.mobile.tracs.util.SettingsListView
-        android:background="@color/unreadBullhornColor"
+        android:background="@color/notificationSettingsBackground"
         android:id="@+id/settings_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
     </edu.txstate.mobile.tracs.util.SettingsListView>
 
 </android.support.constraint.ConstraintLayout>
