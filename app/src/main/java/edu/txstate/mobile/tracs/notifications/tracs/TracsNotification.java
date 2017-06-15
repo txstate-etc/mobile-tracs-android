@@ -33,7 +33,6 @@ public interface TracsNotification extends TracsAppNotification {
     void setTitle(String siteTitle);
     void setSiteId(String siteId);
     void setSiteName(String siteName);
-    void setPageId(String pageId);
 
     boolean isNull();
 

@@ -11,32 +11,27 @@ import edu.txstate.mobile.tracs.util.TracsClient;
 public class TracsAnnouncement extends TracsNotificationAbs {
 
     private static final String TAG = "TracsAnnouncement";
-    private String pageId;
-
     public TracsAnnouncement() {}
 
     public TracsAnnouncement(JsonObject rawNotification) {
         super.setId(this.extractKey(rawNotification, "id", String.class));
         super.setTitle(this.extractKey(rawNotification, "title", String.class));
         super.setSiteId(this.extractKey(rawNotification, "siteId", String.class));
+        setPageId(TracsNotification.NOT_SET);
     }
 
     public String getUrl() {
         String announcementUrl = TracsClient.makeUrl("SITE");
-        announcementUrl += this.getSiteId() + "/page/" + this.getPageId();
+        if (this.getPageId() == null) {
+            announcementUrl += this.getSiteId();
+        } else {
+            announcementUrl += this.getSiteId() + "/page/" + this.getPageId();
+        }
         return announcementUrl;
     }
 
-    public void setPageId(String pageId) {
-        this.pageId = pageId;
-    }
-
     public boolean hasPageId() {
-        return this.pageId != null;
-    }
-
-    private String getPageId() {
-        return this.pageId;
+        return !TracsNotification.NOT_SET.equals(super.getPageId());
     }
 
     @Override

@@ -45,6 +45,9 @@ public class NotificationsActivity extends BaseTracsActivity {
     private ListView notificationsList;
     private BroadcastReceiver messageReceiver;
 
+    private int requestsMade = 0;
+    private int pageIds = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_notifications);
@@ -161,7 +164,6 @@ public class NotificationsActivity extends BaseTracsActivity {
     private boolean allRequestsAreBack() {
         boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
         if (!sizeMatch) { return false; }
-        Log.i(TAG, "Size: " + this.tracsNotifications.size());
         int totalSiteNames = 0;
         int totalPageIds = 0;
         for (TracsAppNotification notification : this.tracsNotifications) {
@@ -195,18 +197,22 @@ public class NotificationsActivity extends BaseTracsActivity {
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         if (!notification.hasSiteName()) {
             Map<String, String> headers = new HashMap<>();
-            requestQueue.addToRequestQueue(new TracsSiteRequest(
+            TracsSiteRequest siteRequest = new TracsSiteRequest(
                     notification.getSiteId(), headers, NotificationsActivity.this::onSiteNameReturned
-            ), this);
+            );
+            requestQueue.addToRequestQueue(siteRequest, this);
         }
-        String pageIdUrl = getString(R.string.tracs_base) +
-                getString(R.string.tracs_site) +
-                notification.getSiteId() +
-                "/pages.json";
-        Log.i(TAG, pageIdUrl);
-        requestQueue.addToRequestQueue(new TracsPageIdRequest(
-                pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
-        ), this);
+        if (!notification.hasPageId()) {
+            String pageIdUrl = getString(R.string.tracs_base) +
+                    getString(R.string.tracs_site) +
+                    notification.getSiteId() +
+                    "/pages.json";
+            requestQueue.addToRequestQueue(new TracsPageIdRequest(
+                    pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
+            ), this);
+            requestsMade += 1;
+            Log.d(TAG, "Requests Made: " + requestsMade);
+        }
     }
 
     private void onSiteNameReturned(JsonObject siteInfo) {
@@ -232,18 +238,33 @@ public class NotificationsActivity extends BaseTracsActivity {
     }
 
     private void onPageIdReturned(Map<String, String> pageIdPair) {
-        for (TracsAppNotification notification : tracsNotifications) {
-            try {
-                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
-                String pageId = pageIdPair.get(tracsNotification.getDispatchId());
-                if (pageId != null) {
-                    tracsNotification.setPageId(pageId);
-                    break;
-                }
-            } catch (NullPointerException | ClassCastException e) {
-                Log.wtf(TAG, "Could not set pageId of notification.");
+        String dispatchId = null;
+        if (!pageIdPair.isEmpty() && pageIdPair.keySet().size() == 1) {
+            for (String key : pageIdPair.keySet()) {
+                dispatchId = key;
+            }
+            TracsAppNotification notification = tracsNotifications.get(dispatchId);
+            if (notification != null) {
+                String pageId = pageIdPair.get(notification.getDispatchId());
+                notification.setPageId(pageId);
             }
         }
+//
+//        for (TracsAppNotification notification : tracsNotifications) {
+//            try {
+//                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
+//
+//                String pageId = pageIdPair.get(tracsNotification.getDispatchId());
+//                if (pageId != null) {
+//                    tracsNotification.setPageId(pageId);
+//                    break;
+//                } else {
+//                    tracsNotification.setPageId(null);
+//                }
+//            } catch (NullPointerException | ClassCastException e) {
+//                Log.wtf(TAG, "Could not set pageId of notification.");
+//            }
+//        }
         if (allRequestsAreBack()) {
             HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
             displayListView();

@@ -7,6 +7,7 @@ public abstract class TracsAppNotificationAbs implements TracsAppNotification {
     private boolean read;
     private boolean cleared;
     private String dispatchId;
+    private String pageId;
     private Date notifyAfter;
 
     private static final String TAG = "TracsAppNotificationAbs";
@@ -14,6 +15,8 @@ public abstract class TracsAppNotificationAbs implements TracsAppNotification {
     public String getDispatchId() {
         return this.dispatchId;
     }
+
+    public String getPageId() { return this.pageId; }
 
     @Override
     public boolean hasBeenRead() {
@@ -32,6 +35,8 @@ public abstract class TracsAppNotificationAbs implements TracsAppNotification {
     public void setDispatchId(String dispatchId) {
         this.dispatchId = dispatchId;
     }
+
+    public void setPageId(String pageId) { this.pageId = pageId; }
 
     public void setNotifyAfter(Date notifyAfter) {
         this.notifyAfter = notifyAfter;

@@ -2,9 +2,7 @@ package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
 import java.util.HashMap;
 
-import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
@@ -109,15 +106,14 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
 
         int typeface;
-        ColorStateList textViewDefaults = rowHolder.titleText.getTextColors();
         if (!content.hasBeenRead()) {
             typeface = Typeface.BOLD;
             rowHolder.fontAwesomeIcon.setBackground(context.getResources().getDrawable(R.drawable.notification_icon_bg));
-            rowHolder.fontAwesomeIcon.setTextColor(context.getResources().getColor(R.color.unreadNotificationBackground));
+            rowHolder.fontAwesomeIcon.setTextColor(context.getResources().getColor(R.color.unreadBullhornColor));
         } else {
             typeface = Typeface.NORMAL;
             rowHolder.fontAwesomeIcon.setBackgroundColor(context.getResources().getColor(R.color.readNotificationBackground));
-            rowHolder.fontAwesomeIcon.setTextColor(textViewDefaults);
+            rowHolder.fontAwesomeIcon.setTextColor(context.getResources().getColor(R.color.readBullhornColor));
         }
 
         rowHolder.titleText.setTypeface(null, typeface);
@@ -132,7 +128,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
             TracsNotification notification = (TracsNotification) getItem(position);
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("url", notification.getUrl());
-            AnalyticsApplication.getContext().startActivity(intent);
+            context.startActivity(intent);
             new StatusUpdate().updateRead(notification);
         });
     }

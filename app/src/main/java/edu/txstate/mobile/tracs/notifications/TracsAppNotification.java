@@ -35,11 +35,13 @@ public interface TracsAppNotification {
     boolean hasBeenCleared();
 
     String getDispatchId();
+    String getPageId();
 
     void markSeen(boolean seen);
     void markRead(boolean read);
     void markCleared(boolean cleared);
     void setDispatchId(String dispatchId);
+    void setPageId(String pageId);
 
     void setNotifyAfter(Date date);
     Date getNotifyAfter();

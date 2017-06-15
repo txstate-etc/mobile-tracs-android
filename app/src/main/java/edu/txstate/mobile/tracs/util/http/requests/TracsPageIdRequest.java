@@ -18,6 +18,7 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.Counter;
 
 public class TracsPageIdRequest extends Request<Map<String, String>> {
 
@@ -26,12 +27,7 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
     private Response.Listener<Map<String, String>> listener;
 
     public TracsPageIdRequest(String url, String dispatchId, Response.Listener<Map<String, String>> listener) {
-        super(Method.GET, url, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.wtf(TAG, new String(error.networkResponse.data));
-            }
-        });
+        super(Method.GET, url, error -> Log.wtf(TAG, "Error retrieving notification"));
         this.listener = listener;
         this.dispatchId = dispatchId;
     }
@@ -62,21 +58,22 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
         } catch (ClassCastException e) {
             return Response.error(new VolleyError("Could not parse page id."));
         }
-
+        Map<String, String> pageIdDispatchId = new HashMap<>();
         for (JsonElement page : pages) {
             JsonArray tools = page.getAsJsonObject().get("tools").getAsJsonArray();
             for (JsonElement tool : tools) {
                 String toolId = tool.getAsJsonObject().get("toolId").getAsString();
                 if (Tool.ANNOUNCEMENTS.equals(toolId)) {
                     String pageId = tool.getAsJsonObject().get("pageId").getAsString();
-                    Map<String, String> pageIdDispatchId = new HashMap<>();
                     pageIdDispatchId.put(this.dispatchId, pageId);
-                    return Response.success(pageIdDispatchId, HttpHeaderParser.parseCacheHeaders(response));
                 }
             }
         }
-
-        return Response.error(new VolleyError("Could not find a pageId for this notification"));
+        if (pageIdDispatchId.isEmpty()) {
+            Log.w(TAG, "No page id found");
+            pageIdDispatchId.put(this.dispatchId, null);
+        }
+        return Response.success(pageIdDispatchId, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override

@@ -112,6 +112,16 @@ public class NotificationsBundle extends Observable implements Iterable<TracsApp
         return null;
     }
 
+    public TracsAppNotification get(String dispatchId) {
+        if (dispatchId == null) { return null; }
+        for (TracsAppNotification notification : allNotifications) {
+            if (dispatchId.equals(notification.getDispatchId())) {
+                return notification;
+            }
+        }
+        return null;
+    }
+
     private void incrementCount(String type) {
         boolean typeExists = this.notificationsCount.containsKey(type);
         int updatedTypeTotal = typeExists ? this.notificationsCount.get(type) + 1 : 1;
