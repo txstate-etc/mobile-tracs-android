@@ -3,17 +3,14 @@ package edu.txstate.mobile.tracs;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.text.Layout;
+import android.os.Parcelable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.gson.JsonObject;
@@ -44,9 +41,8 @@ public class NotificationsActivity extends BaseTracsActivity {
     private NotificationsAdapter adapter;
     private ListView notificationsList;
     private BroadcastReceiver messageReceiver;
-
+    private int currentPosition;
     private int requestsMade = 0;
-    private int pageIds = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +61,21 @@ public class NotificationsActivity extends BaseTracsActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        clearNotifications();
+        if (notificationsList != null) {
+            if (currentPosition >= notificationsList.getCount()) {
+                currentPosition = 0;
+            }
+            notificationsList.setSelection(currentPosition);
+        }
+        init();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
-        clearNotifications();
-        init();
+
     }
 
     private void init() {
@@ -83,8 +86,13 @@ public class NotificationsActivity extends BaseTracsActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (notificationsList != null) {
+            currentPosition = notificationsList.getSelectedItemPosition();
+        }
         this.unregisterReceiver(messageReceiver);
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -113,6 +121,9 @@ public class NotificationsActivity extends BaseTracsActivity {
         }
         if (this.tracsNotifications != null) {
             this.tracsNotifications.removeAll();
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -249,22 +260,6 @@ public class NotificationsActivity extends BaseTracsActivity {
                 notification.setPageId(pageId);
             }
         }
-//
-//        for (TracsAppNotification notification : tracsNotifications) {
-//            try {
-//                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
-//
-//                String pageId = pageIdPair.get(tracsNotification.getDispatchId());
-//                if (pageId != null) {
-//                    tracsNotification.setPageId(pageId);
-//                    break;
-//                } else {
-//                    tracsNotification.setPageId(null);
-//                }
-//            } catch (NullPointerException | ClassCastException e) {
-//                Log.wtf(TAG, "Could not set pageId of notification.");
-//            }
-//        }
         if (allRequestsAreBack()) {
             HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
             displayListView();
