@@ -2,19 +2,22 @@ package edu.txstate.mobile.tracs.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SimpleSwipeListener;
+import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
 import java.util.HashMap;
 
 import edu.txstate.mobile.tracs.MainActivity;
-import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
@@ -25,7 +28,6 @@ import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 public class NotificationsAdapter extends BaseSwipeAdapter {
 
     private static final String TAG = "NotificationsAdapter";
-    private int badgeCount;
 
     private NotificationsBundle tracsAppNotifications;
     private Context context;
@@ -35,14 +37,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         this.tracsAppNotifications = notifications;
         this.context = context;
         for (int i = 0; i < this.tracsAppNotifications.size(); i++) {
-            idMap.put(tracsAppNotifications.get(i).getDispatchId(), i);
-        }
-        this.badgeCount = this.tracsAppNotifications.totalUnseen();
-    }
-
-    public void clear() {
-        for (int i = 0; i < getCount(); i++) {
-            remove(getItem(i));
+            idMap.put(tracsAppNotifications.get(i).getDispatchId(), tracsAppNotifications.get(i).getDispatchId().hashCode());
         }
     }
 
@@ -62,13 +57,13 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     }
 
     public void remove(Object notification) {
-        TracsAppNotification toBeRemoved = (TracsAppNotification) notification;
-        if (!toBeRemoved.hasBeenRead()) {
-            this.badgeCount--;
-        }
         this.tracsAppNotifications.remove(notification);
-        notifyDataSetChanged();
-        NotificationsActivity.class.cast(this.context).setBadgeCount(badgeCount);
+        try {
+            this.idMap.remove(TracsAppNotification.class.cast(notification).getDispatchId());
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Could not remove notification from id map");
+        }
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -83,20 +78,34 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public View generateView(int i, ViewGroup viewGroup) {
-        return LayoutInflater.from(context).inflate(R.layout.notification_row, viewGroup, false);
+    public View generateView(int position, ViewGroup viewGroup) {
+        View view = LayoutInflater.from(context).inflate(R.layout.notification_row, null);
+        return view;
     }
 
     @Override
-    public void fillValues(int position, View convertView) {
-        if (convertView == null) {
-            convertView = ((LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
+    public void fillValues(int position, View swipeView) {
+        if (swipeView == null) {
+            swipeView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
         }
+
+        SwipeLayout swipeLayout = (SwipeLayout) swipeView.findViewById(getSwipeLayoutResourceId(R.id.swipe_layout));
+        swipeLayout.addSwipeListener(new SimpleSwipeListener() {
+            @Override
+            public void onOpen(SwipeLayout layout) {
+                super.onOpen(layout);
+            }
+        });
+
+        swipeView.findViewById(R.id.delete).setOnClickListener(v -> {
+            deleteNotification(position);
+        });
+
         RowHolder rowHolder = new RowHolder();
-        rowHolder.fontAwesomeIcon = (FontAwesome) convertView.findViewById(R.id.notification_icon);
-        rowHolder.siteName = (TextView) convertView.findViewById(R.id.notification_site_name);
-        rowHolder.titleText = (TextView) convertView.findViewById(R.id.notification_title);
-        rowHolder.row = (RelativeLayout) convertView.findViewById(R.id.notification_row);
+        rowHolder.fontAwesomeIcon = (FontAwesome) swipeView.findViewById(R.id.notification_icon);
+        rowHolder.siteName = (TextView) swipeView.findViewById(R.id.notification_site_name);
+        rowHolder.titleText = (TextView) swipeView.findViewById(R.id.notification_title);
+        rowHolder.row = (RelativeLayout) swipeView.findViewById(R.id.notification_row);
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
@@ -118,12 +127,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
         rowHolder.titleText.setTypeface(null, typeface);
 
-        convertView.findViewById(R.id.delete).setOnClickListener(v -> {
-            deleteNotification(position);
-            super.closeAllItems();
-        });
-
-        convertView.setTag(rowHolder);
+        swipeView.setTag(rowHolder);
         rowHolder.row.setOnClickListener(v -> {
             TracsNotification notification = (TracsNotification) getItem(position);
             Intent intent = new Intent(context, MainActivity.class);
@@ -136,7 +140,6 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     private void deleteNotification(int position) {
         TracsAppNotification notification = (TracsAppNotification) getItem(position);
         remove(notification);
-        closeItem(position);
         new StatusUpdate().updateCleared(notification);
     }
 
