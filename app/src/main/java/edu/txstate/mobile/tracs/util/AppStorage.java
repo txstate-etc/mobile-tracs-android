@@ -16,8 +16,6 @@ public class AppStorage {
     public static final String SESSION_ID = "sessionId";
     public static final String PASSWORD = "password";
 
-    private static boolean firstLoad = true;
-
     private AppStorage() {}
 
     private static SharedPreferences getPrefs(Context context) {
@@ -53,14 +51,6 @@ public class AppStorage {
     public static void clear(Context context) {
         SharedPreferences prefs = AppStorage.getPrefs(context);
         prefs.edit().clear().commit();
-    }
-
-    public static boolean isFirstLoad(Context context) {
-        return firstLoad;
-    }
-
-    public static void clearFirstLoad() {
-        firstLoad = false;
     }
 
     public static boolean credentialsAreStored(Context context) {

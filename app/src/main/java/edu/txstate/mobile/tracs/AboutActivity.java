@@ -84,7 +84,6 @@ public class AboutActivity extends BaseTracsActivity implements View.OnTouchList
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             launchMainActivity();
-            AppStorage.clearFirstLoad();
         }
         return false;
     }

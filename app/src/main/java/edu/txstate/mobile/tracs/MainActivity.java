@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.Locale;
 
 import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
+import edu.txstate.mobile.tracs.util.VersionTracker;
 
 public class MainActivity extends BaseTracsActivity {
     private static final String TAG = "MainActivity";
@@ -84,7 +86,7 @@ public class MainActivity extends BaseTracsActivity {
         }
         if (launchedFromNotification()) {
             goToNotifications();
-        } else if (AppStorage.isFirstLoad(this)) {
+        } else if (VersionTracker.getInstance().isNewVersion()) {
             goToAboutApp();
         }
         setContentView(R.layout.activity_main);
