@@ -84,9 +84,7 @@ public class MainActivity extends BaseTracsActivity {
         }
         if (launchedFromNotification()) {
             goToNotifications();
-        }
-
-        if (AppStorage.isFirstLoad(this)) {
+        } else if (AppStorage.isFirstLoad(this)) {
             goToAboutApp();
         }
         setContentView(R.layout.activity_main);
@@ -117,6 +115,9 @@ public class MainActivity extends BaseTracsActivity {
         String url = intent.getStringExtra("url");
         if (url != null && !"".equals(url)) {
             getIntent().putExtra("url", url);
+        }
+        if (launchedFromNotification()) {
+            goToNotifications();
         }
     }
 
