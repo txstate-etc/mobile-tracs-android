@@ -31,7 +31,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
     private NotificationsBundle tracsAppNotifications;
     private Context context;
-    HashMap<String, Integer> idMap = new HashMap<>();
+    private HashMap<String, Integer> idMap = new HashMap<>();
 
     public NotificationsAdapter(NotificationsBundle notifications, Context context) {
         this.tracsAppNotifications = notifications;
@@ -69,7 +69,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     @Override
     public long getItemId(int position) {
         String mapId = TracsNotification.class.cast(getItem(position)).getDispatchId();
-        return idMap.get(mapId);
+        return this.idMap.get(mapId);
     }
 
     @Override

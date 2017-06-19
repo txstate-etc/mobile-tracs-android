@@ -222,7 +222,6 @@ public class NotificationsActivity extends BaseTracsActivity {
                     pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
             ), this);
             requestsMade += 1;
-            Log.d(TAG, "Requests Made: " + requestsMade);
         }
     }
 
@@ -263,6 +262,8 @@ public class NotificationsActivity extends BaseTracsActivity {
         if (allRequestsAreBack()) {
             HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
             displayListView();
+            Log.i(TAG, "Requests Made: " + requestsMade);
+            requestsMade = 0;
         }
     }
 
