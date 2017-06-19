@@ -22,11 +22,10 @@ import edu.txstate.mobile.tracs.util.SettingsStore;
 public class SettingsRequest extends Request<Void> {
 
     private final static String TAG = "SettingsRequest";
-    private final static String TOKEN_PARAMETER = "/" + FirebaseInstanceId.getInstance().getToken();
     private Response.Listener<Void> listener;
 
     public SettingsRequest(String url, Response.Listener<Void> listener) {
-        super(Method.POST, url + TOKEN_PARAMETER, error -> Log.wtf(TAG, "Could not retrieve settings from Dispatch"));
+        super(Method.POST, url + "/" + FirebaseInstanceId.getInstance().getToken(), error -> Log.wtf(TAG, "Could not retrieve settings from Dispatch"));
         this.listener = listener;
     }
 
