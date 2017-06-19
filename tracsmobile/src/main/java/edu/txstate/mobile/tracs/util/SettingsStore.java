@@ -34,8 +34,8 @@ public class SettingsStore {
         if (notificationSettings == null) {
             notificationSettings = new SettingsStore(new JsonObject());
         }
-        notificationSettings.getSettingsFromStorage();
         notificationSettings.setDefaultSettings();
+        notificationSettings.getSettingsFromStorage();
         return notificationSettings;
     }
 
