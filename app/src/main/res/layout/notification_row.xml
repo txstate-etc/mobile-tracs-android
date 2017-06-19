@@ -63,20 +63,19 @@
                 android:id="@+id/notification_title"
                 android:text="title"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_gravity="top"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:layout_weight="0.85"
+                android:layout_weight="0.6"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/notification_site_name"
                 android:text="site name"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:layout_weight="0.15"
+                android:layout_height="0dp"
+                android:layout_weight="0.4"
                 android:textSize="14sp" />
 
         </LinearLayout>
