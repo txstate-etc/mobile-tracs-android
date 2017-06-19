@@ -2,7 +2,7 @@
     <string name="app_name">TRACS</string>
     <string name="notificationsBundle">Notifications</string>
     <string name="notifications_label">Notifications</string>
-    <string name="notification_settings_label">Notification Settings</string>
+    <string name="notification_settings_label">Settings</string>
     <string name="feedback_label">Feedback</string>
     <string name="user_data">user_data.xml</string>
 
@@ -16,6 +16,4 @@
     <string name="menu_tracs_support">TRACS Support</string>
     <string name="clear_all_prompt">Clear all notifications?</string>
     <string name="about_the_app_label">About</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
 </resources>
