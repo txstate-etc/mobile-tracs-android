@@ -7,16 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.Settings;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import android.util.LongSparseArray;
 
 import edu.txstate.mobile.tracs.R;
-
 
 public class FileDownloader {
 
@@ -24,38 +21,9 @@ public class FileDownloader {
     private DownloadManager downloadManager;
     private BroadcastReceiver onDownloadCompletion;
 
-    private ArrayList<String> microsoftMimeTypes = new ArrayList<>(Arrays.asList(
-            "application/msword",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-            "application/vnd.ms-word.document.macroEnabled.12",
-            "application/vnd.ms-word.template.macroEnabled.12",
-            "application/vnd.ms-excel",
-            "application/vnd.ms-excel",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
-            "application/vnd.ms-excel.sheet.macroEnabled.12",
-            "application/vnd.ms-excel.template.macroEnabled.12",
-            "application/vnd.ms-excel.addin.macroEnabled.12",
-            "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
-            "application/vnd.ms-powerpoint",
-            "application/vnd.ms-powerpoint",
-            "application/vnd.ms-powerpoint",
-            "application/vnd.ms-powerpoint",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            "application/vnd.openxmlformats-officedocument.presentationml.template",
-            "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
-            "application/vnd.ms-powerpoint.addin.macroEnabled.12",
-            "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-            "application/vnd.ms-powerpoint.template.macroEnabled.12",
-            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
-            "application/vnd.ms-access"
-    ));
-
     private static final String DOWNLOAD_MANAGER_PACKAGE_NAME = "com.android.providers.downloads";
     private long downloadId = -1;
+    private LongSparseArray<Boolean> downloadStatus = new LongSparseArray<>();
 
     public FileDownloader(Context context) {
         this.context = context;
@@ -110,20 +78,22 @@ public class FileDownloader {
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalPublicDir(dirName, fileName);
             request.addRequestHeader("Cookie", cookies);
+            request.setMimeType(mimeType);
 
             this.onDownloadCompletion = new TypedBroadcastReceiver(mimeType);
-            this.context.registerReceiver(this.onDownloadCompletion, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            this.context.getApplicationContext().registerReceiver(this.onDownloadCompletion, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
             DownloadManager.Query isDownloadingQuery = new DownloadManager.Query();
 
             isDownloadingQuery.setFilterByStatus(
                     DownloadManager.STATUS_PAUSED |
-                    DownloadManager.STATUS_PENDING |
-                    DownloadManager.STATUS_RUNNING |
-                    DownloadManager.STATUS_SUCCESSFUL
+                            DownloadManager.STATUS_PENDING |
+                            DownloadManager.STATUS_RUNNING |
+                            DownloadManager.STATUS_SUCCESSFUL
             );
 
             this.downloadId = downloadManager.enqueue(request);
+            this.downloadStatus.put(downloadId, false);
         }
     }
 
@@ -146,50 +116,54 @@ public class FileDownloader {
     }
 
     private class TypedBroadcastReceiver extends BroadcastReceiver {
-        private String mimeType;
-
         public TypedBroadcastReceiver(String mimeType) {
             super();
-            this.mimeType = mimeType;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
             long intentDownloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             boolean downloadIsForMe = intentDownloadId >= 0 && intentDownloadId == downloadId;
-            if (downloadIsForMe) {
-                Uri localUri = downloadManager.getUriForDownloadedFile(downloadId);
-                openFile(localUri);
+            if (downloadIsForMe && DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(intentDownloadId);
+                Cursor cursor = null;
+                String uri;
+                String mime;
+                try {
+                    cursor = downloadManager.query(query);
+
+                    if (cursor.moveToFirst()) {
+                        int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                            uri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                            mime = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE));
+                            Uri localUri = Uri.parse(uri);
+                            openFile(localUri, mime, intentDownloadId);
+                        }
+                    }
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+
             }
         }
 
-        private void openFile(Uri file) {
-            Intent openFileIntent;
-            if (microsoftMimeTypes.contains(mimeType)) {
-                openFileIntent = new Intent(Intent.ACTION_VIEW);
-                openFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                openFileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                openFileIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                openFileIntent.setDataAndTypeAndNormalize(file, mimeType);
-            } else {
-                openFileIntent = new Intent(Intent.ACTION_VIEW);
-                openFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                openFileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                openFileIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                openFileIntent.setDataAndNormalize(file);
+        private void openFile(Uri file, String mimeType, Long downloadId) {
+            if (FileDownloader.this.downloadStatus.get(downloadId)) { return; }
+            boolean usingNougatOrAbove = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N;
+            if (usingNougatOrAbove) { //We have to have a content URI vs. a file URI
+                file = downloadManager.getUriForDownloadedFile(downloadId);
             }
-
-            try {
-                context.startActivity(openFileIntent);
-            } catch (ActivityNotFoundException e) {
-                makeLongToast("No viewer application found");
-            }
-        }
-
-        private void makeLongToast(String message) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+            openFileIntent.setDataAndType(file, mimeType);
+            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            openFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            FileDownloader.this.context.startActivity(openFileIntent);
+            FileDownloader.this.downloadStatus.put(downloadId, true);
         }
     }
 }
-
-
