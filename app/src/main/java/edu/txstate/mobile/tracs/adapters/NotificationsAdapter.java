@@ -98,7 +98,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         });
 
         swipeView.findViewById(R.id.delete).setOnClickListener(v -> {
-            deleteNotification(position);
+            deleteNotification(position, swipeLayout);
         });
 
         RowHolder rowHolder = new RowHolder();
@@ -137,10 +137,17 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         });
     }
 
-    private void deleteNotification(int position) {
+    private void deleteNotification(int position, SwipeLayout swipeLayout) {
         TracsAppNotification notification = (TracsAppNotification) getItem(position);
         remove(notification);
+        removeShownLayouts(swipeLayout);
         new StatusUpdate().updateCleared(notification);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        closeAllItems();
     }
 
     class RowHolder {
