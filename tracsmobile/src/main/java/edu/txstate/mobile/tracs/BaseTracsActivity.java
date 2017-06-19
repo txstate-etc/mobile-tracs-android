@@ -2,12 +2,10 @@ package edu.txstate.mobile.tracs;
 
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +29,6 @@ import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.MenuController;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
-import edu.txstate.mobile.tracs.util.http.listeners.LoginListener;
 import edu.txstate.mobile.tracs.util.http.requests.NotificationCountRequest;
 
 public abstract class BaseTracsActivity extends AppCompatActivity implements Observer {

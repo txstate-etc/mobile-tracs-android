@@ -89,7 +89,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
     }
 
     private void onSiteIdError(VolleyError error) {
-        Log.wtf(TAG, "Could not retrieve site id");
+        Log.e(TAG, "Could not retrieve site id");
     }
 
     private void onSiteNameResponse(JsonObject siteInfo) {

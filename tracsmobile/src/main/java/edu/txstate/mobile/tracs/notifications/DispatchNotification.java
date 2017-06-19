@@ -79,7 +79,7 @@ public class DispatchNotification extends TracsAppNotificationAbs {
             try {
                 return Type.cast(dateFormat.parse(value.getAsString()));
             } catch (ParseException e) {
-                Log.wtf(TAG, "Could not parse date");
+                Log.e(TAG, "Could not parse date");
                 return Type.cast(new Date());
             }
         }

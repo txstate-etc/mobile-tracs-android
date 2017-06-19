@@ -26,7 +26,7 @@ public class PageLoader {
         try {
             input = AnalyticsApplication.getContext().getAssets().open(filename);
         } catch (IOException e) {
-            Log.wtf(TAG, "Couldn't open html file");
+            Log.e(TAG, "Couldn't open html file");
             returnString = "";
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -41,13 +41,13 @@ public class PageLoader {
             }
             returnString = stringBuilder.toString();
         } catch(IOException e) {
-            Log.wtf(TAG, "Couldn't read html file");
+            Log.e(TAG, "Couldn't read html file");
             returnString = "";
         } finally {
             try {
                 reader.close();
             } catch (IOException e) {
-                Log.wtf(TAG, "File was not open");
+                Log.e(TAG, "File was not open");
                 returnString = "";
             }
         }

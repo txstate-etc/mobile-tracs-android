@@ -3,7 +3,6 @@ package edu.txstate.mobile.tracs.util.http.requests;
 import android.os.Build;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -12,9 +11,6 @@ import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.txstate.mobile.tracs.util.NotificationStatus;
 
@@ -64,6 +60,6 @@ public class DispatchUpdateRequest extends Request<Void> {
     }
 
     private static void onError(VolleyError error) {
-        Log.wtf(TAG, error);
+        Log.e(TAG, error);
     }
 }

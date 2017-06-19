@@ -1,34 +1,14 @@
 package edu.txstate.mobile.tracs;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
-import android.graphics.drawable.PaintDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.widget.IconTextView;
-
-import edu.txstate.mobile.tracs.util.AppStorage;
 
 public class AboutActivity extends BaseTracsActivity implements View.OnTouchListener {
 

@@ -1,18 +1,17 @@
 package edu.txstate.mobile.tracs.util;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import edu.txstate.mobile.tracs.AboutActivity;
-import edu.txstate.mobile.tracs.SupportActivity;
 import edu.txstate.mobile.tracs.FeedbackActivity;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.NotificationSettingsActivity;
 import edu.txstate.mobile.tracs.NotificationsActivity;
 import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.SupportActivity;
 
 public class MenuController {
     private static final String HOME_ACTIVITY = "MainActivity";

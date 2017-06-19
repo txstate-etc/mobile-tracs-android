@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -161,7 +160,7 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void onTracsResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
-            Log.wtf(TAG, "Error retrieving notifications from TRACS");
+            Log.e(TAG, "Error retrieving notifications from TRACS");
             new StatusUpdate().updateCleared(response);
             this.dispatchNotifications.remove(response.getDispatchId());
             if (this.dispatchNotifications.size() == 0) {
@@ -197,11 +196,12 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     @Override
     public void update(Observable tracsNotifications, Object newNotification) {
+        //TODO: Fix this to not be called when watching the login/logout status
         TracsNotification notification;
         try {
             notification = (TracsNotification) newNotification;
         } catch (ClassCastException e) {
-            Log.wtf(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             return;
         }
         if (notification == null) { return; }
@@ -242,7 +242,7 @@ public class NotificationsActivity extends BaseTracsActivity {
                     tracsNotification.setSiteName(siteName);
                 }
             } catch (NullPointerException | ClassCastException e) {
-                Log.wtf(TAG, "Could not set site name.");
+                Log.e(TAG, "Could not set site name.");
             }
         }
     }

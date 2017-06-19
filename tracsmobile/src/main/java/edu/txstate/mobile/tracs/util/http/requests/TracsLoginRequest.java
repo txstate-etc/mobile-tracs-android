@@ -1,7 +1,6 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;

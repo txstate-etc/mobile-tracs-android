@@ -13,7 +13,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
@@ -25,7 +24,7 @@ public class SettingsRequest extends Request<Void> {
     private Response.Listener<Void> listener;
 
     public SettingsRequest(String url, Response.Listener<Void> listener) {
-        super(Method.POST, url + "/" + FirebaseInstanceId.getInstance().getToken(), error -> Log.wtf(TAG, "Could not retrieve settings from Dispatch"));
+        super(Method.POST, url + "/" + FirebaseInstanceId.getInstance().getToken(), error -> Log.e(TAG, "Could not retrieve settings from Dispatch"));
         this.listener = listener;
     }
 

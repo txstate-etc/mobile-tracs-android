@@ -18,7 +18,6 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.util.AppStorage;
-import edu.txstate.mobile.tracs.util.Counter;
 
 public class TracsPageIdRequest extends Request<Map<String, String>> {
 
@@ -27,7 +26,7 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
     private Response.Listener<Map<String, String>> listener;
 
     public TracsPageIdRequest(String url, String dispatchId, Response.Listener<Map<String, String>> listener) {
-        super(Method.GET, url, error -> Log.wtf(TAG, "Error retrieving notification"));
+        super(Method.GET, url, error -> Log.e(TAG, "Error retrieving notification"));
         this.listener = listener;
         this.dispatchId = dispatchId;
     }

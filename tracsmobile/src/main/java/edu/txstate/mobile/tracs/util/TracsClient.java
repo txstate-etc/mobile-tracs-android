@@ -87,7 +87,7 @@ public class TracsClient {
             try {
                 tracsNotification = (DispatchNotification) notification;
             } catch (ClassCastException e) {
-                Log.wtf(TAG, e.getMessage());
+                Log.e(TAG, e.getMessage());
                 continue;
             }
 
@@ -137,9 +137,9 @@ public class TracsClient {
 
     private void onStatusError(VolleyError error) {
        try {
-           Log.wtf(TAG, new String(error.networkResponse.data));
+           Log.e(TAG, "Error retrieving and parsing session token");
        } catch (NullPointerException e) {
-           Log.wtf(TAG, "Error with no message available");
+           Log.e(TAG, "Error with no message available");
        } finally {
            resetLoginState();
        }

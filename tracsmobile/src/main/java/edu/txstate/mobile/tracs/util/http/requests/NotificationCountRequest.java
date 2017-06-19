@@ -5,8 +5,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
@@ -14,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
-import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 
 
 public class NotificationCountRequest extends Request<Integer> {

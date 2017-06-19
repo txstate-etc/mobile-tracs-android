@@ -1,5 +1,6 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -51,6 +52,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
         return customHeaders;
     }
 
+    @SuppressLint("LongLogTag")
     @Override
     protected Response<TracsNotification> parseNetworkResponse(NetworkResponse response) {
         TracsNotification tracsNotification;
@@ -71,7 +73,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
                 try {
                     notification = (JsonObject) parser.next();
                 } catch (ClassCastException e) {
-                    Log.wtf(TAG, "Could not parse JSON response.");
+                    Log.e(TAG, "Could not parse JSON response.");
                     TracsNotificationError errorNotification = new TracsNotificationError(response.statusCode);
                     errorNotification.setDispatchId(this.dispatchId);
                     Response.success(errorNotification, HttpHeaderParser.parseCacheHeaders(response));

@@ -53,7 +53,7 @@ public class UserSitesRequest extends Request<LinkedHashMap<String, String>> {
             sites = parser.hasNext() ? parser.next().getAsJsonObject().get("membership_collection").getAsJsonArray() : new JsonArray();
         } catch (NullPointerException e) {
             String errorMsg = "User is not a member of any sites";
-            Log.wtf(TAG, errorMsg);
+            Log.e(TAG, errorMsg);
             return Response.error(new VolleyError(errorMsg));
         }
 

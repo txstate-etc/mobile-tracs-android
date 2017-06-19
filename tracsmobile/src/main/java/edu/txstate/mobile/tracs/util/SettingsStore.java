@@ -1,12 +1,11 @@
 package edu.txstate.mobile.tracs.util;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonStreamParser;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
@@ -16,8 +15,8 @@ import edu.txstate.mobile.tracs.util.http.requests.SettingsRequest;
 
 public class SettingsStore {
     private static final String TAG = "SettingsStore";
-    public static final boolean SETTING_ENABLED = true;
-    public static final boolean SETTING_DISABLED = false;
+    private static final boolean SETTING_ENABLED = true;
+    private static final boolean SETTING_DISABLED = false;
     private static final String[] SETTINGS_NOT_IMPLEMENTED = {
             NotificationTypes.ASSESSMENT,
             NotificationTypes.GRADE,
@@ -77,7 +76,14 @@ public class SettingsStore {
                 context.getString(R.string.dispatch_settings);
 
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                new SettingsRequest(settingsUrl, response -> Log.i(TAG, "Settings updated!")), null);
+                new SettingsRequest(settingsUrl, response -> {
+                    Tracker t = AnalyticsApplication.getDefaultTracker();
+                    t.send(new HitBuilders.EventBuilder()
+                        .setCategory(context.getString(R.string.settings))
+                        .setAction(context.getString(R.string.save_action))
+                        .setValue(1)
+                        .build());
+                }), null);
     }
 
     public JsonObject getSettings() {

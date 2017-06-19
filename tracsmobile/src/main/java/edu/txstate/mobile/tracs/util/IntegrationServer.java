@@ -59,7 +59,7 @@ public class IntegrationServer {
     }
 
     private void loadFailedLoginIntent(VolleyError error) {
-        Log.wtf(TAG, error.getMessage());
+        Log.e(TAG, "Could not log user in!");
         LoginStatus.getInstance().logout();
         String url = AnalyticsApplication.getContext().getString(R.string.tracs_cas_login);
         Intent intent = new Intent(AnalyticsApplication.getContext(), MainActivity.class);

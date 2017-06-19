@@ -12,7 +12,7 @@ public class FirebaseService extends FirebaseInstanceIdService {
         super.onTokenRefresh();
         String newToken = FirebaseInstanceId.getInstance().getToken();
         if (LoginStatus.getInstance().isUserLoggedIn()) {
-            Registrar.getInstance().registerDevice(null);
+            Registrar.getInstance().registerDevice(null, null);
         }
     }
 }

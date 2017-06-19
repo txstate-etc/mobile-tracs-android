@@ -1,15 +1,12 @@
 package edu.txstate.mobile.tracs.util;
 
 import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.Settings;
@@ -26,7 +23,6 @@ public class FileDownloader {
     private Context context;
     private DownloadManager downloadManager;
     private BroadcastReceiver onDownloadCompletion;
-    private ProgressDialog downloadProgress;
 
     private ArrayList<String> microsoftMimeTypes = new ArrayList<>(Arrays.asList(
             "application/msword",
@@ -127,15 +123,6 @@ public class FileDownloader {
                     DownloadManager.STATUS_SUCCESSFUL
             );
 
-            Cursor downloadStatusCursor = downloadManager.query(isDownloadingQuery);
-            int filePathColumn = downloadStatusCursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-
-            for (downloadStatusCursor.moveToFirst(); !downloadStatusCursor.isAfterLast(); downloadStatusCursor.moveToNext()) {
-                String newFileName = downloadStatusCursor.getString(filePathColumn).substring(downloadStatusCursor.getString(filePathColumn).lastIndexOf("/") + 1);
-                if (fileName.equals(newFileName)) {
-                    //TODO: Figure out if multiple file names are ok to download.
-                }
-            }
             this.downloadId = downloadManager.enqueue(request);
         }
     }
@@ -151,15 +138,9 @@ public class FileDownloader {
         Alert downloadManagerDisabled = new Alert(new android.view.ContextThemeWrapper(this.context, R.style.TxStateAlert), "Download Manager Disabled", "Would you like to enable it?");
 
         downloadManagerDisabled
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        goToSettings();
-                    }
-                })
-                .setNegativeButton("Disable Downloads", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        //TODO: Implement any necessary cancel actions
-                    }
+                .setPositiveButton("Yes", (dialog, which) -> goToSettings())
+                .setNegativeButton("Disable Downloads", (dialog, which) -> {
+                    //User refuses to enable download manager
                 })
                 .show();
     }

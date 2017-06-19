@@ -46,7 +46,7 @@ public class TracsAnnouncement extends TracsNotificationAbs {
         JsonElement jsonValue = notification.get(key);
 
         if (jsonValue == null) {
-            Log.wtf(TAG, "Tried to find key: " + key + " and failed.");
+            Log.e(TAG, "Tried to find key: " + key + " and failed.");
             return null;
         }
 

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
-import edu.txstate.mobile.tracs.NotificationSettingsActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.util.AppStorage;

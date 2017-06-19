@@ -3,8 +3,6 @@ package edu.txstate.mobile.tracs;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,7 +18,6 @@ import android.view.MenuItem;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import edu.txstate.mobile.tracs.util.AppStorage;
 import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.VersionTracker;
 
@@ -271,15 +267,14 @@ public class MainActivity extends BaseTracsActivity {
         }
 
         private File createImageFile() throws IOException {
-            // Create an image file name
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
             String imageFileName = "JPEG_" + timeStamp + "_";
             File storageDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_PICTURES);
             return File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
-                    storageDir      /* directory */
+                    imageFileName,
+                    ".jpg",
+                    storageDir
             );
         }
     }

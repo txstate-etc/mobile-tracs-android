@@ -13,7 +13,7 @@ public class DispatchUnregisterRequest extends Request<Void> {
     private static final String TAG = "UnregisterRequest";
 
     public DispatchUnregisterRequest(String url, String token) {
-        super(Method.DELETE, url + "?token=" + token, error -> Log.i(TAG, new String(error.networkResponse.data)));
+        super(Method.DELETE, url + "?token=" + token, error -> Log.e(TAG, "Failed to unregister device with dispatch"));
     }
 
     @Override
@@ -21,7 +21,6 @@ public class DispatchUnregisterRequest extends Request<Void> {
         if (response.statusCode == 200) {
             return Response.success(null, HttpHeaderParser.parseCacheHeaders(response));
         } else {
-            Log.e(TAG, new String(response.data));
             return Response.error(new VolleyError("Failed to unregister from dispatch with response code " + response.statusCode));
         }
     }

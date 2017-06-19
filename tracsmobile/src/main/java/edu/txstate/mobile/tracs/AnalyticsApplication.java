@@ -14,12 +14,13 @@ import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import edu.txstate.mobile.tracs.util.SettingsStore;
 
 public class AnalyticsApplication extends Application {
-    private Tracker tracker;
-
     //This is only applicable to storing a specific activity in a static
     //context field: getApplicationContext() should eliminate memory leaks.
     @SuppressLint("StaticFieldLeak")
     private static Context context;
+    private static Tracker tracker;
+    private static GoogleAnalytics analytics;
+
 
     public void onCreate() {
         super.onCreate();
@@ -29,6 +30,7 @@ public class AnalyticsApplication extends Application {
             WebView.setWebContentsDebuggingEnabled(true);
             TracsWebView.setWebContentsDebuggingEnabled(true);
         }
+        analytics = GoogleAnalytics.getInstance(this);
         SettingsStore.getInstance().saveSettings();
     }
 
@@ -36,10 +38,9 @@ public class AnalyticsApplication extends Application {
         return context;
     }
 
-    synchronized public Tracker getDefaultTracker() {
+    synchronized static public Tracker getDefaultTracker() {
         if (tracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            tracker = analytics.newTracker("UA-24962120-4");
+            tracker = analytics.newTracker(R.string.analytics_id);
         }
         return tracker;
     }

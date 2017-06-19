@@ -14,6 +14,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.android.volley.VolleyError;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -126,11 +128,13 @@ public class TracsWebView extends WebView {
     private class TracsWebViewClient extends WebViewClient {
         private static final String TAG = "TracsWebViewClient";
 
+        private int attempts = 0;
+        private final int maxAttempts = 5;
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
             TracsWebView.class.cast(view).loadHtml(PageLoader.getInstance().loadHtml("html/no_internet.html"));
-            Log.wtf(TAG, description);
+            Log.e(TAG, description);
         }
 
         @SuppressLint("ApplySharedPref")
@@ -167,7 +171,7 @@ public class TracsWebView extends WebView {
             }
 
             if (url.equals(loginSuccessUrl)) {
-                Registrar.getInstance().registerDevice(this::onResponse);
+                Registrar.getInstance().registerDevice(this::onResponse, this::onRegisterError);
                 SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
                 prefs.edit().putString("user-agent", view.getSettings().getUserAgentString()).commit();
                 String cookies[] = CookieManager.getInstance().getCookie(url).split(";");
@@ -189,9 +193,21 @@ public class TracsWebView extends WebView {
             }
         }
 
+        private void onRegisterError(VolleyError volleyError) {
+            attempts += 1;
+            Log.e(TAG, "Failure Count: " + attempts);
+            if (haveAttemptsLeft()) {
+                Registrar.getInstance().registerDevice(this::onResponse, this::onRegisterError);
+            }
+        }
+
         private void onResponse() {
             SettingsStore.getInstance().saveSettings();
             LoginStatus.getInstance().login();
+        }
+
+        private boolean haveAttemptsLeft() {
+            return this.attempts < this.maxAttempts;
         }
     }
 }

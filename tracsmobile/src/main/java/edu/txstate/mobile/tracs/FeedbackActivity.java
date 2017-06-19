@@ -5,7 +5,6 @@ import android.view.Menu;
 import android.webkit.WebView;
 
 import edu.txstate.mobile.tracs.util.LoginStatus;
-import edu.txstate.mobile.tracs.util.PageLoader;
 
 public class FeedbackActivity extends BaseTracsActivity {
 

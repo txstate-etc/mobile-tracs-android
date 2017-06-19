@@ -8,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
@@ -60,7 +59,7 @@ public class TracsSessionRequest extends Request<TracsSession> {
             TracsSession tracsSession = gson.fromJson(session, TracsSession.class);
             return Response.success(tracsSession, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException | IllegalStateException e) {
-            Log.wtf(TAG, SESSION_ERROR);
+            Log.e(TAG, SESSION_ERROR);
         }
         return null;
     }

@@ -4,7 +4,7 @@ package edu.txstate.mobile.tracs.util;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Response;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONObject;
@@ -26,6 +26,8 @@ public class Registrar {
     private Map<String, String> registration = new HashMap<>();
     private String jwt;
     private RegisterCallback registerCallback;
+    private Response.ErrorListener errorListener;
+
 
     private static final String TOKEN_URL = AnalyticsApplication.getContext().getString(R.string.jwt_url);
     private static final String DISPATCH_URL = AnalyticsApplication.getContext().getString(R.string.dispatch_registration);
@@ -56,8 +58,9 @@ public class Registrar {
         return new JSONObject(registration);
     }
 
-    public void registerDevice(RegisterCallback registerCallback) {
+    public void registerDevice(RegisterCallback registerCallback, Response.ErrorListener errorListener) {
         this.registerCallback = registerCallback;
+        this.errorListener = errorListener;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JwtRequest jwtRequest = new JwtRequest(
                 TOKEN_URL,
@@ -78,7 +81,7 @@ public class Registrar {
         String url = DISPATCH_URL + "?jwt=" + jwt;
         HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         JSONObject regInfo = Registrar.getInstance().getJsonRegistration();
-        DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo, registerCallback);
+        DispatchRegistrationRequest registerRequest = new DispatchRegistrationRequest(url, regInfo, registerCallback, errorListener);
         requestQueue.addToRequestQueue(registerRequest, this);
     }
 }

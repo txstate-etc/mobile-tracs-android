@@ -32,7 +32,7 @@ public class TracsSiteRequest extends Request<JsonObject> {
                             Response.Listener<JsonObject> listener) {
         super(Method.GET,
                 url + siteId + ".json",
-                error -> Log.wtf(TAG, error.getMessage()));
+                error -> Log.e(TAG, "Site name is not available"));
         this.listener = listener;
         this.headers = headers;
     }

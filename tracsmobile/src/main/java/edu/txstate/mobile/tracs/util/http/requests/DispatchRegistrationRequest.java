@@ -11,9 +11,6 @@ import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONObject;
 
-import java.util.Map;
-
-import edu.txstate.mobile.tracs.util.LoginStatus;
 import edu.txstate.mobile.tracs.util.http.listeners.RegisterCallback;
 
 public class DispatchRegistrationRequest extends Request<Void> {
@@ -24,8 +21,8 @@ public class DispatchRegistrationRequest extends Request<Void> {
     private RegisterCallback registerCallback;
     private JSONObject body;
 
-    public DispatchRegistrationRequest(String url, JSONObject body, RegisterCallback registerCallback) {
-        super(Method.POST, url, error -> Log.wtf(TAG, error.getMessage()));
+    public DispatchRegistrationRequest(String url, JSONObject body, RegisterCallback registerCallback, Response.ErrorListener registerError) {
+        super(Method.POST, url, registerError);
         this.registerCallback = registerCallback;
         this.body = body;
     }
