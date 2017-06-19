@@ -64,9 +64,6 @@ public class Registrar {
                 Registrar.getInstance()::receiveJwt,
                 error -> Log.e(TAG, "Could not retrieve JWT from service.")
         );
-        jwtRequest.setRetryPolicy(new DefaultRetryPolicy(0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.addToRequestQueue(jwtRequest, this);
     }
 
