@@ -8,3 +8,4 @@
 .externalNativeBuild
 /app/src/main/res/values/urls.xml
 /app/src/release/res/values/urls.xml
+keystore.properties
