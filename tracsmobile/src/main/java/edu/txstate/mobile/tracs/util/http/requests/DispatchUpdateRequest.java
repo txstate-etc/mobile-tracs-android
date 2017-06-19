@@ -60,6 +60,6 @@ public class DispatchUpdateRequest extends Request<Void> {
     }
 
     private static void onError(VolleyError error) {
-        Log.e(TAG, error);
+        Log.e(TAG, "Failed to update notifications");
     }
 }

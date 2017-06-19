@@ -142,8 +142,6 @@ public class TracsWebView extends WebView {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            Log.i(TAG, url);
-
             Context context = AnalyticsApplication.getContext();
             String loginUrl = context.getString(R.string.tracs_cas_login);
             String loginSuccessUrl = context.getString(R.string.tracs_login_success);
