@@ -1,5 +1,6 @@
 package edu.txstate.mobile.tracs;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,7 +28,7 @@ import edu.txstate.mobile.tracs.util.http.requests.UserSitesRequest;
 public class NotificationSettingsActivity extends BaseTracsActivity {
 
     private static final String TAG = "NotificationSettingsActivity";
-    private static final String SCREEN_NAME = "SettingsStore";
+    private static final String SCREEN_NAME = "Settings";
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
     private SettingsAdapter adapter;
@@ -88,6 +89,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         }
     }
 
+    @SuppressLint("LongLogTag")
     private void onSiteIdError(VolleyError error) {
         Log.e(TAG, "Could not retrieve site id");
     }

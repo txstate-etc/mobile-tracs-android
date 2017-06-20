@@ -30,7 +30,7 @@ import edu.txstate.mobile.tracs.util.VersionTracker;
 
 public class MainActivity extends BaseTracsActivity {
     private static final String TAG = "MainActivity";
-    private static final String SCREEN_NAME = "TRACS";
+    private static final String SCREEN_NAME = "WebView";
     private static final String TRACS_PORTAL_URL = AnalyticsApplication.getContext().getString(R.string.tracs_base)
                                                     + AnalyticsApplication.getContext().getString(R.string.tracs_portal);
     private TracsWebView tracsWebView;

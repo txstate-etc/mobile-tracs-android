@@ -40,7 +40,7 @@ public class AnalyticsApplication extends Application {
 
     synchronized static public Tracker getDefaultTracker() {
         if (tracker == null) {
-            tracker = analytics.newTracker(R.string.analytics_id);
+            tracker = analytics.newTracker(R.xml.global_tracker);
         }
         return tracker;
     }

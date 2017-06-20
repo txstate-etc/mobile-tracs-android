@@ -76,14 +76,13 @@ public class SettingsStore {
                 context.getString(R.string.dispatch_settings);
 
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
-                new SettingsRequest(settingsUrl, response -> {
-                    Tracker t = AnalyticsApplication.getDefaultTracker();
-                    t.send(new HitBuilders.EventBuilder()
+                new SettingsRequest(settingsUrl, response ->
+                    AnalyticsApplication.getDefaultTracker().send(new HitBuilders.EventBuilder()
                         .setCategory(context.getString(R.string.settings))
                         .setAction(context.getString(R.string.save_action))
-                        .setValue(1)
-                        .build());
-                }), null);
+                        .setLabel(toString())
+                        .build())
+                ), null);
     }
 
     public JsonObject getSettings() {
