@@ -16,7 +16,6 @@
         .container {
             height: 100%;
             margin-top: 10%;
-
         }
 
         #introContainer, #feedbackContainer {
@@ -126,9 +125,19 @@
             }
         }
 
-        @media (max-width: 599px) and (orientation: portrait){
+        @media (max-width: 599px) and (min-width: 400px) and (orientation: portrait){
             #feature-list {
                 width: 75%;
+            }
+        }
+
+        @media (max-width: 399px) and (orientation: portrait) {
+            #feature-list {
+                width: 85%;
+            }
+
+            #introContainer {
+                min-height: 25vh;
             }
         }
 
