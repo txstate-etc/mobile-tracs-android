@@ -1,25 +1,15 @@
 package edu.txstate.mobile.tracs;
 
-import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
 
-public class Splash extends Fragment {
+public class Splash extends AppCompatActivity {
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_about_the_app, container, false);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+        Intent mainActivity = new Intent(Splash.this, MainActivity.class);
+        startActivity(mainActivity);
+        finish();
     }
 }
