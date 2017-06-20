@@ -88,7 +88,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
             swipeView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
         }
 
-        SwipeLayout swipeLayout = (SwipeLayout) swipeView.findViewById(getSwipeLayoutResourceId(R.id.swipe_layout));
+        SwipeLayout swipeLayout = swipeView.findViewById(getSwipeLayoutResourceId(R.id.swipe_layout));
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
             @Override
             public void onOpen(SwipeLayout layout) {
@@ -101,10 +101,10 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         });
 
         RowHolder rowHolder = new RowHolder();
-        rowHolder.fontAwesomeIcon = (FontAwesome) swipeView.findViewById(R.id.notification_icon);
-        rowHolder.siteName = (TextView) swipeView.findViewById(R.id.notification_site_name);
-        rowHolder.titleText = (TextView) swipeView.findViewById(R.id.notification_title);
-        rowHolder.row = (RelativeLayout) swipeView.findViewById(R.id.notification_row);
+        rowHolder.fontAwesomeIcon = swipeView.findViewById(R.id.notification_icon);
+        rowHolder.siteName = swipeView.findViewById(R.id.notification_site_name);
+        rowHolder.titleText = swipeView.findViewById(R.id.notification_title);
+        rowHolder.row = swipeView.findViewById(R.id.notification_row);
 
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
@@ -112,6 +112,8 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.siteName.setText(content.getSiteName());
 
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
+
+        swipeLayout.setBackgroundColor(context.getResources().getColor(R.color.readNotificationBackground));
 
         int typeface;
         if (!content.hasBeenRead()) {
