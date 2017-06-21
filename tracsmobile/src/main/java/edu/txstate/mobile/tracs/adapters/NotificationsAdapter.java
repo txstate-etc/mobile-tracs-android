@@ -139,17 +139,16 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
         swipeView.setTag(rowHolder);
         rowHolder.row.setOnClickListener(v -> {
-            TracsNotification notification = (TracsNotification) getItem(position);
             Tracker tracker = AnalyticsApplication.getDefaultTracker();
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(context.getString(R.string.notification_event))
                     .setAction(context.getString(R.string.click_event))
-                    .setLabel(notification.getType())
+                    .setLabel(content.getType())
                     .build());
             Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra("url", notification.getUrl());
+            intent.putExtra("url", content.getUrl());
             context.startActivity(intent);
-            new StatusUpdate().updateRead(notification);
+            new StatusUpdate().updateRead(content);
         });
     }
 
