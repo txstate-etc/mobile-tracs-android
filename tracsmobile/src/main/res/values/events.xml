@@ -5,4 +5,5 @@
     <string name="notification_event">Notification</string>
     <string name="click_event">click</string>
     <string name="cleared_event">cleared</string>
+    <string name="filter_event">Filter</string>
 </resources>

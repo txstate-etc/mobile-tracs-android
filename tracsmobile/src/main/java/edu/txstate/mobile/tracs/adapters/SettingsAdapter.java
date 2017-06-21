@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -121,7 +124,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.notification_settings_header, parent, false);
         }
 
-        TextView settingsHeader = (TextView) convertView.findViewById(R.id.settings_header);
+        TextView settingsHeader = convertView.findViewById(R.id.settings_header);
         settingsHeader.setTypeface(null, Typeface.BOLD);
         settingsHeader.setText((String) getGroup(groupPosition));
 
@@ -138,7 +141,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         RowHolder rowHolder = new RowHolder();
 
         Pair<String, String> setting = (Pair<String, String>) getChild(groupPosition, childPosition);
-        rowHolder.settingStatus = (SwitchCompat) convertView.findViewById(R.id.setting_toggle);
+        rowHolder.settingStatus = convertView.findViewById(R.id.setting_toggle);
         rowHolder.settingStatus.setChecked(SettingsStore.getInstance().get(setting.first));
         rowHolder.settingId = setting.first;
 
@@ -164,8 +167,16 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
     private void onClicked(View view) {
         View parent = (View) view.getParent();
         RowHolder tag = (RowHolder) parent.getTag();
+        boolean allowed = tag.settingStatus.isChecked();
+
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
         SettingsStore.getInstance().saveSettings();
+        Tracker tracker = AnalyticsApplication.getDefaultTracker();
+        tracker.send(new HitBuilders.EventBuilder()
+        .setCategory(context.getString(R.string.filter_event))
+        .setAction(allowed ? "allow" : "block")
+        .setLabel(tag.settingId)
+        .build());
     }
 }

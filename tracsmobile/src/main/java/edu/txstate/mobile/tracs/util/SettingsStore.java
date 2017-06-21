@@ -1,6 +1,7 @@
 package edu.txstate.mobile.tracs.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -77,11 +78,7 @@ public class SettingsStore {
 
         HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                 new SettingsRequest(settingsUrl, response ->
-                    AnalyticsApplication.getDefaultTracker().send(new HitBuilders.EventBuilder()
-                        .setCategory(context.getString(R.string.settings))
-                        .setAction(context.getString(R.string.save_action))
-                        .setLabel(toString())
-                        .build())
+                        Log.i(TAG, "Settings saved")
                 ), null);
     }
 
