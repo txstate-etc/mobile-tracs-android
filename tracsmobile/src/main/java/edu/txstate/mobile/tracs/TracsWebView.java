@@ -11,10 +11,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.android.volley.VolleyError;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,12 +70,12 @@ public class TracsWebView extends WebView {
     }
 
     @JavascriptInterface
-    public void deliver(String username, String password, boolean privateDevice) {
+    public void deliver(String username, String password) {
         AppStorage.put(AppStorage.USERNAME, username.toLowerCase().trim(), context);
         AppStorage.remove(AppStorage.PASSWORD, context);
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
 
-        boolean shouldStorePassword = keyguardManager.isKeyguardSecure() && privateDevice;
+        boolean shouldStorePassword = keyguardManager.isKeyguardSecure();
         if (shouldStorePassword) {
             AppStorage.put(AppStorage.PASSWORD, password, context);
         }
@@ -137,6 +140,17 @@ public class TracsWebView extends WebView {
             Log.e(TAG, description);
         }
 
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+            Tracker tracker = AnalyticsApplication.getDefaultTracker();
+            tracker.send(new HitBuilders.EventBuilder()
+            .setCategory("Link")
+            .setAction(context.getString(R.string.click_event))
+            .setLabel(url)
+            .build());
+            return super.shouldInterceptRequest(view, url);
+        }
+
         @SuppressLint("ApplySharedPref")
         @Override
         public void onPageFinished(WebView view, String url) {
@@ -149,6 +163,8 @@ public class TracsWebView extends WebView {
 
             if (url.equals(loginUrl)) {
                 LoginStatus.getInstance().logout();
+                view.evaluateJavascript("document.querySelector('form input[name=\"publicWorkstation\"]').style = \"display:none;\"", null);
+                view.evaluateJavascript("document.querySelector('form label[for=\"publicWorkstation\"]').style = \"display:none;\"", null);
                 String javascript;
                 try {
                     InputStream input = context.getAssets().open("js/logins.js");

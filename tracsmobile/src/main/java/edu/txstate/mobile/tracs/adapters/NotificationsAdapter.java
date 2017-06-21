@@ -13,9 +13,12 @@ import android.widget.TextView;
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
@@ -87,6 +90,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         if (swipeView == null) {
             swipeView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
         }
+        TracsNotification content = TracsNotification.class.cast(getItem(position));
 
         SwipeLayout swipeLayout = swipeView.findViewById(getSwipeLayoutResourceId(R.id.swipe_layout));
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
@@ -97,6 +101,12 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         });
 
         swipeView.findViewById(R.id.delete).setOnClickListener(v -> {
+            Tracker tracker = AnalyticsApplication.getDefaultTracker();
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(context.getString(R.string.notification_event))
+                    .setAction(context.getString(R.string.cleared_event))
+                    .setLabel(content.getType())
+                    .build());
             deleteNotification(position, swipeLayout);
         });
 
@@ -106,7 +116,6 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         rowHolder.titleText = swipeView.findViewById(R.id.notification_title);
         rowHolder.row = swipeView.findViewById(R.id.notification_row);
 
-        TracsNotification content = TracsNotification.class.cast(getItem(position));
 
         rowHolder.titleText.setText(content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
@@ -131,6 +140,12 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         swipeView.setTag(rowHolder);
         rowHolder.row.setOnClickListener(v -> {
             TracsNotification notification = (TracsNotification) getItem(position);
+            Tracker tracker = AnalyticsApplication.getDefaultTracker();
+            tracker.send(new HitBuilders.EventBuilder()
+                    .setCategory(context.getString(R.string.notification_event))
+                    .setAction(context.getString(R.string.click_event))
+                    .setLabel(notification.getType())
+                    .build());
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("url", notification.getUrl());
             context.startActivity(intent);

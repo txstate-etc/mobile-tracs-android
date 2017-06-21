@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ga_trackingId" translatable="false">@strings/analytics_id</string>
+    <string name="ga_trackingId" translatable="false">UA-24962120-4</string>
 </resources>

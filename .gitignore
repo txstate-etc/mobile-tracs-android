@@ -7,6 +7,7 @@
 /tracsmobile/src/main/res/values/urls.xml
 /tracsmobile/src/release/res/values/urls.xml
 keystore.properties
+/tracsmobile/src/main/res/xml/global_tracker.xml
 
 # Generated files
 bin/

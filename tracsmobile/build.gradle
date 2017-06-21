@@ -28,7 +28,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        resValue "string", "analytics_id", localProperties.getProperty("tracs.uid","")
     }
     buildTypes {
         release {
