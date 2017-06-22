@@ -178,7 +178,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         tracker.send(new HitBuilders.EventBuilder()
         .setCategory(context.getString(R.string.filter_event))
         .setAction(allowed ? "allow" : "block")
-        .setLabel(((TextView) view).getText().toString())
+        .setLabel(label)
         .build());
     }
 }
