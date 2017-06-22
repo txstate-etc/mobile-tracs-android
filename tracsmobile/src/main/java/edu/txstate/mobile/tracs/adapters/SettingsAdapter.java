@@ -3,6 +3,7 @@ package edu.txstate.mobile.tracs.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -168,7 +169,8 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         View parent = (View) view.getParent();
         RowHolder tag = (RowHolder) parent.getTag();
         boolean allowed = tag.settingStatus.isChecked();
-
+        TextView labelText = (TextView) view;
+        String label = labelText.getText() != null ? labelText.getText().toString() : "Title Not Found";
         SettingsStore.getInstance().put(tag.settingId, tag.settingStatus.isChecked());
         AppStorage.put(AppStorage.SETTINGS, SettingsStore.getInstance().toString(), AnalyticsApplication.getContext());
         SettingsStore.getInstance().saveSettings();
@@ -176,7 +178,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         tracker.send(new HitBuilders.EventBuilder()
         .setCategory(context.getString(R.string.filter_event))
         .setAction(allowed ? "allow" : "block")
-        .setLabel(tag.settingId)
+        .setLabel(((TextView) view).getText().toString())
         .build());
     }
 }
