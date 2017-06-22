@@ -147,8 +147,8 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
                     .build());
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("url", content.getUrl());
-            context.startActivity(intent);
             new StatusUpdate().updateRead(content);
+            context.startActivity(intent);
         });
     }
 

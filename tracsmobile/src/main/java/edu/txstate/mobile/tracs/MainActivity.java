@@ -104,6 +104,8 @@ public class MainActivity extends BaseTracsActivity {
             tracsWebView = (TracsWebView) findViewById(R.id.tracs_webview);
             tracsWebView.setWebChromeClient(new TracsWebChromeClient(this));
             tracsWebView.loadUrl(destinationUrl, true);
+            getIntent().removeExtra("url");
+            shouldReloadWebView = false;
         }
     }
 
