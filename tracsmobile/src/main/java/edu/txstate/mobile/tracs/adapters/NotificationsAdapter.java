@@ -3,8 +3,10 @@ package edu.txstate.mobile.tracs.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -19,6 +21,7 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.HashMap;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.BuildConfig;
 import edu.txstate.mobile.tracs.MainActivity;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
@@ -34,10 +37,13 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     private NotificationsBundle tracsAppNotifications;
     private Context context;
     private HashMap<String, Integer> idMap = new HashMap<>();
+    private int lastDeletedPosition = -1;
+    private final NotificationSwipeListener swipeListener;
 
     public NotificationsAdapter(NotificationsBundle notifications, Context context) {
         this.tracsAppNotifications = notifications;
         this.context = context;
+        this.swipeListener = new NotificationSwipeListener();
         for (int i = 0; i < this.tracsAppNotifications.size(); i++) {
             idMap.put(tracsAppNotifications.get(i).getDispatchId(), tracsAppNotifications.get(i).getDispatchId().hashCode());
         }
@@ -45,7 +51,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
     @Override
     public boolean hasStableIds() {
-        return true;
+        return false;
     }
 
     @Override
@@ -65,7 +71,6 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         } catch (ClassCastException e) {
             Log.e(TAG, "Could not remove notification from id map");
         }
-        this.notifyDataSetChanged();
     }
 
     @Override
@@ -75,49 +80,44 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public int getSwipeLayoutResourceId(int i) {
+    public int getSwipeLayoutResourceId(int position) {
         return R.id.swipe_layout;
     }
 
     @Override
     public View generateView(int position, ViewGroup viewGroup) {
-        View view = LayoutInflater.from(context).inflate(R.layout.notification_row, null);
-        return view;
+        View swipeView = LayoutInflater.from(context).inflate(R.layout.notification_row, null);
+        return swipeView;
     }
 
     @Override
     public void fillValues(int position, View swipeView) {
-        if (swipeView == null) {
-            swipeView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notification_row, null);
-        }
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
-        SwipeLayout swipeLayout = swipeView.findViewById(getSwipeLayoutResourceId(R.id.swipe_layout));
-        swipeLayout.addSwipeListener(new SimpleSwipeListener() {
-            @Override
-            public void onOpen(SwipeLayout layout) {
-                super.onOpen(layout);
-            }
-        });
+        Swiperoo swipeLayout = (Swiperoo) swipeView;
+        swipeLayout.removeSwipeListener(swipeListener);
+        swipeLayout.addSwipeListener(swipeListener);
 
-        swipeView.findViewById(R.id.delete).setOnClickListener(v -> {
+        swipeLayout.findViewById(R.id.delete).setOnClickListener(v -> {
+            swipeLayout.close(false);
+            deleteNotification(content, position, swipeLayout);
+            this.lastDeletedPosition = position;
             Tracker tracker = AnalyticsApplication.getDefaultTracker();
             tracker.send(new HitBuilders.EventBuilder()
                     .setCategory(context.getString(R.string.notification_event))
                     .setAction(context.getString(R.string.cleared_event))
                     .setLabel(content.getType())
                     .build());
-            deleteNotification(position, swipeLayout);
         });
 
         RowHolder rowHolder = new RowHolder();
-        rowHolder.fontAwesomeIcon = swipeView.findViewById(R.id.notification_icon);
-        rowHolder.siteName = swipeView.findViewById(R.id.notification_site_name);
-        rowHolder.titleText = swipeView.findViewById(R.id.notification_title);
-        rowHolder.row = swipeView.findViewById(R.id.notification_row);
+        rowHolder.fontAwesomeIcon = swipeLayout.findViewById(R.id.notification_icon);
+        rowHolder.siteName = swipeLayout.findViewById(R.id.notification_site_name);
+        rowHolder.titleText = swipeLayout.findViewById(R.id.notification_title);
+        rowHolder.row = swipeLayout.findViewById(R.id.notification_row);
 
 
-        rowHolder.titleText.setText(content.getTitle());
+        rowHolder.titleText.setText(String.valueOf(position) + " - " + content.getTitle());
         rowHolder.siteName.setText(content.getSiteName());
 
         rowHolder.fontAwesomeIcon.setText(R.string.fa_bullhorn);
@@ -137,7 +137,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
 
         rowHolder.titleText.setTypeface(null, typeface);
 
-        swipeView.setTag(rowHolder);
+        swipeLayout.setTag(rowHolder);
         rowHolder.row.setOnClickListener(v -> {
             Tracker tracker = AnalyticsApplication.getDefaultTracker();
             tracker.send(new HitBuilders.EventBuilder()
@@ -152,23 +152,55 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
         });
     }
 
-    private void deleteNotification(int position, SwipeLayout swipeLayout) {
-        TracsAppNotification notification = (TracsAppNotification) getItem(position);
+    private boolean hasBeenDeleted(int position) {
+        return this.lastDeletedPosition == position;
+    }
+
+    private void clearDeletion(int position) {
+        this.lastDeletedPosition = -1;
+    }
+
+    private void deleteNotification(TracsNotification notification, int position, SwipeLayout swipeLayout) {
         remove(notification);
-        removeShownLayouts(swipeLayout);
-        new StatusUpdate().updateCleared(notification);
+        this.notifyDataSetChanged();
+        Log.i(TAG, "Notification Deleted");
+        if (!BuildConfig.DEBUG) {
+            new StatusUpdate().updateCleared(notification);
+        }
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-        closeAllItems();
+    private class NotificationSwipeListener extends SimpleSwipeListener {
+        @Override
+        public void onOpen(SwipeLayout layout) {
+            super.onOpen(layout);
+        }
+
+        @Override
+        public void onClose(SwipeLayout layout) {
+            super.onClose(layout);
+        }
     }
 
-    class RowHolder {
+    static class RowHolder {
         FontAwesome fontAwesomeIcon;
         TextView siteName;
         TextView titleText;
         RelativeLayout row;
     }
+}
+
+class Swiperoo extends SwipeLayout {
+
+    public Swiperoo(Context context) {
+        super(context);
+    }
+
+    public Swiperoo(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public Swiperoo(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
 }
