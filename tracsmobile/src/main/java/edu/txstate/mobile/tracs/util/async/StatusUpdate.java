@@ -37,7 +37,7 @@ public class StatusUpdate {
         return url;
     }
 
-    private void sendUpdate(TracsAppNotification notification, NotificationStatus status) {
+    void sendUpdate(TracsAppNotification notification, NotificationStatus status) {
         String url = formUrl(notification);
 
         //Should not need to cancel this request
@@ -46,45 +46,46 @@ public class StatusUpdate {
                 null
         );
     }
+}
 
-    private class Seen extends AsyncTask<NotificationsBundle, Void, Void> {
 
-        @Override
-        protected Void doInBackground(NotificationsBundle... tracsAppNotifications) {
-            NotificationsBundle notifications = tracsAppNotifications[0];
-            NotificationStatus status = new NotificationStatus(true, false, false);
-            for (int i = 0; i < notifications.size(); i++) {
-                TracsAppNotification notification = notifications.get(i);
-                if (!notification.hasBeenSeen()) {
-                    sendUpdate(notification, status);
-                }
+class Seen extends AsyncTask<NotificationsBundle, Void, Void> {
+
+    @Override
+    protected Void doInBackground(NotificationsBundle... tracsAppNotifications) {
+        NotificationsBundle notifications = tracsAppNotifications[0];
+        NotificationStatus status = new NotificationStatus(true, false, false);
+        for (int i = 0; i < notifications.size(); i++) {
+            TracsAppNotification notification = notifications.get(i);
+            if (!notification.hasBeenSeen()) {
+                new StatusUpdate().sendUpdate(notification, status);
             }
-            return null;
         }
+        return null;
     }
+}
 
-    private class Read extends AsyncTask<TracsAppNotification, Void, Void> {
-        @Override
-        protected Void doInBackground(TracsAppNotification... tracsAppNotifications) {
-            TracsAppNotification notification = tracsAppNotifications[0];
-            NotificationStatus status = new NotificationStatus(true, true, false);
-            if (!notification.hasBeenRead()) {
-                sendUpdate(notification, status);
-            }
-            return null;
+class Read extends AsyncTask<TracsAppNotification, Void, Void> {
+    @Override
+    protected Void doInBackground(TracsAppNotification... tracsAppNotifications) {
+        TracsAppNotification notification = tracsAppNotifications[0];
+        NotificationStatus status = new NotificationStatus(true, true, false);
+        if (!notification.hasBeenRead()) {
+            new StatusUpdate().sendUpdate(notification, status);
         }
+        return null;
     }
+}
 
-    private class Cleared extends AsyncTask<TracsAppNotification, Void, Void> {
-        @Override
-        protected Void doInBackground(TracsAppNotification... tracsAppNotifications) {
-            TracsAppNotification notification = tracsAppNotifications[0];
-            NotificationStatus status = new NotificationStatus(true, notification.hasBeenRead(), true);
-            if (!notification.hasBeenCleared()) {
-                sendUpdate(notification, status);
-            }
-            return null;
+class Cleared extends AsyncTask<TracsAppNotification, Void, Void> {
+    @Override
+    protected Void doInBackground(TracsAppNotification... tracsAppNotifications) {
+        TracsAppNotification notification = tracsAppNotifications[0];
+        NotificationStatus status = new NotificationStatus(true, notification.hasBeenRead(), true);
+        if (!notification.hasBeenCleared()) {
+            new StatusUpdate().sendUpdate(notification, status);
         }
+        return null;
     }
 }
 

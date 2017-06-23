@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.google.gson.JsonObject;
@@ -191,6 +192,17 @@ public class NotificationsActivity extends BaseTracsActivity {
         this.notificationsList = (ListView) findViewById(R.id.notifications_list);
         adapter = new NotificationsAdapter(tracsNotifications, this);
         this.notificationsList.setAdapter(adapter);
+        this.notificationsList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                ((NotificationsAdapter) absListView.getAdapter()).closeAllItems();
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                ((NotificationsAdapter) absListView.getAdapter()).closeAllItems();
+            }
+        });
         new StatusUpdate().updateSeen(this.tracsNotifications);
     }
 
