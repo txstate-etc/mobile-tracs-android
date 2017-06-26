@@ -8,35 +8,35 @@ import android.widget.TextView;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.FontAwesome;
 
-public class NotificationViewHolder extends RecyclerView.ViewHolder {
-    private RelativeLayout normalLayout;
+class NotificationViewHolder extends RecyclerView.ViewHolder {
+    private RelativeLayout layout;
 
     private FontAwesome notificationIcon;
     private TextView notificationTitle;
     private TextView notificationSite;
 
-    public NotificationViewHolder(View itemView) {
+    NotificationViewHolder(View itemView) {
         super(itemView);
 
-        normalLayout = itemView.findViewById(R.id.notification_row);
+        layout = itemView.findViewById(R.id.notification_row);
         notificationIcon = itemView.findViewById(R.id.n_icon);
         notificationSite = itemView.findViewById(R.id.n_site);
         notificationTitle= itemView.findViewById(R.id.n_title);
     }
 
-    public RelativeLayout getNormalLayout() {
-        return normalLayout;
+    RelativeLayout getLayout() {
+        return layout;
     }
 
-    public FontAwesome getNotificationIcon() {
+    FontAwesome getNotificationIcon() {
         return notificationIcon;
     }
 
-    public TextView getNotificationTitle() {
+    TextView getNotificationTitle() {
         return notificationTitle;
     }
 
-    public TextView getNotificationSite() {
+    TextView getNotificationSite() {
         return notificationSite;
     }
 }
