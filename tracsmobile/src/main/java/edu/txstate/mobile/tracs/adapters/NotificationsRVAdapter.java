@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,6 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
 
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
-        long startTime = System.nanoTime();
         final TracsNotification notification = (TracsNotification) tracsNotifications.get(position);
         final String onClickUrl = notification.getUrl();
         RelativeLayout layout = holder.getLayout();
@@ -86,7 +84,6 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
             new StatusUpdate().updateRead(notification);
             context.startActivity(intent);
         });
-        Log.i(TAG, "View Creation Time: " + (System.nanoTime() - startTime) / 1_000_000f);
     }
 
     public void remove(int position) {

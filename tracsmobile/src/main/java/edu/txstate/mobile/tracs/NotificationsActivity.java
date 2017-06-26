@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -44,6 +46,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     private NotificationsRVAdapter adapter;
     private RecyclerView notificationsList;
     private BroadcastReceiver messageReceiver;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     }
 
     private void refreshNotifications() {
+        startTime = System.nanoTime();
         if (this.tracsNotifications != null ){
             this.tracsNotifications.deleteObservers();
         }
@@ -182,7 +186,6 @@ public class NotificationsActivity extends BaseTracsActivity {
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
         adapter = new NotificationsRVAdapter(tracsNotifications);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         notificationsList.setLayoutManager(linearLayoutManager);
@@ -190,6 +193,17 @@ public class NotificationsActivity extends BaseTracsActivity {
 
         setSwipeForRecyclerView();
         new StatusUpdate().updateSeen(this.tracsNotifications);
+        long loadTime = System.nanoTime() - this.startTime / 1_000_000;
+        String notificationsLoaded = String.valueOf(this.notificationsList.getAdapter().getItemCount());
+        Tracker tracker = AnalyticsApplication.getDefaultTracker();
+
+        tracker.send(new HitBuilders.TimingBuilder()
+                .setCategory(getResources().getString(R.string.notification_event))
+                .setValue(loadTime)
+                .setVariable("notifications")
+                .setLabel(notificationsLoaded)
+                .build()
+        );
     }
 
     private void setSwipeForRecyclerView() {
