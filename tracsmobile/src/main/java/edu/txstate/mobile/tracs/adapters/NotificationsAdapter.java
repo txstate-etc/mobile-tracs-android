@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -94,7 +93,7 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     public void fillValues(int position, View swipeView) {
         TracsNotification content = TracsNotification.class.cast(getItem(position));
 
-        Swiperoo swipeLayout = (Swiperoo) swipeView;
+        SwipeRow swipeLayout = (SwipeRow) swipeView;
         swipeLayout.removeSwipeListener(swipeListener);
         swipeLayout.addSwipeListener(swipeListener);
 
@@ -189,17 +188,17 @@ public class NotificationsAdapter extends BaseSwipeAdapter {
     }
 }
 
-class Swiperoo extends SwipeLayout {
+class SwipeRow extends SwipeLayout {
 
-    public Swiperoo(Context context) {
+    public SwipeRow(Context context) {
         super(context);
     }
 
-    public Swiperoo(Context context, AttributeSet attrs) {
+    public SwipeRow(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public Swiperoo(Context context, AttributeSet attrs, int defStyle) {
+    public SwipeRow(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
