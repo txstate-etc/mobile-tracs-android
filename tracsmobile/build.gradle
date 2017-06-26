@@ -82,7 +82,6 @@ dependencies {
     //Swipe view support
     compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
     compile 'com.android.support:support-v4:26.0.0-alpha1'
-    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     //Turns Java Objects into JSON
     compile 'com.google.code.gson:gson:2.8.0'
     //Support for additional layouts
