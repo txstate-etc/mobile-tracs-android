@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -141,14 +142,14 @@ public class TracsWebView extends WebView {
         }
 
         @Override
-        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Tracker tracker = AnalyticsApplication.getDefaultTracker();
             tracker.send(new HitBuilders.EventBuilder()
-            .setCategory("Link")
-            .setAction(context.getString(R.string.click_event))
-            .setLabel(url)
-            .build());
-            return super.shouldInterceptRequest(view, url);
+                    .setCategory("Link")
+                    .setAction(context.getString(R.string.click_event))
+                    .setLabel(url)
+                    .build());
+            return super.shouldOverrideUrlLoading(view, url);
         }
 
         @SuppressLint("ApplySharedPref")
@@ -218,6 +219,13 @@ public class TracsWebView extends WebView {
         private void onResponse() {
             SettingsStore.getInstance().saveSettings();
             LoginStatus.getInstance().login();
+        }
+
+        private class JavaScriptInterface {
+            @JavascriptInterface
+            public void processHTML(String html) {
+                Log.i("HTML", "HTML Processed");
+            }
         }
 
         private boolean haveAttemptsLeft() {
