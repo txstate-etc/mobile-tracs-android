@@ -1,4 +1,6 @@
 <resources>
 
     <dimen name="default_size">60dp</dimen>
+    <dimen name="ic_clear_margin_normal">40dp</dimen>
+    <dimen name="ic_clear_margin_large">25dp</dimen>
 </resources>

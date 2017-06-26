@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ListView;
 
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
@@ -21,12 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-import edu.txstate.mobile.tracs.adapters.NotificationsAdapter;
+import edu.txstate.mobile.tracs.adapters.NotificationsRVAdapter;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
+import edu.txstate.mobile.tracs.util.SwipeUtil;
 import edu.txstate.mobile.tracs.util.TracsClient;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
@@ -38,15 +41,16 @@ public class NotificationsActivity extends BaseTracsActivity {
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
     private NotificationsBundle dispatchNotifications;
-    private NotificationsAdapter adapter;
-    private ListView notificationsList;
+    private NotificationsRVAdapter adapter;
+    private RecyclerView notificationsList;
     private BroadcastReceiver messageReceiver;
-    private int currentPosition;
-    private int requestsMade = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_notifications);
+        notificationsList = (RecyclerView) findViewById(R.id.rv_notifications);
+        notificationsList.addItemDecoration(new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL));
         super.onCreate(savedInstanceState);
         messageReceiver = new BroadcastReceiver() {
             @Override
@@ -62,12 +66,6 @@ public class NotificationsActivity extends BaseTracsActivity {
     protected void onStart() {
         super.onStart();
         clearNotifications();
-        if (notificationsList != null) {
-            if (currentPosition >= notificationsList.getCount()) {
-                currentPosition = 0;
-            }
-            notificationsList.setSelection(currentPosition);
-        }
         init();
     }
 
@@ -75,24 +73,18 @@ public class NotificationsActivity extends BaseTracsActivity {
     protected void onResume() {
         super.onResume();
         super.hitScreenView(SCREEN_NAME);
-
+        this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
     }
 
     private void init() {
         refreshNotifications();
-        this.registerReceiver(messageReceiver, new IntentFilter("badge_count"));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (notificationsList != null) {
-            currentPosition = notificationsList.getSelectedItemPosition();
-        }
         this.unregisterReceiver(messageReceiver);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,21 +181,37 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        this.notificationsList = (ListView) findViewById(R.id.notifications_list);
-        adapter = new NotificationsAdapter(tracsNotifications, this);
+        adapter = new NotificationsRVAdapter(tracsNotifications);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        notificationsList.setLayoutManager(linearLayoutManager);
         this.notificationsList.setAdapter(adapter);
-        this.notificationsList.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+        setSwipeForRecyclerView();
+        new StatusUpdate().updateSeen(this.tracsNotifications);
+    }
+
+    private void setSwipeForRecyclerView() {
+        SwipeUtil swipeHelper = new SwipeUtil(0, ItemTouchHelper.LEFT, this) {
+
             @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-                ((NotificationsAdapter) absListView.getAdapter()).closeAllItems();
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+                int swipedPosition = viewHolder.getAdapterPosition();
+                ((NotificationsRVAdapter) notificationsList.getAdapter()).remove(swipedPosition);
             }
 
             @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                ((NotificationsAdapter) absListView.getAdapter()).closeAllItems();
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return super.getSwipeDirs(recyclerView, viewHolder);
             }
-        });
-        new StatusUpdate().updateSeen(this.tracsNotifications);
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHelper);
+        itemTouchHelper.attachToRecyclerView(notificationsList);
+
+        swipeHelper.setLeftSwipeLabel("Delete");
+        swipeHelper.setLeftColorCode(getResources().getColor(R.color.dismissBackground));
     }
 
     @Override
@@ -233,7 +241,6 @@ public class NotificationsActivity extends BaseTracsActivity {
             requestQueue.addToRequestQueue(new TracsPageIdRequest(
                     pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
             ), this);
-            requestsMade += 1;
         }
     }
 
@@ -274,8 +281,6 @@ public class NotificationsActivity extends BaseTracsActivity {
         if (allRequestsAreBack()) {
             HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
             displayListView();
-            Log.i(TAG, "Requests Made: " + requestsMade);
-            requestsMade = 0;
         }
     }
 

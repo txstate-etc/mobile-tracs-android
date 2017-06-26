@@ -6,8 +6,8 @@
     tools:context="edu.txstate.mobile.tracs.NotificationsActivity"
     tools:showIn="@layout/activity_notifications">
 
-    <ListView
-        android:id="@+id/notifications_list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_notifications"
         android:divider="#BBBBBB"
         android:dividerHeight="1dp"
         android:layout_width="match_parent"
