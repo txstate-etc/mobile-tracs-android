@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.ValueCallback;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -164,8 +162,6 @@ public class TracsWebView extends WebView {
 
             if (url.equals(loginUrl)) {
                 LoginStatus.getInstance().logout();
-                view.evaluateJavascript("document.querySelector('form input[name=\"publicWorkstation\"]').style = \"display:none;\"", null);
-                view.evaluateJavascript("document.querySelector('form label[for=\"publicWorkstation\"]').style = \"display:none;\"", null);
                 String javascript;
                 try {
                     InputStream input = context.getAssets().open("js/logins.js");
