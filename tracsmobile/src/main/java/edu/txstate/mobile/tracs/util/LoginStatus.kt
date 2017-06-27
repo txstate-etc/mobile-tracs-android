@@ -4,11 +4,9 @@ import java.util.Observable
 
 class LoginStatus : Observable() {
     companion object {
-        @JvmStatic
         var userIsLoggedIn: Boolean = false
-        val loginStatus: LoginStatus = LoginStatus()
         @JvmStatic
-        val instance: LoginStatus = Companion.loginStatus
+        val instance: LoginStatus = LoginStatus()
     }
 
 
