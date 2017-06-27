@@ -28,9 +28,9 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
     private NotificationsBundle tracsNotifications;
     private Context context;
 
-    public NotificationsRVAdapter(NotificationsBundle bundle) {
+    public NotificationsRVAdapter(NotificationsBundle bundle, Context context) {
         this.tracsNotifications = bundle;
-        this.context = AnalyticsApplication.getContext();
+        this.context = context;
     }
 
     @Override

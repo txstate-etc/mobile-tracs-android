@@ -185,7 +185,7 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        adapter = new NotificationsRVAdapter(tracsNotifications);
+        adapter = new NotificationsRVAdapter(tracsNotifications, this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         notificationsList.setLayoutManager(linearLayoutManager);
