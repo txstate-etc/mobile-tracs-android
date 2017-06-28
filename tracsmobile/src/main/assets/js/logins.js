@@ -4,4 +4,6 @@ document.querySelector('form').onsubmit = function() {
     document.querySelector('form input[name="publicWorkstation"]').checked = false;
     TracsWebView.deliver(username, password);
     return true;
-}
+};
+document.querySelector('form input[name="publicWorkstation"]').style.display = "none";
+document.querySelector('form label[for="publicWorkstation"]').style.display = "none";
