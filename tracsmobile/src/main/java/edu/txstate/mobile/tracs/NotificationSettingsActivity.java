@@ -32,6 +32,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
     private int expectedSites, retrievedSites;
     private LinkedHashMap<String, String> siteNames;
     private SettingsAdapter adapter;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
     private void onSessionVerified(String session) {
         if (session != null) {
             AppStorage.put(AppStorage.SESSION_ID, session, AnalyticsApplication.getContext());
+            startTime = System.nanoTime();
             HttpQueue.getInstance(AnalyticsApplication.getContext()).addToRequestQueue(
                     new UserSitesRequest(NotificationSettingsActivity.this::onSiteIdResponse,
                             NotificationSettingsActivity.this::onSiteIdError), this
@@ -76,14 +78,12 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
     private void onSiteIdResponse(LinkedHashMap<String, String> siteIds) {
         this.siteNames = siteIds;
         this.expectedSites = siteIds.size();
-        Iterator iterator = siteNames.entrySet().iterator();
-        Map<String, String> headers = new HashMap<>();
-        while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) iterator.next();
+        for (Map.Entry pair : siteNames.entrySet()) {
             HttpQueue queue = HttpQueue.getInstance(AnalyticsApplication.getContext());
             TracsSiteRequest siteNameRequest = new TracsSiteRequest(
-                    pair.getKey().toString(), headers,
-                    NotificationSettingsActivity.this::onSiteNameResponse
+                    pair.getKey().toString(),
+                    this::onSiteNameResponse,
+                    this::onSiteNameError
             );
             queue.addToRequestQueue(siteNameRequest, this);
         }
@@ -108,8 +108,15 @@ public class NotificationSettingsActivity extends BaseTracsActivity {
         }
     }
 
+    @SuppressLint("LongLogTag")
+    private void onSiteNameError(String siteId) {
+        Log.e(TAG, "Could not get site name for: " + siteId);
+    }
+
+    @SuppressLint("LongLogTag")
     private void displayListView() {
         findViewById(R.id.loading_spinner).setVisibility(View.GONE);
+        Log.i(TAG, "Load Time: " + (System.nanoTime() - startTime) / 1_000_000 + "ms");
         ExpandableListView settingsListView = (ExpandableListView) findViewById(R.id.settings_list);
         adapter = new SettingsAdapter(this, this.siteNames);
         settingsListView.setAdapter(adapter);

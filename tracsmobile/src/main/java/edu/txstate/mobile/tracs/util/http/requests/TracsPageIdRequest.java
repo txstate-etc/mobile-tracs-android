@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
 import java.io.UnsupportedEncodingException;
@@ -17,18 +18,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.http.listeners.DataErrorListener;
 
-public class TracsPageIdRequest extends Request<Map<String, String>> {
+public class TracsPageIdRequest extends Request<JsonObject> {
 
     private static final String TAG = "TracsPageIdRequest";
-    private String dispatchId;
-    private Response.Listener<Map<String, String>> listener;
+    private static final String url = AnalyticsApplication.getContext().getResources().getString(R.string.tracs_base)
+            + AnalyticsApplication.getContext().getResources().getString(R.string.tracs_site);
+    private Response.Listener<JsonObject> listener;
+    private String siteId;
 
-    public TracsPageIdRequest(String url, String dispatchId, Response.Listener<Map<String, String>> listener) {
-        super(Method.GET, url, error -> Log.e(TAG, "Error retrieving notification"));
+    public TracsPageIdRequest(String siteId, Response.Listener<JsonObject> listener, DataErrorListener errorListener) {
+        super(Method.GET,
+                url + siteId + "/pages.json",
+                error -> errorListener.onError(siteId));
         this.listener = listener;
-        this.dispatchId = dispatchId;
+        this.siteId = siteId;
     }
 
 
@@ -41,7 +49,7 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
     }
 
     @Override
-    protected Response<Map<String, String>> parseNetworkResponse(NetworkResponse response) {
+    protected Response<JsonObject> parseNetworkResponse(NetworkResponse response) {
         String siteData = null;
         try {
             siteData = new String(response.data,
@@ -57,30 +65,37 @@ public class TracsPageIdRequest extends Request<Map<String, String>> {
         } catch (ClassCastException e) {
             return Response.error(new VolleyError("Could not parse page id."));
         }
-        Map<String, String> pageIdDispatchId = new HashMap<>();
+        JsonObject pageIds = new JsonObject();
+        pageIds.addProperty("siteId", this.siteId);
         for (JsonElement page : pages) {
             JsonArray tools = page.getAsJsonObject().get("tools").getAsJsonArray();
+            String pageId;
             for (JsonElement tool : tools) {
                 String toolId = tool.getAsJsonObject().get("toolId").getAsString();
-                if (Tool.ANNOUNCEMENTS.equals(toolId)) {
-                    String pageId = tool.getAsJsonObject().get("pageId").getAsString();
-                    pageIdDispatchId.put(this.dispatchId, pageId);
+                switch(toolId) {
+                    case Tool.ANNOUNCEMENTS:
+                        pageId = tool.getAsJsonObject().get("pageId").getAsString();
+                        pageIds.addProperty(NotificationTypes.ANNOUNCEMENT, pageId);
+                        break;
+                    case Tool.DISCUSSIONS:
+                        pageId = tool.getAsJsonObject().get("pageId").getAsString();
+                        pageIds.addProperty(NotificationTypes.DISCUSSION, pageId);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
-        if (pageIdDispatchId.isEmpty()) {
-            Log.w(TAG, "No page id found");
-            pageIdDispatchId.put(this.dispatchId, null);
-        }
-        return Response.success(pageIdDispatchId, HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(pageIds, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override
-    protected void deliverResponse(Map<String, String> response) {
+    protected void deliverResponse(JsonObject response) {
         this.listener.onResponse(response);
     }
 
     private interface Tool {
         String ANNOUNCEMENTS = "sakai.announcements";
+        String DISCUSSIONS = "sakai.forums";
     }
 }
