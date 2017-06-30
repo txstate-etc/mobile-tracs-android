@@ -27,6 +27,10 @@ class Registrar {
     }
 
     init {
+        updateRegistration()
+    }
+
+    private fun updateRegistration() {
         val context = AnalyticsApplication.getContext()
         registration.put("token", FirebaseInstanceId.getInstance().token ?: "")
         registration.put("platform", "android")
@@ -35,6 +39,7 @@ class Registrar {
     }
 
     private fun getJsonRegistration(): JSONObject {
+        updateRegistration()
         return JSONObject(Registrar.instance.registration)
     }
 
