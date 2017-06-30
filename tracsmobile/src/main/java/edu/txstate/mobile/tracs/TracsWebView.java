@@ -197,6 +197,7 @@ public class TracsWebView extends WebView {
             }
 
             if (logoutUrl.equals(url)) {
+                CookieManager.getInstance().setCookie("https://tracs.txstate.edu", "");
                 LoginStatus.getInstance().logout();
                 Registrar.getInstance().unregisterDevice();
                 SettingsStore.getInstance().clear();
