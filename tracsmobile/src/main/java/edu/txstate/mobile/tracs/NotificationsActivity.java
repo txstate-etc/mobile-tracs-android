@@ -166,11 +166,15 @@ public class NotificationsActivity extends BaseTracsActivity {
 
     private void onSiteDataResponse(SiteSet data) {
         this.siteIds = data;
+        ArrayList<DispatchNotification> toBeRemoved = new ArrayList<>();
         for (TracsAppNotification notification: this.dispatchNotifications) {
             DispatchNotification dNotification = (DispatchNotification) notification;
             if (!this.siteIds.contains(dNotification.getSiteId())) {
-                this.dispatchNotifications.remove(dNotification);
+                toBeRemoved.add(dNotification);
             }
+        }
+        for (DispatchNotification d : toBeRemoved) {
+            this.dispatchNotifications.remove(d);
         }
         TracsClient tracs = TracsClient.getInstance();
         tracs.getNotifications(this.dispatchNotifications, NotificationsActivity.this::onTracsResponse, AnalyticsApplication.getContext());
