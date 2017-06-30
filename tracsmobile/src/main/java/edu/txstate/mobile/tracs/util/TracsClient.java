@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,16 @@ import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
+import edu.txstate.mobile.tracs.notifications.util.NotificationData;
+import edu.txstate.mobile.tracs.notifications.util.SiteSet;
 import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.listeners.LoginListener;
+import edu.txstate.mobile.tracs.util.http.listeners.NotificationDataListener;
 import edu.txstate.mobile.tracs.util.http.requests.TracsLoginRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsNotificationRequest;
+import edu.txstate.mobile.tracs.util.http.requests.TracsPageIdRequest;
 import edu.txstate.mobile.tracs.util.http.requests.TracsSessionRequest;
+import edu.txstate.mobile.tracs.util.http.requests.TracsSiteRequest;
 import edu.txstate.mobile.tracs.util.http.responses.TracsSession;
 
 public class TracsClient {
@@ -31,11 +37,12 @@ public class TracsClient {
     private static final String ANNOUNCEMENT_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_announcement);
     private static final String PORTAL_URL = TRACS_URL + "portal";
     private static final String SITE_URL = PORTAL_URL + "/pda/";
-    public static final String SESSION_URL = TRACS_URL + AnalyticsApplication.getContext().getString(R.string.tracs_session_login);
 
     private static TracsClient tracsClient;
 
     private LoginListener loginListener;
+    private NotificationDataListener dataListener;
+    private SiteSet siteData;
 
     private TracsClient() {
     }
@@ -108,6 +115,66 @@ public class TracsClient {
                     url, headers, tracsNotification, listener, errorHandler), this);
         }
 
+    }
+
+    public void getSiteData(SiteSet siteData, NotificationDataListener listener) {
+        this.dataListener = listener;
+        this.siteData = siteData;
+        HttpQueue queue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+        for (NotificationData data : siteData) {
+            TracsSiteRequest siteRequest = new TracsSiteRequest(data.getSiteId(),
+                    this::onSiteNameReturned, this::onDataError);
+            queue.addToRequestQueue(siteRequest, this);
+
+            TracsPageIdRequest pageIdRequest = new TracsPageIdRequest(data.getSiteId(),
+                    this::onPageIdsReturned, this::onDataError);
+            queue.addToRequestQueue(pageIdRequest, this);
+        }
+    }
+
+    private void onDataError(String siteId) {
+        NotificationData data = this.siteData.get(siteId);
+        if (data != null) {
+            this.siteData.remove(data);
+            if (siteDataHasBeenFetched(data)) {
+                this.dataListener.onResponse(this.siteData);
+            }
+        }
+    }
+
+    private void onSiteNameReturned(JsonObject site) {
+        String siteId = site.get("entityId").getAsString();
+        String siteName = site.get("entityTitle").getAsString();
+        NotificationData data = this.siteData.get(siteId);
+        if (data != null) {
+            data.setSiteName(siteName);
+            if (siteDataHasBeenFetched(data)) {
+                this.dataListener.onResponse(this.siteData);
+            }
+        }
+    }
+
+    private void onPageIdsReturned(JsonObject pageIds) {
+        NotificationData data = this.siteData.get(pageIds.get("siteId").getAsString());
+        if (data != null) {
+            if (pageIds.has(NotificationTypes.ANNOUNCEMENT)) {
+                data.setAnnouncementPageId(pageIds.get(NotificationTypes.ANNOUNCEMENT).getAsString());
+            } else {
+                data.setAnnouncementPageId(null);
+            }
+            if (pageIds.has(NotificationTypes.DISCUSSION)) {
+                data.setDiscussionPageId(pageIds.get(NotificationTypes.DISCUSSION).getAsString());
+            } else {
+                data.setDiscussionPageId(null);
+            }
+            if (siteDataHasBeenFetched(data)) {
+                this.dataListener.onResponse(this.siteData);
+            }
+        }
+    }
+
+    private boolean siteDataHasBeenFetched(NotificationData data) {
+        return data.isComplete() && this.siteData.isComplete();
     }
 
     public void verifySession (LoginListener listener) {

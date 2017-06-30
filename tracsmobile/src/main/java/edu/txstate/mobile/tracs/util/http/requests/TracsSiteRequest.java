@@ -1,7 +1,5 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -12,11 +10,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.util.AppStorage;
+import edu.txstate.mobile.tracs.util.http.listeners.DataErrorListener;
 
 public class TracsSiteRequest extends Request<JsonObject> {
 
@@ -25,16 +25,15 @@ public class TracsSiteRequest extends Request<JsonObject> {
     private static final String TAG = "TracsSiteRequest";
 
     private final Response.Listener<JsonObject> listener;
-    private Map<String, String> headers;
+    private Map<String, String> headers = new HashMap<>();
 
     public TracsSiteRequest(String siteId,
-                            Map<String, String> headers,
-                            Response.Listener<JsonObject> listener) {
+                            Response.Listener<JsonObject> listener,
+                            DataErrorListener errorListener) {
         super(Method.GET,
                 url + siteId + ".json",
-                error -> Log.e(TAG, "Site name is not available"));
+                error -> errorListener.onError(siteId));
         this.listener = listener;
-        this.headers = headers;
     }
 
     @Override

@@ -15,21 +15,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.volley.VolleyError;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.JsonObject;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 
 import edu.txstate.mobile.tracs.adapters.NotificationsRVAdapter;
+import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
+import edu.txstate.mobile.tracs.notifications.util.NotificationData;
+import edu.txstate.mobile.tracs.notifications.util.SiteSet;
 import edu.txstate.mobile.tracs.util.IntegrationServer;
 import edu.txstate.mobile.tracs.util.SwipeUtil;
 import edu.txstate.mobile.tracs.util.TracsClient;
@@ -42,11 +49,12 @@ public class NotificationsActivity extends BaseTracsActivity {
     public static final String TAG = "NotificationsActivity";
     private static final String SCREEN_NAME = "Notifications";
     private NotificationsBundle tracsNotifications;
-    private NotificationsBundle dispatchNotifications;
+    private NotificationsBundle dispatchNotifications = new NotificationsBundle();
     private NotificationsRVAdapter adapter;
     private RecyclerView notificationsList;
     private BroadcastReceiver messageReceiver;
     private long startTime;
+    private SiteSet siteIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,8 +159,21 @@ public class NotificationsActivity extends BaseTracsActivity {
             return;
         }
         this.dispatchNotifications = response;
+        this.siteIds = extractSiteIds(response);
         TracsClient tracs = TracsClient.getInstance();
-        tracs.getNotifications(response, NotificationsActivity.this::onTracsResponse, AnalyticsApplication.getContext());
+        tracs.getSiteData(this.siteIds, this::onSiteDataResponse);
+    }
+
+    private void onSiteDataResponse(SiteSet data) {
+        this.siteIds = data;
+        for (TracsAppNotification notification: this.dispatchNotifications) {
+            DispatchNotification dNotification = (DispatchNotification) notification;
+            if (!this.siteIds.contains(dNotification.getSiteId())) {
+                this.dispatchNotifications.remove(dNotification);
+            }
+        }
+        TracsClient tracs = TracsClient.getInstance();
+        tracs.getNotifications(this.dispatchNotifications, NotificationsActivity.this::onTracsResponse, AnalyticsApplication.getContext());
     }
 
     private void onTracsResponse(TracsNotification response) {
@@ -168,9 +189,35 @@ public class NotificationsActivity extends BaseTracsActivity {
         }
     }
 
+    @Override
+    public void update(Observable tracsNotifications, Object newNotification) {
+        TracsNotification notification;
+        try {
+            notification = (TracsNotification) newNotification;
+            NotificationData siteData = this.siteIds.get(notification.getSiteId());
+            if (siteData != null) {
+                notification.setSiteName(siteData.getSiteName());
+                switch (notification.getType()) {
+                    case NotificationTypes.ANNOUNCEMENT:
+                        notification.setPageId(siteData.getAnnouncementPageId());
+                        break;
+                    case NotificationTypes.DISCUSSION:
+                        notification.setPageId(siteData.getDiscussionPageId());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (ClassCastException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        if (allRequestsAreBack()) {
+            displayListView();
+        }
+    }
+
     private boolean allRequestsAreBack() {
-        boolean sizeMatch = this.tracsNotifications.size() >= this.dispatchNotifications.size();
-        if (!sizeMatch) { return false; }
+        if (this.dispatchNotifications.size() > this.tracsNotifications.size()) { return false; }
         int totalSiteNames = 0;
         int totalPageIds = 0;
         for (TracsAppNotification notification : this.tracsNotifications) {
@@ -193,10 +240,10 @@ public class NotificationsActivity extends BaseTracsActivity {
 
         setSwipeForRecyclerView();
         new StatusUpdate().updateSeen(this.tracsNotifications);
-        long loadTime = System.nanoTime() - this.startTime / 1_000_000;
+        long loadTime = (System.nanoTime() - this.startTime) / 1_000_000;
         String notificationsLoaded = String.valueOf(this.notificationsList.getAdapter().getItemCount());
         Tracker tracker = AnalyticsApplication.getDefaultTracker();
-
+        Log.i(TAG, "Notification Retrieval Time: " + loadTime + "ms");
         tracker.send(new HitBuilders.TimingBuilder()
                 .setCategory(getResources().getString(R.string.notification_event))
                 .setValue(loadTime)
@@ -228,78 +275,56 @@ public class NotificationsActivity extends BaseTracsActivity {
         swipeHelper.setLeftColorCode(getResources().getColor(R.color.dismissBackground));
     }
 
-    @Override
-    public void update(Observable tracsNotifications, Object newNotification) {
-        //TODO: Fix this to not be called when watching the login/logout status
-        TracsNotification notification;
-        try {
-            notification = (TracsNotification) newNotification;
-        } catch (ClassCastException e) {
-            Log.e(TAG, e.getMessage());
-            return;
-        }
-        if (notification == null) { return; }
-        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
-        if (!notification.hasSiteName()) {
-            Map<String, String> headers = new HashMap<>();
-            TracsSiteRequest siteRequest = new TracsSiteRequest(
-                    notification.getSiteId(), headers, NotificationsActivity.this::onSiteNameReturned
-            );
-            requestQueue.addToRequestQueue(siteRequest, this);
-        }
-        if (!notification.hasPageId()) {
-            String pageIdUrl = getString(R.string.tracs_base) +
-                    getString(R.string.tracs_site) +
-                    notification.getSiteId() +
-                    "/pages.json";
-            requestQueue.addToRequestQueue(new TracsPageIdRequest(
-                    pageIdUrl, notification.getDispatchId(), NotificationsActivity.this::onPageIdReturned
-            ), this);
-        }
-    }
-
-    private void onSiteNameReturned(JsonObject siteInfo) {
-        for (TracsAppNotification notification : tracsNotifications) {
-            try {
-                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
-                boolean titleIsSet = !TracsNotification.NOT_SET.equals(tracsNotification.getSiteName());
-                if (titleIsSet) {
-                    continue;
-                }
-
-                String siteId = tracsNotification.getSiteId();
-                String fetchedSiteId = siteInfo.get("entityId").getAsString();
-
-                if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
-                    String siteName = siteInfo.get("entityTitle").getAsString();
-                    tracsNotification.setSiteName(siteName);
-                }
-            } catch (NullPointerException | ClassCastException e) {
-                Log.e(TAG, "Could not set site name.");
-            }
-        }
-    }
-
-    private void onPageIdReturned(Map<String, String> pageIdPair) {
-        String dispatchId = null;
-        if (!pageIdPair.isEmpty() && pageIdPair.keySet().size() == 1) {
-            for (String key : pageIdPair.keySet()) {
-                dispatchId = key;
-            }
-            TracsAppNotification notification = tracsNotifications.get(dispatchId);
-            if (notification != null) {
-                String pageId = pageIdPair.get(notification.getDispatchId());
-                notification.setPageId(pageId);
-            }
-        }
-        if (allRequestsAreBack()) {
-            HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
-            displayListView();
-        }
-    }
+//    private void onSiteNameReturned(JsonObject siteInfo) {
+//        for (TracsAppNotification notification : tracsNotifications) {
+//            try {
+//                TracsNotification tracsNotification = TracsNotification.class.cast(notification);
+//                boolean titleIsSet = !TracsNotification.NOT_SET.equals(tracsNotification.getSiteName());
+//                if (titleIsSet) {
+//                    continue;
+//                }
+//
+//                String siteId = tracsNotification.getSiteId();
+//                String fetchedSiteId = siteInfo.get("entityId").getAsString();
+//
+//                if (fetchedSiteId != null && fetchedSiteId.equals(siteId)) {
+//                    String siteName = siteInfo.get("entityTitle").getAsString();
+//                    tracsNotification.setSiteName(siteName);
+//                }
+//            } catch (NullPointerException | ClassCastException e) {
+//                Log.e(TAG, "Could not set site name.");
+//            }
+//        }
+//    }
+//
+//    private void onPageIdReturned(Map<String, String> pageIdPair) {
+//        String dispatchId = null;
+//        if (!pageIdPair.isEmpty() && pageIdPair.keySet().size() == 1) {
+//            for (String key : pageIdPair.keySet()) {
+//                dispatchId = key;
+//            }
+//            TracsAppNotification notification = tracsNotifications.get(dispatchId);
+//            if (notification != null) {
+//                String pageId = pageIdPair.get(notification.getDispatchId());
+//                notification.setPageId(pageId);
+//            }
+//        }
+//        if (allRequestsAreBack()) {
+//            HttpQueue.getInstance(AnalyticsApplication.getContext()).getRequestQueue().cancelAll(this);
+//            displayListView();
+//        }
+//    }
 
     public void setBadgeCount(int count) {
         super.setBadgeCount(count);
     }
 
+    private SiteSet extractSiteIds(NotificationsBundle bundle) {
+        SiteSet siteIds = new SiteSet();
+        for(TracsAppNotification notification : bundle) {
+            DispatchNotification dNotification = (DispatchNotification) notification;
+            siteIds.add(new NotificationData(dNotification.getSiteId()));
+        }
+        return siteIds;
+    }
 }
