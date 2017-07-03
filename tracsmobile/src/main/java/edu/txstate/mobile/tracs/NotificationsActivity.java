@@ -186,7 +186,7 @@ public class NotificationsActivity extends BaseTracsActivity {
     private void onTracsResponse(TracsNotification response) {
         if (response.getType().equals(NotificationTypes.ERROR)) {
             Log.e(TAG, "Error retrieving notifications from TRACS");
-            new StatusUpdate().updateCleared(response);
+            StatusUpdate.updateCleared(response);
             this.dispatchNotifications.remove(response.getDispatchId());
             if (this.dispatchNotifications.size() == 0) {
                 displayListView();
@@ -246,7 +246,7 @@ public class NotificationsActivity extends BaseTracsActivity {
         this.notificationsList.setAdapter(adapter);
 
         setSwipeForRecyclerView();
-        new StatusUpdate().updateSeen(this.tracsNotifications);
+        StatusUpdate.updateSeen(this.tracsNotifications);
         long loadTime = (System.nanoTime() - this.startTime) / 1_000_000;
         String notificationsLoaded = String.valueOf(this.notificationsList.getAdapter().getItemCount());
         Tracker tracker = AnalyticsApplication.getDefaultTracker();

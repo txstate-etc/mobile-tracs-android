@@ -81,7 +81,7 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
                     .build());
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("url", onClickUrl);
-            new StatusUpdate().updateRead(notification);
+            StatusUpdate.updateRead(notification);
             context.startActivity(intent);
         });
     }
@@ -95,7 +95,7 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
                 .setAction(context.getString(R.string.cleared_event))
                 .setLabel(notification.getType())
                 .build());
-        new StatusUpdate().updateCleared(notification);
+        StatusUpdate.updateCleared(notification);
 
         notifyItemRemoved(position);
     }

@@ -7,6 +7,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.TracsAppNotification;
 import edu.txstate.mobile.tracs.util.NotificationStatus;
@@ -14,21 +15,23 @@ import edu.txstate.mobile.tracs.util.http.HttpQueue;
 import edu.txstate.mobile.tracs.util.http.requests.DispatchUpdateRequest;
 
 public class StatusUpdate {
-    private Context context = AnalyticsApplication.getContext();
-
-    public void updateSeen(NotificationsBundle bundle) {
+    public static void updateSeen(NotificationsBundle bundle) {
         new Seen().execute(bundle);
     }
 
-    public void updateRead(TracsAppNotification notification) {
+    public static void updateRead(TracsAppNotification notification) {
         new Read().execute(notification);
     }
 
-    public void updateCleared(TracsAppNotification notification) {
+    public static void updateCleared(TracsAppNotification notification) {
+        if (NotificationTypes.ERROR.equals(notification.getType())) {
+           return;
+        }
         new Cleared().execute(notification);
     }
 
     private String formUrl(TracsAppNotification notification) {
+        Context context = AnalyticsApplication.getContext();
         String url = context.getString(R.string.dispatch_base) + context.getString(R.string.dispatch_notifications);
         url += "/";
         url += notification.getDispatchId();
@@ -39,6 +42,7 @@ public class StatusUpdate {
 
     void sendUpdate(TracsAppNotification notification, NotificationStatus status) {
         String url = formUrl(notification);
+        Context context = AnalyticsApplication.getContext();
 
         //Should not need to cancel this request
         HttpQueue.getInstance(context).addToRequestQueue(
