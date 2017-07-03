@@ -40,6 +40,8 @@ public class TracsClient {
 
     private static TracsClient tracsClient;
 
+    private HttpQueue queue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+
     private LoginListener loginListener;
     private NotificationDataListener dataListener;
     private SiteSet siteData;
@@ -120,23 +122,24 @@ public class TracsClient {
     public void getSiteData(SiteSet siteData, NotificationDataListener listener) {
         this.dataListener = listener;
         this.siteData = siteData;
-        HttpQueue queue = HttpQueue.getInstance(AnalyticsApplication.getContext());
+
         for (NotificationData data : siteData) {
             TracsSiteRequest siteRequest = new TracsSiteRequest(data.getSiteId(),
                     this::onSiteNameReturned, this::onDataError);
-            queue.addToRequestQueue(siteRequest, this);
+            queue.addToRequestQueue(siteRequest, data.getSiteId());
 
             TracsPageIdRequest pageIdRequest = new TracsPageIdRequest(data.getSiteId(),
                     this::onPageIdsReturned, this::onDataError);
-            queue.addToRequestQueue(pageIdRequest, this);
+            queue.addToRequestQueue(pageIdRequest, data.getSiteId());
         }
     }
 
     private void onDataError(String siteId) {
         NotificationData data = this.siteData.get(siteId);
+        queue.getRequestQueue().cancelAll(siteId);
         if (data != null) {
             this.siteData.remove(data);
-            if (siteDataHasBeenFetched(data)) {
+            if (siteDataHasBeenFetched()) {
                 this.dataListener.onResponse(this.siteData);
             }
         }
@@ -148,7 +151,7 @@ public class TracsClient {
         NotificationData data = this.siteData.get(siteId);
         if (data != null) {
             data.setSiteName(siteName);
-            if (siteDataHasBeenFetched(data)) {
+            if (siteDataHasBeenFetched()) {
                 this.dataListener.onResponse(this.siteData);
             }
         }
@@ -167,21 +170,20 @@ public class TracsClient {
             } else {
                 data.setDiscussionPageId(null);
             }
-            if (siteDataHasBeenFetched(data)) {
+            if (siteDataHasBeenFetched()) {
                 this.dataListener.onResponse(this.siteData);
             }
         }
     }
 
-    private boolean siteDataHasBeenFetched(NotificationData data) {
-        return data.isComplete() && this.siteData.isComplete();
+    private boolean siteDataHasBeenFetched() {
+        return this.siteData.isComplete();
     }
 
     public void verifySession (LoginListener listener) {
         this.loginListener = listener;
-        HttpQueue requestQueue = HttpQueue.getInstance(AnalyticsApplication.getContext());
         Map<String, String> headers = new HashMap<>();
-        requestQueue.addToRequestQueue(new TracsSessionRequest(headers,
+        queue.addToRequestQueue(new TracsSessionRequest(headers,
                 TracsClient.this::onSessionReturned,
                 TracsClient.this::onStatusError), this);
     }
