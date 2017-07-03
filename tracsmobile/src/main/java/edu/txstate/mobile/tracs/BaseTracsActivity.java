@@ -58,8 +58,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
             actionBar.setHomeAsUpIndicator(homeIcon);
         }
 
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        analyticsTracker = application.getDefaultTracker();
+        analyticsTracker = AnalyticsApplication.getDefaultTracker();
         analyticsTracker.enableExceptionReporting(true);
 
         messageReceiver = new BroadcastReceiver() {
@@ -178,7 +177,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         String badgeCount = String.valueOf(count);
         if (this.optionsMenu != null) {
             View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
-            TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+            TextView badge = menuItem.findViewById(R.id.notification_badge);
             badge.setText(badgeCount);
             if (count == 0) {
                 badge.setVisibility(View.INVISIBLE);
@@ -192,7 +191,7 @@ public abstract class BaseTracsActivity extends AppCompatActivity implements Obs
         int badgeCount = 0;
         if (this.optionsMenu != null) {
             View menuItem = this.optionsMenu.findItem(R.id.menu_notifications).getActionView();
-            TextView badge = (TextView) menuItem.findViewById(R.id.notification_badge);
+            TextView badge = menuItem.findViewById(R.id.notification_badge);
             try {
                 badgeCount = Integer.valueOf(badge.getText().toString());
             } catch (Exception e) {
