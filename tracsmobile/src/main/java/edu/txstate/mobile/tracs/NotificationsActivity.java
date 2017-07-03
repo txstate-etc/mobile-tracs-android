@@ -165,6 +165,9 @@ public class NotificationsActivity extends BaseTracsActivity {
     }
 
     private void onSiteDataResponse(SiteSet data) {
+        if (data.size() == 0) {
+            displayListView();
+        }
         this.siteIds = data;
         ArrayList<DispatchNotification> toBeRemoved = new ArrayList<>();
         for (TracsAppNotification notification: this.dispatchNotifications) {
