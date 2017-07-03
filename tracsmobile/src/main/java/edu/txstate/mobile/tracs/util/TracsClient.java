@@ -180,7 +180,7 @@ public class TracsClient {
         return this.siteData.isComplete();
     }
 
-    public void verifySession (LoginListener listener) {
+    public void verifySession(LoginListener listener) {
         this.loginListener = listener;
         Map<String, String> headers = new HashMap<>();
         queue.addToRequestQueue(new TracsSessionRequest(headers,
@@ -188,7 +188,7 @@ public class TracsClient {
                 TracsClient.this::onStatusError), this);
     }
 
-    private void login () {
+    private void login() {
         TracsLoginRequest.execute(this.loginListener);
     }
 
@@ -205,14 +205,8 @@ public class TracsClient {
     }
 
     private void onStatusError(VolleyError error) {
-       try {
-           Log.e(TAG, "Error retrieving and parsing session token");
-       } catch (NullPointerException e) {
-           Log.e(TAG, "Error with no message available");
-       } finally {
-           resetLoginState();
-       }
-
+        Log.e(TAG, "Error verifying session: no token retrieved");
+        resetLoginState();
     }
 
     private void resetLoginState() {
