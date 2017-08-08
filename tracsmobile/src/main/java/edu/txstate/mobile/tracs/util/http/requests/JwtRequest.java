@@ -1,8 +1,6 @@
 package edu.txstate.mobile.tracs.util.http.requests;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.webkit.CookieManager;
+import android.util.Base64;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -15,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
+import edu.txstate.mobile.tracs.util.AppStorage;
 
 public class JwtRequest extends StringRequest {
     private Map<String, String> headers;
@@ -28,13 +27,11 @@ public class JwtRequest extends StringRequest {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         this.headers.putAll(super.getHeaders());
-        CookieManager cookies = CookieManager.getInstance();
-        String url = "https://login.its.txstate.edu";
-        SharedPreferences prefs = AnalyticsApplication.getContext().getSharedPreferences("cas", Context.MODE_PRIVATE);
-        String userAgent = prefs.getString("user-agent", "");
-        prefs.edit().remove("user-agent").apply();
-        this.headers.put("Cookie", cookies.getCookie(url));
-        this.headers.put("User-Agent", userAgent);
+        String username = AppStorage.get(AppStorage.USERNAME, AnalyticsApplication.getContext());
+        String password = AppStorage.get(AppStorage.PASSWORD, AnalyticsApplication.getContext());
+        String creds = String.format("%s:%s", username, password);
+        String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
+        headers.put("Authorization", auth);
         return headers;
     }
 
