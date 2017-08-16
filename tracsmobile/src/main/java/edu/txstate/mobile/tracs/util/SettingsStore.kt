@@ -14,12 +14,13 @@ class SettingsStore private constructor() {
         private val TAG = "SettingsStore"
         private val SETTING_ENABLED = true
         private val SETTING_DISABLED = false
-        private val SETTINGS_NOT_IMPLEMENTED = arrayOf(
+
+        @JvmField
+        var SETTINGS_NOT_IMPLEMENTED: Array<String> = arrayOf(
                 NotificationTypes.ASSESSMENT,
                 NotificationTypes.GRADE,
-                NotificationTypes.DISCUSSION,
-                NotificationTypes.ASSIGNMENT
-        )
+                NotificationTypes.ASSIGNMENT)
+
         var instance: SettingsStore = SettingsStore()
             @JvmStatic
             get() {

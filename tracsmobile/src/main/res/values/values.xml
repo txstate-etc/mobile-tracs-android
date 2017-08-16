@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fa_bullhorn">&#xf0a1;</string>
+    <string name="fa_comments">&#xf086;</string>
 </resources>

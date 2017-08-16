@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
@@ -21,6 +23,7 @@ public class AnalyticsApplication extends Application {
     private static Tracker tracker;
     private static GoogleAnalytics analytics;
 
+    private static final String TAG = "AnalyticsApplication";
 
     public void onCreate() {
         super.onCreate();

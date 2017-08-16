@@ -17,7 +17,9 @@ import java.util.Map;
 
 import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
+import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsAnnouncement;
+import edu.txstate.mobile.tracs.notifications.tracs.TracsDiscussion;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotificationError;
 import edu.txstate.mobile.tracs.util.AppStorage;
@@ -29,6 +31,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
     private final Map<String, String> headers;
     private final Response.Listener<TracsNotification> listener;
     private String dispatchId;
+    private DispatchNotification dispatchNotification;
     private NotificationStatus status;
     private Date notifyAfter;
 
@@ -38,6 +41,7 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
         this.headers = headers;
         this.listener = listener;
         this.dispatchId = dispatchNotification.getDispatchId();
+        this.dispatchNotification = dispatchNotification;
         this.notifyAfter = dispatchNotification.getNotifyAfter();
         this.status = new NotificationStatus(dispatchNotification.hasBeenSeen(),
                 dispatchNotification.hasBeenRead(),
@@ -73,13 +77,23 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
                 try {
                     notification = (JsonObject) parser.next();
                 } catch (ClassCastException e) {
-                    Log.e(TAG, "Could not parse JSON response.");
-                    TracsNotificationError errorNotification = new TracsNotificationError(response.statusCode);
-                    errorNotification.setDispatchId(this.dispatchId);
-                    Response.success(errorNotification, HttpHeaderParser.parseCacheHeaders(response));
+                    return handleNotificationError(response);
                 }
             }
-            tracsNotification = new TracsAnnouncement(notification);
+
+            switch (dispatchNotification.getType()) {
+                case NotificationTypes.ANNOUNCEMENT:
+                    tracsNotification = new TracsAnnouncement(notification);
+                    break;
+                case NotificationTypes.DISCUSSION:
+                    tracsNotification = new TracsDiscussion(notification);
+                    tracsNotification.setId(this.dispatchId);
+                    tracsNotification.setSiteId(this.dispatchNotification.getSiteId());
+                    break;
+                default:
+                    return handleNotificationError(response);
+            }
+
             tracsNotification.setDispatchId(this.dispatchId);
             tracsNotification.setNotifyAfter(this.notifyAfter);
             tracsNotification.markSeen(status.hasBeenSeen());
@@ -92,5 +106,13 @@ public class TracsNotificationRequest extends Request<TracsNotification> {
     @Override
     protected void deliverResponse(TracsNotification response) {
         listener.onResponse(response);
+    }
+
+    @SuppressLint("LongLogTag")
+    private Response<TracsNotification> handleNotificationError(NetworkResponse response) {
+        Log.e(TAG, "Could not parse JSON response.");
+        TracsNotificationError errorNotification = new TracsNotificationError(response.statusCode);
+        errorNotification.setDispatchId(this.dispatchId);
+        return Response.success(errorNotification, HttpHeaderParser.parseCacheHeaders(response));
     }
 }

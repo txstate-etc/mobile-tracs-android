@@ -2,7 +2,7 @@ package edu.txstate.mobile.tracs.notifications.tracs;
 
 import edu.txstate.mobile.tracs.notifications.TracsAppNotificationAbs;
 
-abstract class TracsNotificationAbs extends TracsAppNotificationAbs implements TracsNotification {
+public abstract class TracsNotificationAbs extends TracsAppNotificationAbs implements TracsNotification {
 
     private String title;
     private String id;
@@ -58,7 +58,8 @@ abstract class TracsNotificationAbs extends TracsAppNotificationAbs implements T
         this.siteName = siteName;
     }
 
-    void setId(String id) {
+    @Override
+    public void setId(String id) {
         this.id = id;
     }
 
