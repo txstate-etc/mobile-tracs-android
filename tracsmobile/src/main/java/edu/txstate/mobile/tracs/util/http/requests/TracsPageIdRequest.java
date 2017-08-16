@@ -78,7 +78,7 @@ public class TracsPageIdRequest extends Request<JsonObject> {
                         pageIds.addProperty(NotificationTypes.ANNOUNCEMENT, pageId);
                         break;
                     case Tool.DISCUSSIONS:
-                        pageId = tool.getAsJsonObject().get("pageId").getAsString();
+                        pageId = tool.getAsJsonObject().get("id").getAsString();
                         pageIds.addProperty(NotificationTypes.DISCUSSION, pageId);
                         break;
                     default:

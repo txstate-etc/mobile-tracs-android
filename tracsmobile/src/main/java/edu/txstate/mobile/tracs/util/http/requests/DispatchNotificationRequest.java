@@ -16,6 +16,7 @@ import java.util.Map;
 import edu.txstate.mobile.tracs.notifications.DispatchNotification;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
+import edu.txstate.mobile.tracs.util.SettingsStore;
 
 public class DispatchNotificationRequest extends Request<NotificationsBundle> {
     private static final String TAG = "TracsSessionRequest";
@@ -55,7 +56,7 @@ public class DispatchNotificationRequest extends Request<NotificationsBundle> {
             }
 
             for (JsonElement notification : notifications) {
-                if (notification.isJsonObject() && notification.getAsJsonObject().get("keys").getAsJsonObject().get("object_type").getAsString().equals(NotificationTypes.ANNOUNCEMENT)) {
+                if (isEnabled(notification)) {
                     dispatchNotifications.add(new DispatchNotification((JsonObject) notification));
                 }
             }
@@ -69,5 +70,20 @@ public class DispatchNotificationRequest extends Request<NotificationsBundle> {
     @Override
     protected void deliverResponse(NotificationsBundle response) {
         listener.onResponse(response);
+    }
+
+    private boolean isEnabled(JsonElement notification) {
+        boolean isJsonObject = notification.isJsonObject();
+        String notificationType = notification.getAsJsonObject()
+                .get("keys").getAsJsonObject()
+                .get("object_type").getAsString();
+        boolean isNotificationEnabled = true;
+        for (String setting : SettingsStore.SETTINGS_NOT_IMPLEMENTED) {
+            if (notificationType.equals(setting)) {
+                isNotificationEnabled = false;
+                break;
+            }
+        }
+        return isNotificationEnabled;
     }
 }

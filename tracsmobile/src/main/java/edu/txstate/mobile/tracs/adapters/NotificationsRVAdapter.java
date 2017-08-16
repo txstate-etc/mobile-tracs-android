@@ -18,6 +18,7 @@ import edu.txstate.mobile.tracs.R;
 import edu.txstate.mobile.tracs.notifications.NotificationTypes;
 import edu.txstate.mobile.tracs.notifications.NotificationsBundle;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsAnnouncement;
+import edu.txstate.mobile.tracs.notifications.tracs.TracsDiscussion;
 import edu.txstate.mobile.tracs.notifications.tracs.TracsNotification;
 import edu.txstate.mobile.tracs.util.FontAwesome;
 import edu.txstate.mobile.tracs.util.async.StatusUpdate;
@@ -55,6 +56,14 @@ public class NotificationsRVAdapter extends RecyclerView.Adapter<NotificationVie
                 holder.getNotificationIcon().setText(R.string.fa_bullhorn);
                 holder.getNotificationTitle().setText(announcement.getTitle());
                 holder.getNotificationSite().setText(announcement.getSiteName());
+                break;
+            case NotificationTypes.DISCUSSION:
+                TracsDiscussion discussion = TracsDiscussion.class.cast(notification);
+                layout.setBackgroundColor(context.getResources().getColor(R.color.readNotificationBackground));
+
+                holder.getNotificationIcon().setText(R.string.fa_comments);
+                holder.getNotificationTitle().setText(discussion.getTitle());
+                holder.getNotificationSite().setText(discussion.getSiteName());
                 break;
             default:
                 break;

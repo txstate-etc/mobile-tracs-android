@@ -17,7 +17,7 @@ public class TracsAnnouncement extends TracsNotificationAbs {
         super.setId(this.extractKey(rawNotification, "id", String.class));
         super.setTitle(this.extractKey(rawNotification, "title", String.class));
         super.setSiteId(this.extractKey(rawNotification, "siteId", String.class));
-        setPageId(TracsNotification.NOT_SET);
+        super.setPageId(TracsNotification.NOT_SET);
     }
 
     public String getUrl() {
@@ -39,8 +39,7 @@ public class TracsAnnouncement extends TracsNotificationAbs {
         return NotificationTypes.ANNOUNCEMENT;
     }
 
-    @Override
-    public <T> T extractKey(JsonObject notification, String key, Class<T> returnType) {
+    private <T> T extractKey(JsonObject notification, String key, Class<T> returnType) {
         if (notification == null) { return returnType.cast(TracsNotificationAbs.NOT_SET); }
         T value;
         JsonElement jsonValue = notification.get(key);

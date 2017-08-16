@@ -36,9 +36,4 @@ public class TracsNotificationError extends TracsNotificationAbs {
     public String getType() {
         return NotificationTypes.ERROR;
     }
-
-    @Override
-    public <T> T extractKey(JsonObject notification, String key, Class<T> returnType) {
-        return null;
-    }
 }

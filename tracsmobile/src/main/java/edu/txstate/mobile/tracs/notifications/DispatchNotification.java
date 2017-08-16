@@ -43,6 +43,11 @@ public class DispatchNotification extends TracsAppNotificationAbs {
         return this.id;
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getType() {
         return this.type;
     }

@@ -101,7 +101,16 @@ public class TracsClient {
             }
 
             HttpQueue requestQueue = HttpQueue.getInstance(context);
-            String entityId = tracsNotification.getSiteId() + ":main:" + tracsNotification.getObjectId();
+            String entityId = "";
+            switch (tracsNotification.getType()) {
+                case NotificationTypes.ANNOUNCEMENT:
+                    entityId = tracsNotification.getSiteId() + ":main:" + tracsNotification.getObjectId();
+                    break;
+                case NotificationTypes.DISCUSSION:
+                    entityId = tracsNotification.getObjectId();
+                    break;
+                default:
+            }
             String url = makeUrl(notification.getType()) + entityId + ".json";
             Map<String, String> headers = new HashMap<>();
 
