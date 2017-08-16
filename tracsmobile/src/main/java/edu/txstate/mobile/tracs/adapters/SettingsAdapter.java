@@ -52,7 +52,7 @@ public class SettingsAdapter extends BaseExpandableListAdapter {
         ArrayList<Pair<String, String>> coursesSettings = new ArrayList<>();
 
         defaultSettings.add(new Pair<>(NotificationTypes.ANNOUNCEMENT, context.getString(R.string.announcement_setting)));
-//        defaultSettings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
+        defaultSettings.add(new Pair<>(NotificationTypes.DISCUSSION, context.getString(R.string.discussion_setting)));
 //        defaultSettings.add(new Pair<>(NotificationTypes.GRADE, context.getString(R.string.grade_setting)));
 //        defaultSettings.add(new Pair<>(NotificationTypes.ASSESSMENT, context.getString(R.string.assessment_setting)));
 //        defaultSettings.add(new Pair<>(NotificationTypes.ASSIGNMENT, context.getString(R.string.assignment_setting)));

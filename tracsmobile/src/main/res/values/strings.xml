@@ -7,6 +7,7 @@
     <string name="user_data">user_data.xml</string>
 
     <string name="announcement_setting">Announcements</string>
+    <string name="discussion_setting">Forums</string>
 
     <string name="menu_clear_all">Clear All</string>
     <string name="menu_notification_settings">Notification Settings</string>
