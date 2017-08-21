@@ -194,6 +194,7 @@ public class TracsWebView extends WebView {
                     }
                 }
                 TracsWebView.class.cast(view).setSessionId(newCookie);
+                LoginStatus.getInstance().login();
             }
 
             if (logoutUrl.equals(url)) {
@@ -202,6 +203,10 @@ public class TracsWebView extends WebView {
                 Registrar.getInstance().unregisterDevice();
                 SettingsStore.getInstance().clear();
                 AppStorage.clear(AnalyticsApplication.getContext());
+            }
+
+            if (LoginStatus.getInstance().isUserLoggedIn()) {
+
             }
         }
 
