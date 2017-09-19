@@ -115,9 +115,14 @@ public class TracsClient {
             Map<String, String> headers = new HashMap<>();
 
             Response.ErrorListener errorHandler = (error) -> {
-                TracsNotificationError errorNotification = new TracsNotificationError(
-                        error.networkResponse.statusCode
-                );
+                TracsNotificationError errorNotification;
+                if (error != null && error.networkResponse != null) {
+                    errorNotification = new TracsNotificationError(
+                            error.networkResponse.statusCode
+                    );
+                } else {
+                    errorNotification = new TracsNotificationError(404);
+                }
                 errorNotification.setDispatchId(tracsNotification.getDispatchId());
                 listener.onResponse(errorNotification);
             };
