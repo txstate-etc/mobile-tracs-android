@@ -26,7 +26,7 @@ android {
         applicationId "edu.txstate.mobile.tracs"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 2
+        versionCode 4
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

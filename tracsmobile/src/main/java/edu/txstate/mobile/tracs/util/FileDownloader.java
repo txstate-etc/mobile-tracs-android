@@ -1,5 +1,11 @@
 package edu.txstate.mobile.tracs.util;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -9,10 +15,20 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.util.LongSparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Toast;
 
+import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 
 public class FileDownloader {
@@ -57,6 +73,28 @@ public class FileDownloader {
     }
 
     public void downloadFile(String url, final String mimeType) {
+        if (Build.VERSION.SDK_INT >= 23 && userHasDeniedStorage()) {
+            //Display prompt for downloading permissions
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            View titleView = inflater.inflate(R.layout.download_dialog_title, null);
+            builder.setCustomTitle(titleView)
+                    .setPositiveButton("OK", (dialogInterface, i) -> {
+                        goToDownloadSettings();
+                    })
+                    .setNegativeButton("CANCEL", ((dialogInterface, i) -> {
+                        Toast toast = Toast.makeText(context, "Cancelling download...", Toast.LENGTH_LONG);
+                        toast.show();
+                    }));
+
+            AlertDialog dialog = builder.create();
+            dialog.setOnShowListener((dialogInterface -> {
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(AnalyticsApplication.getContext().getResources().getColor(R.color.unreadBullhornColor));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(AnalyticsApplication.getContext().getResources().getColor(R.color.unreadBullhornColor));
+            }));
+            dialog.show();
+            return;
+        }
         String fileName = "";
         String cookies = android.webkit.CookieManager.getInstance().getCookie(url);
         boolean urlIsNotEmpty = !(url == null || url.isEmpty());
@@ -94,6 +132,24 @@ public class FileDownloader {
 
             this.downloadId = downloadManager.enqueue(request);
             this.downloadStatus.put(downloadId, false);
+        }
+    }
+
+    private boolean userHasDeniedStorage() {
+        return ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void goToDownloadSettings() {
+        try {
+            Intent appSettings = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+            appSettings.setData(uri);
+            context.startActivity(appSettings);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+            Intent genericSettings = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+            context.startActivity(genericSettings);
         }
     }
 
@@ -152,7 +208,9 @@ public class FileDownloader {
         }
 
         private void openFile(Uri file, String mimeType, Long downloadId) {
-            if (FileDownloader.this.downloadStatus.get(downloadId)) { return; }
+            if (FileDownloader.this.downloadStatus.get(downloadId)) {
+                return;
+            }
             boolean usingNougatOrAbove = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N;
             if (usingNougatOrAbove) { //We have to have a content URI vs. a file URI
                 file = downloadManager.getUriForDownloadedFile(downloadId);

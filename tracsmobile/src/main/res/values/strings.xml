@@ -18,4 +18,5 @@
     <string name="clear_all_prompt">Clear all notifications?</string>
     <string name="about_the_app_label">About</string>
     <string name="tracs_star_logo">TRACS Star Logo</string>
+    <string name="disabled_downloads">Downloads are disabled for this app, re-enable them?</string>
 </resources>
