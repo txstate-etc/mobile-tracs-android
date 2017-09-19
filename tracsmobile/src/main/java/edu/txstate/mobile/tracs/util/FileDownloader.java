@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,8 @@ import edu.txstate.mobile.tracs.AnalyticsApplication;
 import edu.txstate.mobile.tracs.R;
 
 public class FileDownloader {
+
+    private static final String TAG = "FileDownloader";
 
     private Context context;
     private DownloadManager downloadManager;
@@ -220,8 +223,14 @@ public class FileDownloader {
             openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             openFileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             openFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            FileDownloader.this.context.startActivity(openFileIntent);
-            FileDownloader.this.downloadStatus.put(downloadId, true);
+            try {
+                FileDownloader.this.context.startActivity(openFileIntent);
+                FileDownloader.this.downloadStatus.put(downloadId, true);
+            } catch (ActivityNotFoundException e) {
+                Toast noActivity = Toast.makeText(context, "Could not open downloaded file", Toast.LENGTH_LONG);
+                noActivity.show();
+                e.printStackTrace();
+            }
         }
     }
 }
